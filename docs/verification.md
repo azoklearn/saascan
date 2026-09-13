@@ -1,6 +1,6 @@
 # Vérification de SaaScan
 
-Vérification locale du 13 septembre 2026. Les dossiers ne font appel à aucune IA : ils sont assemblés à partir des textes de `data/contenus`. La clé Whop de production a servi à créer le catalogue ; aucun paiement et aucun email réel.
+Vérification locale du 13 septembre 2026. Les dossiers ne font appel à aucune IA : ils sont assemblés à partir des textes de `data/contenus`. SaaScan n’envoie aucun email. La clé Whop de production a servi à créer le catalogue et le webhook ; aucun paiement réel.
 
 ## Vérifications automatisées
 
@@ -15,22 +15,24 @@ Les 93 tests se répartissent ainsi :
 
 - **Contenus (80 tests, 4 par idée) :** structure du fichier, longueurs, vouvoiement, apostrophe typographique, 60 accroches et déroulés distincts, au moins trois plateformes, aucun pourcentage dans les vidéos et le plan de A à Z, sept phases aux périodes imposées, et prompt de 700 à 900 mots pour chacun des 3 072 profils testés. Les prompts vont de 794 à 884 mots selon les idées et les profils.
 - **Domaine :** neuf questions et curseur final, réponses invalides, sélection des idées (assez d’idées, aucune, complément avec les plus proches), remontée des domaines choisis, dossier assemblé pour deux profils (trois idées, citations des neuf réponses, prompt de 700 à 900 mots, 24 tâches distinctes, risques rédigés), adaptation du prompt aux compétences et à la zone, bonus de chaque formule (0, 30 ou 60 vidéos, plan de A à Z avec l’objectif de revenu), canaux autorisés, prix par jour (0,63 €, 0,33 € et 0,19 €) et économies (−47 % et −69 %).
-- **Base de données :** PostgreSQL/PGlite applique les cinq migrations et le scénario `supabase/tests/rls.sql`. Le scénario couvre :
+- **Base de données :** PostgreSQL/PGlite applique les six migrations et le scénario `supabase/tests/rls.sql`. Le scénario couvre :
+  - l’absence de table de rappels et de colonnes d’email dans le journal des paiements ;
   - l’absence d’accès navigateur ;
   - la création du dossier au passage en caisse ;
   - le refus de publier avant paiement ;
-  - le premier paiement Whop et la livraison répétée ;
-  - l’email avec le lien ;
+  - le premier paiement Whop signalé pour la publication, avec l’email Whop enregistré, et la livraison répétée ;
   - les 60 idées de vidéos exigées pour la formule 12 mois, avec 30 refusées ;
   - la remise à zéro des tentatives ;
-  - le renouvellement et le rappel de reconduction ;
+  - le renouvellement ;
   - la résiliation conservée malgré un état plus ancien ;
-  - le remboursement conservé malgré un succès tardif ;
+  - le remboursement signalé une seule fois et conservé malgré un succès tardif ;
   - la réactivation d’un abonnement terminé.
 
-## Catalogue Whop
+## Whop
 
 `node scripts/whop-catalogue.mjs` a créé le produit masqué et les trois formules, sans frais initiaux : Whop affiche « €18.99 / month », « €29.99 / 3-months » et « €69.99 / year ». Une configuration de paiement d’essai renvoie une adresse `https://whop.com/checkout/ch_…/` et conserve ses métadonnées. Whop refuse une adresse de retour en `http://` : le paiement ne se teste pas sur localhost.
+
+`node scripts/whop-webhook.mjs https://saascan.vercel.app` a créé le webhook vers `/api/webhooks/whop` avec six événements ; Whop refuse `membership.went_valid` et `membership.went_invalid`. Le secret est enregistré dans `.env.local` sans être affiché. Après déploiement, la route répond `503 NOT_CONFIGURED` tant que `WHOP_WEBHOOK_SECRET` manque sur Vercel.
 
 ## Parcours navigateur vérifié
 
@@ -46,24 +48,28 @@ Navigateur intégré, à 309 pixels de large puis à 375 × 812 pixels :
    - prompt de 813 mots ;
    - objectif de revenu remplacé dans la dernière phase, sans balise restante ;
    - tâche cochée conservée après rechargement ;
-   - pas de bloc d’abonnement en démonstration, aucun débordement horizontal.
-4. **Contenu payant :** ni le HTML ni les scripts chargés par le dossier d’exemple ne contiennent le texte des autres idées. Les contenus restent côté serveur.
+   - pas de bloc de lien ni d’abonnement en démonstration, aucun débordement horizontal.
+4. **Menu « Mon dossier » :**
+   - avec un lien de dossier au bon format dans le stockage local, « Mon dossier » apparaît dans le menu ordinateur et dans le menu mobile, vers `/dossier/<lien>` ;
+   - sans lien enregistré, il disparaît ;
+   - un lien inconnu affiche « Ce dossier est introuvable. Vérifiez votre lien personnel. ».
+5. **CGV :** elles indiquent que SaaScan n’envoie aucun email et ne promettent plus de rappel avant renouvellement.
+6. **Contenu payant :** ni le HTML ni les scripts chargés par le dossier d’exemple ne contiennent le texte des autres idées. Les contenus restent côté serveur.
 
-Le questionnaire et l’analyse n’ont pas changé depuis la vérification précédente.
+Le questionnaire et l’analyse n’ont pas changé depuis la vérification précédente. Le bloc « Gardez ce lien » et son bouton de copie ne s’affichent que sur un vrai dossier payé : ils restent à voir après un premier paiement.
 
 ## À vérifier avec les services configurés
 
-- Migration `202609130003_contenus_rediges.sql` appliquée sur la base Supabase.
-- Webhook Whop vers l’adresse Vercel, puis paiement :
+- Migrations `202609130003_contenus_rediges.sql` et `202609130004_sans_emails.sql` appliquées sur la base Supabase.
+- Paiement réel ou dans le bac à sable Whop :
   - retour sur `/dossier/<lien>` et publication immédiate du dossier et des bonus ;
-  - email avec le lien ;
+  - bouton « Copier le lien » et menu « Mon dossier » ;
   - webhook répété ;
   - renouvellement ;
   - passage de 3 à 12 mois ;
   - résiliation depuis le dossier ;
-  - remboursement sous 48 heures ;
+  - remboursement sous 48 heures, suivi de l’annulation de l’abonnement ;
   - réactivation.
-- Envoi Resend, reprise après erreur, rappel de reconduction et exécution du cron Vercel.
 - Téléchargement du prompt et tâches cochées avec un vrai lien de dossier.
 
-Ces cas ont été revus dans le code et vérifiés par TypeScript et par le scénario SQL, mais restent à exercer avec les API réelles.
+Ces cas ont été revus dans le code et vérifiés par TypeScript et par le scénario SQL, mais restent à exercer avec Whop.

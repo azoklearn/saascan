@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import { ArrowDownToLine, ArrowRight, Braces, Check, ChevronDown, Clapperboard, Clipboard, FileText, Layers3, ListChecks, LoaderCircle, Route, ShieldCheck, Sparkles, Target, TriangleAlert } from "lucide-react";
+import { ArrowDownToLine, ArrowRight, Braces, Check, ChevronDown, Clapperboard, Clipboard, FileText, Layers3, Link2, ListChecks, LoaderCircle, Route, ShieldCheck, Sparkles, Target, TriangleAlert } from "lucide-react";
 import { planWeeks } from "@/config/plan-weeks";
 import { findPlan, refundDays, type PlanId } from "@/config/pricing";
 import { loadDemoProgress, saveDemoProgress } from "@/lib/demo/storage";
+import { rememberDossier } from "@/lib/dossier/saved-link";
 import { countWords } from "@/lib/dossier/word-count";
 import { clearLocalAnswers } from "@/lib/questionnaire/local-answers";
 import type { DossierContent, DossierRecord, DossierState, PlanTask, Selection } from "@/types/domain";
@@ -65,6 +66,7 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
   const [elapsed, setElapsed] = useState(0);
   const [tab, setTab] = useState<Tab>("ideas");
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [error, setError] = useState("");
   const [pending, setPending] = useState<string[]>([]);
   const [paymentFailed, setPaymentFailed] = useState(false);
@@ -84,7 +86,8 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
         if (cancelled) return;
         setRecord(data); setLoadError("");
         const { dossier, content } = data;
-        if (dossier.paid_at) clearLocalAnswers();
+        // Aucun email : le lien reste accessible depuis le menu du site sur cet appareil.
+        if (dossier.paid_at) { clearLocalAnswers(); rememberDossier(token); }
         const bonusPending = extrasMissing(dossier, content);
         const closed = !!dossier.refunded_at || (!!dossier.paid_at && !data.access);
         const generationOver = !content && dossier.statut === "echec" && dossier.generation_attempts >= 3;
@@ -123,11 +126,16 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
     return () => window.clearInterval(interval);
   }, [waiting]);
   useEffect(() => { if (!copied) return; const timer = setTimeout(() => setCopied(false), 2500); return () => clearTimeout(timer); }, [copied]);
+  useEffect(() => { if (!linkCopied) return; const timer = setTimeout(() => setLinkCopied(false), 2500); return () => clearTimeout(timer); }, [linkCopied]);
 
   async function copy() {
     if (!record?.content) return;
     try { await navigator.clipboard.writeText(record.content.build_prompt); setCopied(true); setError(""); }
     catch { setError("La copie n’est pas autorisée dans ce navigateur. Vous pouvez télécharger le prompt en Markdown."); }
+  }
+  async function copyLink() {
+    try { await navigator.clipboard.writeText(`${window.location.origin}/dossier/${token}`); setLinkCopied(true); setError(""); }
+    catch { setError("La copie n’est pas autorisée dans ce navigateur. Ajoutez cette page à vos favoris pour garder le lien."); }
   }
   function download() {
     if (!record?.content) return;
@@ -174,7 +182,7 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
   if (dossier.refunded_at) return <ProblemScreen message="Ce dossier a été remboursé. Son contenu n’est plus accessible." demo={demo} />;
   if (!dossier.paid_at) {
     if (paymentFailed) return <Preparation title="Le paiement n’a pas abouti." text="Aucun abonnement n’a été créé. Vous pouvez choisir à nouveau votre formule quand vous voulez."><p className="ws-dossier-actions ws-centered"><Link className="ws-button" href="/debloquer">Choisir ma formule</Link></p></Preparation>;
-    return <Preparation title="Nous confirmons votre paiement." text={elapsed > 90_000 ? "La confirmation prend plus de temps que prévu. Gardez l’email de confirmation : le lien de votre dossier y figure." : "Whop nous transmet la confirmation. Votre dossier s’ouvre juste après."} />;
+    return <Preparation title="Nous confirmons votre paiement." text={elapsed > 90_000 ? "La confirmation prend plus de temps que prévu. Gardez cette page ouverte : elle s’actualise dès que Whop confirme le paiement." : "Whop nous transmet la confirmation. Votre dossier s’ouvre juste après : ajoutez cette page à vos favoris, c’est votre accès."} />;
   }
   if (!record.access) return <Shell><EndedScreen busy={action.target === "reactivate" && action.busy !== "cancel" ? action.busy : null} error={errorFor("reactivate")} onReactivate={reactivate} /></Shell>;
   if (!content) {
@@ -199,7 +207,7 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
   }
 
   return <Shell demo={demo}><div className="ws-dossier-top"><div><p className="ws-kicker">Votre dossier SaaScan</p><h1 className="ws-title">Vos idées. <em>Votre point de départ.</em></h1><p className="ws-subtitle">Trois pistes pour votre situation. Un prompt pour construire. Un plan pour avancer, une action à la fois.</p></div><div className="ws-dossier-actions"><button className="ws-button-secondary" onClick={download}><ArrowDownToLine size={14} /> Exporter le prompt</button></div></div>
-    {!demo && <p className="ws-info">Ce lien est personnel : ajoutez cette page à vos favoris ou retrouvez-la dans l’email reçu après le paiement.</p>}
+    {!demo && <div className="ws-link-save"><p><Link2 size={15} /><span><strong>Gardez ce lien, c’est l’accès à votre dossier.</strong> Aucun email n’est envoyé : copiez le lien dans vos notes ou ajoutez cette page à vos favoris. Sur cet appareil, il reste aussi dans le menu « Mon dossier ».</span></p><button className="ws-button-secondary" onClick={copyLink}>{linkCopied ? <Check size={14} /> : <Clipboard size={14} />}{linkCopied ? "Lien copié" : "Copier le lien"}</button><span role="status" className="sr-only">{linkCopied ? "Le lien du dossier est copié dans le presse-papiers." : ""}</span></div>}
     <div className="ws-tabs" role="tablist" aria-label="Les parties de votre dossier">{tabs.map(({ id: key, label, icon: Icon }, index) => <button key={key} className="ws-tab" id={`tab-${key}`} role="tab" aria-selected={tab === key} aria-controls={`panel-${key}`} tabIndex={tab === key ? 0 : -1} onClick={() => setTab(key)} onKeyDown={(event) => navigateTab(event, index)}><Icon size={15} />{label}{key === "plan" && <small>{done}/{content.tasks.length}</small>}{key === "videos" && !!content.videos?.length && <small>{content.videos.length}</small>}</button>)}</div>
     {error && <ErrorNotice>{error}</ErrorNotice>}
     <section id="panel-ideas" role="tabpanel" aria-labelledby="tab-ideas" hidden={tab !== "ideas"}>

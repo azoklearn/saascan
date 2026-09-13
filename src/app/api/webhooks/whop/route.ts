@@ -1,7 +1,6 @@
 import { after } from "next/server";
 import { unwrapWebhook } from "@whop/sdk/helpers";
 import { publishDossier, publishExtras } from "@/lib/dossier/publish";
-import { sendEventEmail } from "@/lib/email/service";
 import { ApiError, requireEnv } from "@/lib/security/config";
 import { errorResponse, json } from "@/lib/security/http";
 import { getWhop } from "@/lib/whop/client";
@@ -22,16 +21,15 @@ export async function POST(request: Request) {
     const deliveryId = request.headers.get("webhook-id");
     if (!deliveryId) throw new ApiError("Identifiant de livraison Whop manquant.", 400);
     const result = await applyWhopEvent(deliveryId, event);
-    if (!result.ignored && !result.duplicate) {
-      // Whop attend une réponse en moins de 5 secondes : publication, email et résiliation continuent ensuite.
+    if (!result.ignored && !result.duplicate && (result.first_payment || result.refund_confirmed)) {
+      // Whop attend une réponse en moins de 5 secondes : la publication et la résiliation continuent ensuite.
       after(async () => {
         // La page du dossier relance la publication si ce travail échoue.
         if (result.first_payment) {
           await publishDossier(result.dossierId).then(() => publishExtras(result.dossierId))
             .catch(logFailure("Publication du dossier à reprendre", result.dossierId));
         }
-        if (result.email_kind) await sendEventEmail(deliveryId).catch(logFailure("Email transactionnel à reprendre", deliveryId));
-        if (result.email_kind === "remboursement_recu" && result.membership_id) {
+        if (result.refund_confirmed && result.membership_id) {
           await getWhop().memberships.cancel({ id: result.membership_id, reason: "Remboursement au titre de la garantie de 48 heures" })
             .catch(logFailure("Abonnement remboursé à résilier", result.dossierId));
         }

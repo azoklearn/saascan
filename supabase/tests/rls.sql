@@ -21,6 +21,10 @@ create function pg_temp.answers() returns jsonb language sql immutable as $$
   select '{"tranche_age":"25_34","cible_client":"b2b","domaines":["vente","productivite"],"competences":"sans_code","temps_jour":"1h","zone":"francophone","facturation":"abonnement","concurrence":"differencier","objectif_revenu":"2000"}'::jsonb;
 $$;
 
+-- SaaScan n’envoie plus d’email : ni journal d’envoi ni rappel en base.
+select pg_temp.assert_true(to_regclass('public.renewal_reminders') is null
+  and not exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'payment_events' and column_name like 'email%'), 'aucune trace des emails');
+
 -- Les navigateurs n’ont aucun accès direct aux données ni aux transactions.
 set local role anon;
 do $$ begin
@@ -57,16 +61,16 @@ do $$ begin
   exception when object_not_in_prerequisite_state then null; end;
 end $$;
 
--- Premier paiement : le dossier s’ouvre, l’abonnement est enregistré.
-select public.apply_whop_event('msg_test_paid', 'payment.succeeded', 'pay_test_1', now(), pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'),
+-- Premier paiement : le dossier s’ouvre, l’abonnement et l’email Whop sont enregistrés.
+select pg_temp.assert_true((public.apply_whop_event('msg_test_paid', 'payment.succeeded', 'pay_test_1', now(), pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'),
   jsonb_build_object('id', 'pay_test_1', 'local_id', pg_temp.pending_payment('test_lien_acces_dossier_saascan_0123456789a'), 'formule', 'annuel',
     'total_cents', 6999, 'refunded_cents', 0, 'paid_at', now(), 'email', 'acheteur@example.invalid'),
-  jsonb_build_object('id', 'mem_test_1', 'status', 'active', 'cancel_at_period_end', false, 'current_period_end', now() + interval '365 days', 'formule', 'annuel', 'synced_at', now()));
+  jsonb_build_object('id', 'mem_test_1', 'status', 'active', 'cancel_at_period_end', false, 'current_period_end', now() + interval '365 days', 'formule', 'annuel', 'synced_at', now())) ->> 'first_payment')::boolean,
+  'premier paiement signalé pour la publication');
 select pg_temp.assert_true((select paid_at is not null and email = 'acheteur@example.invalid' and membership_status = 'active' and statut = 'brouillon'
   from public.dossiers where access_token = 'test_lien_acces_dossier_saascan_0123456789a'), 'paiement et abonnement confirmés avant la publication');
 select pg_temp.assert_true((public.apply_whop_event('msg_test_paid', 'payment.succeeded', 'pay_test_1', now(), pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'),
   jsonb_build_object('id', 'pay_test_1', 'formule', 'annuel', 'total_cents', 6999, 'refunded_cents', 0)) ->> 'duplicate')::boolean, 'événement répété sans second effet');
-select pg_temp.assert_true((select public.claim_event_email('msg_test_paid') ->> 'access_token') = 'test_lien_acces_dossier_saascan_0123456789a', 'email envoyé avec le lien du dossier');
 select pg_temp.assert_true((public.reserve_generation(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a')) -> 'answers' ->> 'objectif_revenu') = '2000', 'publication réservée après paiement');
 do $$ begin
   begin perform public.reserve_extras(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'));
@@ -104,22 +108,18 @@ select public.apply_whop_event('msg_test_renewal', 'payment.succeeded', 'pay_tes
   jsonb_build_object('id', 'pay_test_2', 'formule', 'annuel', 'total_cents', 6999, 'refunded_cents', 0, 'paid_at', now() + interval '1 second'));
 select pg_temp.assert_true((select count(*) = 2 and bool_or(renouvellement) from public.payments where dossier_id = pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a') and statut = 'paye'), 'renouvellement enregistré');
 
--- Rappel avant reconduction, puis résiliation : un état Whop plus ancien est ignoré.
-update public.dossiers set current_period_end = now() + interval '40 days' where access_token = 'test_lien_acces_dossier_saascan_0123456789a';
-select pg_temp.assert_true(public.queue_renewal_reminders() = 1, 'rappel de reconduction programmé');
-select pg_temp.assert_true((select public.claim_renewal_reminder(dossier_id, period_end) ->> 'email' from public.renewal_reminders limit 1) = 'acheteur@example.invalid', 'rappel adressé à l’acheteur');
+-- Résiliation : un état Whop plus ancien est ignoré.
 select public.sync_membership(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'), jsonb_build_object('id', 'mem_test_1', 'status', 'canceling', 'cancel_at_period_end', true, 'current_period_end', now() + interval '40 days', 'synced_at', now() + interval '1 minute'));
 select public.sync_membership(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'), jsonb_build_object('id', 'mem_test_1', 'status', 'active', 'cancel_at_period_end', false, 'current_period_end', now() + interval '40 days', 'synced_at', now()));
 select pg_temp.assert_true((select cancel_at_period_end and membership_status = 'canceling' from public.dossiers where access_token = 'test_lien_acces_dossier_saascan_0123456789a'), 'résiliation conservée malgré un état plus ancien');
 
 -- Remboursement du premier paiement : accès fermé, jamais rouvert par un succès tardif.
-select public.apply_whop_event('msg_test_refund', 'refund.updated', 'rf_test', now(), pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'),
-  jsonb_build_object('id', 'pay_test_1', 'formule', 'annuel', 'total_cents', 6999, 'refunded_cents', 6999));
-select public.apply_whop_event('msg_test_paid_late', 'payment.succeeded', 'pay_test_1', now(), pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'),
-  jsonb_build_object('id', 'pay_test_1', 'formule', 'annuel', 'total_cents', 6999, 'refunded_cents', 0));
+select pg_temp.assert_true((public.apply_whop_event('msg_test_refund', 'refund.updated', 'rf_test', now(), pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'),
+  jsonb_build_object('id', 'pay_test_1', 'formule', 'annuel', 'total_cents', 6999, 'refunded_cents', 6999)) ->> 'refund_confirmed')::boolean, 'remboursement signalé pour arrêter l’abonnement');
+select pg_temp.assert_true(not (public.apply_whop_event('msg_test_paid_late', 'payment.succeeded', 'pay_test_1', now(), pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'),
+  jsonb_build_object('id', 'pay_test_1', 'formule', 'annuel', 'total_cents', 6999, 'refunded_cents', 0)) ->> 'refund_confirmed')::boolean, 'remboursement signalé une seule fois');
 select pg_temp.assert_true((select refunded_at is not null from public.dossiers where access_token = 'test_lien_acces_dossier_saascan_0123456789a'), 'remboursement conservé malgré un succès tardif');
 select pg_temp.assert_true((select statut = 'rembourse' from public.payments where provider_payment_id = 'pay_test_1'), 'premier paiement marqué remboursé');
-select pg_temp.assert_true((select public.claim_event_email('msg_test_refund') ->> 'kind') = 'remboursement_recu', 'email de remboursement');
 do $$ begin
   begin perform public.reserve_extras(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'));
     raise exception 'ÉCHEC : bonus après remboursement';

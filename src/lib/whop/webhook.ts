@@ -4,7 +4,7 @@ import { databaseError } from "@/lib/security/http";
 import { cents, getWhop, membershipSnapshot, planFromWhop } from "./client";
 
 export type WhopEvent = { type: string; timestamp?: string; data?: { id?: string; payment_id?: string } };
-type Applied = { duplicate: boolean; email_kind: "dossier_disponible" | "remboursement_recu" | null; first_payment: boolean; refunded: boolean; membership_id: string | null };
+type Applied = { duplicate: boolean; first_payment: boolean; refund_confirmed: boolean; refunded: boolean; membership_id: string | null };
 export type WhopEventResult = { ignored: true } | (Applied & { ignored: false; dossierId: string });
 
 const membershipEvents = ["membership.activated", "membership.deactivated", "membership.cancel_at_period_end_changed"];

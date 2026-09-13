@@ -162,6 +162,12 @@
   .ws-subscription-actions { justify-content: stretch; }
   .ws-subscription-actions > * { flex: 1 1 auto; }
 }
+.ws-link-save { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 14px 16px; border: 1px solid #2f5a55; border-radius: 6px; background: #10191b; }
+.ws-link-save p { display: flex; gap: 10px; margin: 0; color: #9ec5c1; font-size: 12px; line-height: 1.75; }
+.ws-link-save p svg { flex-shrink: 0; margin-top: 4px; color: var(--ws-accent); }
+.ws-link-save strong { color: #e4f3f2; font-weight: 600; }
+.ws-link-save .ws-button-secondary { flex-shrink: 0; min-height: 40px; font-size: 11px; }
+@media (max-width: 720px) { .ws-link-save { flex-direction: column; align-items: stretch; } }
 @keyframes ws-spin { to { transform: rotate(360deg); } }
 @media (max-width: 980px) {.ws-dossier-top { flex-direction: column; gap: 10px; }.ws-dossier-actions { margin-top: 0; } }
 @media (max-width: 720px) { .ws-shell { width: calc(100% - 36px); padding-top: 24px; padding-bottom: 65px; }.ws-demo-banner { align-items: flex-start; font-size: 10px; gap: 8px; }.ws-demo-banner a { display: none; }.ws-dossier-icon { width: 39px; height: 39px; }.ws-analysis { padding-top: 10px; }.ws-analysis .ws-subtitle { font-size: 12px; }.ws-analysis-steps { padding: 4px 18px; }.ws-analysis-step { font-size: 11px; }.ws-tabs { gap: 20px; overflow-x: auto; margin-top: 24px; }.ws-tab { font-size: 10px; gap: 6px; }.ws-tab svg { width: 14px; }.ws-section-intro { align-items: flex-start; flex-direction: column; gap: 17px; }.ws-idea-primary { padding: 23px 20px; }.ws-idea-header { gap: 15px; }.ws-idea-header h3 { font-size: 27px; }.ws-idea-symbol { width: 44px; height: 44px; border-radius: 7px; }.ws-idea-symbol svg { width: 20px; }.ws-idea-pitch { font-size: 11px; }.ws-idea-rank { margin-bottom: 20px; font-size: 8px; }.ws-idea-details { grid-template-columns: 1fr; gap: 22px; }.ws-alternatives { grid-template-columns: 1fr; }.ws-alternative { padding: 23px 20px; }.ws-prompt-content { padding: 20px; font-size: 11px; }.ws-prompt-meta { padding: 14px; font-size: 9px; }.ws-prompt-meta > span:last-child { display: none; }.ws-week summary { padding: 18px 15px; gap: 12px; }.ws-week summary h3 { font-size: 12px; line-height: 1.6; }.ws-week-tasks { padding: 0 17px 10px; }.ws-plan-progress { padding: 20px 17px; }.ws-plan-progress p { font-size: 9px; }.ws-empty { padding: 35px 20px; } }

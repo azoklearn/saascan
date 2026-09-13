@@ -20,7 +20,7 @@ export function hasAccess(dossier: DossierState) {
 export async function findDossier(admin: SupabaseClient, token: string): Promise<DossierRow> {
   const { data, error } = await admin.from("dossiers").select(columns).eq("access_token", token).maybeSingle();
   databaseError(error);
-  if (!data) throw new ApiError("Ce dossier est introuvable. Vérifiez le lien reçu par email.", 404, "NOT_FOUND");
+  if (!data) throw new ApiError("Ce dossier est introuvable. Vérifiez votre lien personnel.", 404, "NOT_FOUND");
   return data as unknown as DossierRow;
 }
 
