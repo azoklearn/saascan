@@ -4,7 +4,6 @@ import type { UserProfile } from "@/lib/questionnaire/profile";
 import { questions } from "@/lib/questionnaire/questions";
 import { acquisitionFor, allowedChannels } from "@/lib/matching/idea-rules";
 import { countWords } from "./word-count";
-import { acquisitionLanguageConflict } from "./acquisition-constraints";
 
 const questionIds = questions.map((question) => question.id) as [string, ...string[]];
 const channelSchema = z.enum(["community", "network", "cold", "face"]);
@@ -22,7 +21,7 @@ export const generationSchema = z.object({
       question_id: z.enum(questionIds),
       reponse: z.string().min(1).max(500),
       effet: z.string().min(15).max(700),
-    }).strict()).min(3).max(20),
+    }).strict()).min(3).max(questions.length),
   }).strict()).length(3),
   build_prompt: z.string().describe("Prompt Markdown complet pour l’idée de rang 1, entre 700 et 900 mots séparés par des espaces. Vise 800 mots."),
   tasks: z.array(z.object({
@@ -44,11 +43,6 @@ function invariant(condition: unknown, message: string): asserts condition {
   if (!condition) throw new GenerationValidationError(message);
 }
 
-function validateAcquisitionLanguage(text: string, profile: UserProfile) {
-  const conflict = acquisitionLanguageConflict(text, profile);
-  invariant(!conflict, conflict === "cold" ? "Le texte propose du démarchage à froid malgré ton refus." : "Le texte propose une apparition face caméra malgré ton refus.");
-}
-
 export function validateGeneratedDraft(input: unknown, candidates: Idea[], profile: UserProfile): GeneratedDraft {
   const draft = generationSchema.parse(input);
   invariant(new Set(draft.selections.map((selection) => selection.idea_id)).size === 3, "Les trois idées doivent être distinctes.");
@@ -56,44 +50,37 @@ export function validateGeneratedDraft(input: unknown, candidates: Idea[], profi
   const cited = new Set<string>();
   for (const selection of draft.selections) {
     const idea = candidates.find((candidate) => candidate.id === selection.idea_id);
-    invariant(idea, "Une idée sélectionnée ne respecte pas le pré-filtrage.");
-    invariant(allowedChannels(idea, profile).some((channel) => channel.id === selection.canal_id), "Un canal ne respecte pas tes contraintes.");
-    for (const text of [selection.justification, selection.adaptation, selection.risque]) validateAcquisitionLanguage(text, profile);
+    invariant(idea, "Une idée sélectionnée ne fait pas partie des candidats.");
+    invariant(allowedChannels(idea).some((channel) => channel.id === selection.canal_id), "Un canal ne correspond pas à l’idée choisie.");
     const ownCitations = new Set<string>();
     for (const citation of selection.reponses_citees) {
       invariant(!ownCitations.has(citation.question_id), "Une réponse est citée deux fois dans la même sélection.");
       ownCitations.add(citation.question_id);
       invariant(profile.evidence.find((entry) => entry.question_id === citation.question_id)?.reponse === citation.reponse, "Une réponse citée ne correspond pas au questionnaire.");
-      // The verbatim answer remains untrusted data; inspect only our proposed effect.
-      validateAcquisitionLanguage(citation.effet, profile);
       cited.add(citation.question_id);
     }
   }
-  invariant(questions.every((question) => cited.has(question.id)), "Les 20 réponses doivent avoir un effet explicite dans le dossier.");
+  invariant(questions.every((question) => cited.has(question.id)), `Les ${questions.length} réponses doivent avoir un effet explicite dans le dossier.`);
   const words = countWords(draft.build_prompt);
   invariant(words >= 700 && words <= 900, `Le prompt contient ${words} mots ; 700 à 900 sont requis.`);
-  validateAcquisitionLanguage(draft.build_prompt, profile);
   const firstIdea = candidates.find((candidate) => candidate.id === draft.selections.find((selection) => selection.rang === 1)!.idea_id)!;
   for (let week = 1; week <= 4; week++) {
     const weekTasks = draft.tasks.filter((task) => task.semaine === week).sort((a, b) => a.position - b.position);
     invariant(weekTasks.length >= 5 && weekTasks.length <= 7, "Chaque semaine doit contenir cinq à sept tâches.");
     invariant(weekTasks.every((task, index) => task.position === index + 1), "Les positions des tâches doivent être consécutives et distinctes.");
-    for (const task of weekTasks) {
-      invariant(task.canal_id === "none" || allowedChannels(firstIdea, profile).some((channel) => channel.id === task.canal_id), "Une tâche propose un canal incompatible.");
-      validateAcquisitionLanguage(task.libelle, profile);
-    }
+    invariant(weekTasks.every((task) => task.canal_id === "none" || allowedChannels(firstIdea).some((channel) => channel.id === task.canal_id)), "Une tâche propose un canal incompatible.");
   }
   return draft;
 }
 
-export function contentFromDraft(draft: GeneratedDraft, candidates: Idea[], profile: UserProfile): DossierContent {
+export function contentFromDraft(draft: GeneratedDraft, candidates: Idea[]): DossierContent {
   return {
     selections: [...draft.selections].sort((a, b) => a.rang - b.rang).map((selection) => {
       const idea = candidates.find((candidate) => candidate.id === selection.idea_id)!;
       return {
         id: crypto.randomUUID(), idea_id: idea.id, idea_snapshot: idea, rang: selection.rang,
         justification: selection.justification, adaptation: selection.adaptation,
-        canal_acquisition: acquisitionFor(idea, profile, selection.canal_id),
+        canal_acquisition: acquisitionFor(idea, selection.canal_id),
         risque: selection.risque, reponses_citees: selection.reponses_citees,
       };
     }),

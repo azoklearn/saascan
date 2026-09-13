@@ -1,14 +1,16 @@
-export type AnswerValue = string | number | string[];
+export type AnswerValue = string | string[];
 export type Answers = Record<string, AnswerValue>;
+
+export type QuestionOption = { value: string; label: string; detail?: string; short?: string };
 
 export type Question = {
   id: string;
   label: string;
-  description: string;
-  block: 1 | 2 | 3 | 4 | 5;
-  type: "single" | "multiple" | "scale" | "text";
-  options?: { value: string; label: string; detail?: string }[];
-  placeholder?: string;
+  description?: string;
+  type: "single" | "multiple" | "range";
+  options: QuestionOption[];
+  maxChoices?: number;
+  defaultValue?: string;
 };
 
 export type Idea = {
@@ -42,7 +44,6 @@ export type Selection = {
 
 export type PlanTask = {
   id: string;
-  dossier_id?: string;
   semaine: number;
   position: number;
   libelle: string;
@@ -55,18 +56,15 @@ export type DossierContent = {
   tasks: PlanTask[];
 };
 
-export type DossierSummary = {
-  id: string;
+export type DossierState = {
   statut: "brouillon" | "generation" | "pret" | "echec";
-  created_at: string;
-  updated_at: string;
   paid_at: string | null;
   refunded_at: string | null;
-  response_count: number;
+  generation_attempts: number;
+  generation_started_at: string | null;
 };
 
 export type DossierRecord = {
-  dossier: DossierSummary;
-  answers: Answers;
+  dossier: DossierState;
   content?: DossierContent;
 };

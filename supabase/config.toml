@@ -12,25 +12,12 @@ port = 54322
 shadow_port = 54320
 major_version = 17
 
+# Le parcours ne crée aucun compte : le serveur accède à la base avec service_role.
 [auth]
 enabled = true
 site_url = "http://localhost:3000"
-additional_redirect_urls = ["http://localhost:3000/auth/callback", "http://localhost:3000/auth/confirm"]
-enable_signup = true
+enable_signup = false
 enable_anonymous_sign_ins = false
 
 [auth.email]
-enable_signup = true
-enable_confirmations = true
-double_confirm_changes = true
-max_frequency = "60s"
-otp_length = 6
-otp_expiry = 3600
-
-[auth.email.template.magic_link]
-subject = "Ton lien de connexion SaaScan"
-content_path = "./supabase/templates/magic-link.html"
-
-[auth.email.template.confirmation]
-subject = "Ouvre ton espace SaaScan"
-content_path = "./supabase/templates/magic-link.html"
+enable_signup = false

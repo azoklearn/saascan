@@ -10,15 +10,14 @@ const refundEvents = new Set(["charge.refunded", "refund.created", "refund.updat
 
 function validateSession(session: Stripe.Checkout.Session, payment: PaymentRow) {
   if (session.mode !== "payment" || session.amount_total !== 3900 || session.currency !== "eur"
-    || session.client_reference_id !== payment.user_id || session.metadata?.payment_id !== payment.id
-    || session.metadata?.dossier_id !== payment.dossier_id || session.metadata?.user_id !== payment.user_id
+    || session.metadata?.payment_id !== payment.id || session.metadata?.dossier_id !== payment.dossier_id
     || (payment.stripe_session_id && session.id !== payment.stripe_session_id)) {
     throw new ApiError("La session Stripe ne correspond pas au paiement attendu.", 400, "INVALID_PAYMENT");
   }
 }
 
 export async function applyStripeEvent(event: Stripe.Event) {
-  if (!checkoutEvents.has(event.type) && !refundEvents.has(event.type)) return { ignored: true };
+  if (!checkoutEvents.has(event.type) && !refundEvents.has(event.type)) return { ignored: true as const };
   const stripe = getStripe(); const admin = createAdminClient();
   // Une clé de test ne doit jamais accorder un droit en environnement live.
   const expectsLive = process.env.STRIPE_SECRET_KEY?.startsWith("sk_live_") ?? false;
@@ -30,7 +29,7 @@ export async function applyStripeEvent(event: Stripe.Event) {
     // État actuel, pour supporter la livraison désordonnée des événements.
     session = await stripe.checkout.sessions.retrieve(snapshot.id, { expand: ["payment_intent.latest_charge"] });
     const paymentId = session.metadata?.payment_id;
-    if (!paymentId) return { ignored: true };
+    if (!paymentId) return { ignored: true as const };
     const result = await admin.from("payments").select("*").eq("id", paymentId).maybeSingle();
     databaseError(result.error); payment = result.data as PaymentRow | null;
     if (!payment) throw new Error("Paiement référencé par Stripe introuvable.");
@@ -43,10 +42,10 @@ export async function applyStripeEvent(event: Stripe.Event) {
       const refund = event.data.object as Stripe.Refund;
       intentId = typeof refund.payment_intent === "string" ? refund.payment_intent : refund.payment_intent?.id ?? null;
     }
-    if (!intentId) return { ignored: true };
+    if (!intentId) return { ignored: true as const };
     const intent = await stripe.paymentIntents.retrieve(intentId);
     const paymentId = intent.metadata.payment_id;
-    if (!paymentId) return { ignored: true };
+    if (!paymentId) return { ignored: true as const };
     const result = await admin.from("payments").select("*").eq("id", paymentId).maybeSingle();
     databaseError(result.error); payment = result.data as PaymentRow | null;
     if (!payment) throw new Error("Paiement remboursé introuvable.");
@@ -75,6 +74,9 @@ export async function applyStripeEvent(event: Stripe.Event) {
     p_paid: session.payment_status === "paid", p_refunded_cents: refundedCents,
     p_expired: session.status === "expired" || event.type === "checkout.session.async_payment_failed",
     p_paid_at: charge ? new Date(charge.created * 1000).toISOString() : null,
+    p_email: session.customer_details?.email ?? null,
   });
-  databaseError(result.error); return result.data as { duplicate?: boolean; email_kind?: string | null };
+  databaseError(result.error);
+  const applied = result.data as { duplicate?: boolean; email_kind?: string | null };
+  return { ...applied, dossierId: payment.dossier_id, startGeneration: checkoutEvents.has(event.type) && session.payment_status === "paid" && !applied.duplicate };
 }

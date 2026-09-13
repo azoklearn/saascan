@@ -7,88 +7,83 @@ create function pg_temp.assert_true(condition boolean, message text)
 returns void language plpgsql as $$
 begin if condition is distinct from true then raise exception 'ÉCHEC : %', message; end if; end;
 $$;
+create function pg_temp.dossier_id(token text) returns uuid language sql stable as $$
+  select id from public.dossiers where access_token = token;
+$$;
+create function pg_temp.payment_id(token text) returns uuid language sql stable as $$
+  select p.id from public.payments p join public.dossiers d on d.id = p.dossier_id where d.access_token = token;
+$$;
 
-insert into auth.users(id, email) values
-  ('11111111-1111-4111-8111-111111111111', 'rls-a@example.invalid'),
-  ('22222222-2222-4222-8222-222222222222', 'rls-b@example.invalid');
-insert into public.dossiers(id, user_id) values
-  ('aaaaaaaa-1111-4111-8111-111111111111', '11111111-1111-4111-8111-111111111111'),
-  ('bbbbbbbb-2222-4222-8222-222222222222', '22222222-2222-4222-8222-222222222222');
-insert into public.dossiers(id, user_id, statut, generated_at) values
-  ('aaaaaaaa-3333-4333-8333-333333333333', '11111111-1111-4111-8111-111111111111', 'pret', now());
-insert into public.selections(dossier_id, idea_id, idea_snapshot, rang, justification, adaptation, canal_acquisition, risque, reponses_citees)
-select 'aaaaaaaa-3333-4333-8333-333333333333', 'idee-' || i, '{}'::jsonb, i, 'Justification', 'Adaptation', 'Canal', 'Risque', '[]'::jsonb from generate_series(1,3) i;
-insert into public.build_prompts(dossier_id, contenu_md) values
-  ('aaaaaaaa-3333-4333-8333-333333333333', btrim(repeat('mot ', 800)));
-insert into public.plan_tasks(id, dossier_id, semaine, position, libelle)
-values ('cccccccc-1111-4111-8111-111111111111', 'aaaaaaaa-3333-4333-8333-333333333333', 1, 1, 'Une tâche');
-
+-- Les navigateurs n’ont plus aucun accès direct aux données ni aux transactions.
 set local role anon;
 do $$ begin
-  begin perform 1 from public.dossiers; raise exception 'ÉCHEC : lecture anonyme autorisée';
+  begin perform 1 from public.dossiers; raise exception 'ÉCHEC : lecture anonyme des dossiers';
+  exception when insufficient_privilege then null; end;
+  begin perform public.start_checkout('{}'::jsonb, 'test_lien_acces_dossier_saascan_0123456789a');
+    raise exception 'ÉCHEC : dossier créé depuis le navigateur';
   exception when insufficient_privilege then null; end;
 end $$;
 
 set local role authenticated;
-select set_config('request.jwt.claim.sub', '11111111-1111-4111-8111-111111111111', true);
-select set_config('request.jwt.claims', '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}', true);
-select pg_temp.assert_true((select count(*) = 2 from public.dossiers), 'isolation des dossiers entre comptes');
-select pg_temp.assert_true((select count(*) = 0 from public.selections), 'sélections verrouillées avant paiement');
-select pg_temp.assert_true((select count(*) = 0 from public.build_prompts), 'prompt verrouillé avant paiement');
-select pg_temp.assert_true((select count(*) = 0 from public.plan_tasks), 'tâches verrouillées avant paiement');
-
-select public.save_response('aaaaaaaa-1111-4111-8111-111111111111', 'temps_semaine', '"5_10"');
-select public.save_response('aaaaaaaa-1111-4111-8111-111111111111', 'temps_semaine', '"10_20"');
-select pg_temp.assert_true((select count(*) = 1 from public.responses), 'upsert de réponse sans doublon');
 do $$ begin
-  begin perform public.save_response('bbbbbbbb-2222-4222-8222-222222222222', 'temps_semaine', '"5_10"');
-    raise exception 'ÉCHEC : modification de réponse d’un autre compte';
+  begin perform 1 from public.selections; raise exception 'ÉCHEC : contenu lisible avec une session';
   exception when insufficient_privilege then null; end;
-  begin update public.dossiers set paid_at = now() where id = 'aaaaaaaa-3333-4333-8333-333333333333';
-    raise exception 'ÉCHEC : droit de paiement modifiable';
-  exception when insufficient_privilege then null; end;
-  begin perform public.reserve_generation('aaaaaaaa-1111-4111-8111-111111111111', '11111111-1111-4111-8111-111111111111');
-    raise exception 'ÉCHEC : RPC serveur accessible au client';
-  exception when insufficient_privilege then null; end;
-  begin perform 1 from public.stripe_events; raise exception 'ÉCHEC : journal Stripe exposé';
+  begin perform public.reserve_generation(gen_random_uuid()); raise exception 'ÉCHEC : génération déclenchée depuis le navigateur';
   exception when insufficient_privilege then null; end;
 end $$;
 
 reset role;
-insert into public.payments(id, user_id, dossier_id) values
-  ('dddddddd-1111-4111-8111-111111111111', '11111111-1111-4111-8111-111111111111', 'aaaaaaaa-3333-4333-8333-333333333333');
 set local role service_role;
-select public.apply_stripe_event('evt_test_paid', 'checkout.session.completed', 'cs_test_rls', now(),
-  'dddddddd-1111-4111-8111-111111111111', 'cs_test_rls', 'pi_test_rls', true, 0, false, now());
-select pg_temp.assert_true((public.apply_stripe_event('evt_test_paid', 'checkout.session.completed', 'cs_test_rls', now(),
-  'dddddddd-1111-4111-8111-111111111111', 'cs_test_rls', 'pi_test_rls', true, 0, false, now()) ->> 'duplicate')::boolean,
-  'événement dupliqué sans second effet');
-
-set local role authenticated;
-select pg_temp.assert_true((select count(*) = 3 from public.selections), 'sélections accessibles après paiement');
-select pg_temp.assert_true((select count(*) = 1 from public.build_prompts), 'prompt accessible après paiement');
-update public.plan_tasks set done = true where id = 'cccccccc-1111-4111-8111-111111111111';
-select pg_temp.assert_true((select done from public.plan_tasks where id = 'cccccccc-1111-4111-8111-111111111111'), 'case cochée persistée');
+select public.start_checkout('{"tranche_age":"25_34","cible_client":"b2b","domaines":["vente","productivite"],"competences":"sans_code","temps_jour":"1h","zone":"francophone","facturation":"abonnement","concurrence":"differencier","objectif_revenu":"2000"}'::jsonb, 'test_lien_acces_dossier_saascan_0123456789a');
+select pg_temp.assert_true((select count(*) = 9 from public.responses where dossier_id = pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a')), 'réponses enregistrées au passage en caisse');
+select pg_temp.assert_true((select user_id is null and questionnaire_version = 2 and statut = 'brouillon' from public.dossiers where access_token = 'test_lien_acces_dossier_saascan_0123456789a'), 'dossier créé sans compte');
 do $$ begin
-  begin update public.plan_tasks set libelle = 'Contenu altéré' where id = 'cccccccc-1111-4111-8111-111111111111';
-    raise exception 'ÉCHEC : contenu de tâche modifiable';
-  exception when insufficient_privilege then null; end;
+  begin perform public.start_checkout('{"question_inventee":"x"}'::jsonb, 'autre_lien_acces_dossier_saascan_0123456789');
+    raise exception 'ÉCHEC : question inconnue acceptée';
+  exception when check_violation then null; end;
+  begin perform public.start_checkout('{}'::jsonb, 'trop-court');
+    raise exception 'ÉCHEC : lien d’accès invalide accepté';
+  exception when check_violation then null; end;
+  begin perform public.reserve_generation(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'));
+    raise exception 'ÉCHEC : génération réservée avant paiement';
+  exception when object_not_in_prerequisite_state then null; end;
+  begin update public.dossiers set statut = 'generation', generation_started_at = now() where access_token = 'test_lien_acces_dossier_saascan_0123456789a';
+    raise exception 'ÉCHEC : génération possible sans paiement';
+  exception when check_violation then null; end;
 end $$;
-select set_config('request.jwt.claim.sub', '22222222-2222-4222-8222-222222222222', true);
-select set_config('request.jwt.claims', '{"sub":"22222222-2222-4222-8222-222222222222","role":"authenticated"}', true);
-select pg_temp.assert_true((select count(*) = 0 from public.selections), 'contenu payé non partagé entre comptes');
-select pg_temp.assert_true((select count(*) = 0 from public.payments), 'paiements non partagés entre comptes');
 
-set local role service_role;
-select public.apply_stripe_event('evt_test_refund', 'charge.refunded', 'ch_test_rls', now(),
-  'dddddddd-1111-4111-8111-111111111111', 'cs_test_rls', 'pi_test_rls', true, 3900, false, now());
-select public.apply_stripe_event('evt_test_paid_late', 'checkout.session.completed', 'cs_test_rls', now(),
-  'dddddddd-1111-4111-8111-111111111111', 'cs_test_rls', 'pi_test_rls', true, 0, false, now());
-set local role authenticated;
-select set_config('request.jwt.claim.sub', '11111111-1111-4111-8111-111111111111', true);
-select set_config('request.jwt.claims', '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}', true);
-select pg_temp.assert_true((select count(*) = 0 from public.selections), 'remboursement ferme l’accès malgré un succès tardif');
-select pg_temp.assert_true((select count(*) = 0 from public.plan_tasks), 'tâches inaccessibles après remboursement');
+select public.apply_stripe_event('evt_test_paid', 'checkout.session.completed', 'cs_test_parcours', now(),
+  pg_temp.payment_id('test_lien_acces_dossier_saascan_0123456789a'), 'cs_test_parcours', 'pi_test_parcours', true, 0, false, now(), 'acheteur@example.invalid');
+select pg_temp.assert_true((select paid_at is not null and email = 'acheteur@example.invalid' and statut = 'brouillon' from public.dossiers where access_token = 'test_lien_acces_dossier_saascan_0123456789a'), 'paiement confirmé avant la génération');
+select pg_temp.assert_true((public.apply_stripe_event('evt_test_paid', 'checkout.session.completed', 'cs_test_parcours', now(),
+  pg_temp.payment_id('test_lien_acces_dossier_saascan_0123456789a'), 'cs_test_parcours', 'pi_test_parcours', true, 0, false, now(), 'acheteur@example.invalid') ->> 'duplicate')::boolean,
+  'événement dupliqué sans second effet');
+select pg_temp.assert_true((public.claim_event_email('evt_test_paid') ->> 'access_token') = 'test_lien_acces_dossier_saascan_0123456789a', 'email envoyé avec le lien du dossier');
+select pg_temp.assert_true((public.reserve_generation(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a')) -> 'answers' ->> 'objectif_revenu') = '2000', 'génération réservée après paiement avec les réponses');
+do $$ begin
+  begin perform public.reserve_generation(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'));
+    raise exception 'ÉCHEC : deux générations simultanées';
+  exception when object_not_in_prerequisite_state then null; end;
+end $$;
+select pg_temp.assert_true(public.publish_generation(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'), 1, jsonb_build_object(
+  'selections', (select jsonb_agg(jsonb_build_object('idea_id', 'idee-' || i, 'idea_snapshot', '{}'::jsonb, 'rang', i,
+    'justification', 'Justification', 'adaptation', 'Adaptation', 'canal_acquisition', 'Canal', 'risque', 'Risque', 'reponses_citees', '[]'::jsonb)) from generate_series(1, 3) i),
+  'build_prompt', btrim(repeat('mot ', 800)),
+  'tasks', (select jsonb_agg(jsonb_build_object('semaine', w, 'position', t, 'libelle', 'Une tâche')) from generate_series(1, 4) w, generate_series(1, 6) t)
+)), 'dossier publié');
+select pg_temp.assert_true((select statut = 'pret' and generated_at is not null from public.dossiers where access_token = 'test_lien_acces_dossier_saascan_0123456789a'), 'dossier prêt');
+
+select public.apply_stripe_event('evt_test_refund', 'charge.refunded', 'ch_test_parcours', now(),
+  pg_temp.payment_id('test_lien_acces_dossier_saascan_0123456789a'), 'cs_test_parcours', 'pi_test_parcours', true, 3900, false, now(), null);
+select public.apply_stripe_event('evt_test_paid_late', 'checkout.session.completed', 'cs_test_parcours', now(),
+  pg_temp.payment_id('test_lien_acces_dossier_saascan_0123456789a'), 'cs_test_parcours', 'pi_test_parcours', true, 0, false, now(), null);
+select pg_temp.assert_true((select refunded_at is not null from public.dossiers where access_token = 'test_lien_acces_dossier_saascan_0123456789a'), 'remboursement conservé malgré un succès tardif');
+select pg_temp.assert_true((select statut = 'rembourse' from public.payments where id = pg_temp.payment_id('test_lien_acces_dossier_saascan_0123456789a')), 'paiement marqué remboursé');
+do $$ begin
+  begin perform public.reserve_generation(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'));
+    raise exception 'ÉCHEC : génération après remboursement';
+  exception when object_not_in_prerequisite_state then null; end;
+end $$;
 
 reset role;
 rollback;

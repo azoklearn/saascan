@@ -9,15 +9,18 @@ export function json(value: unknown, status = 200) {
 
 export function errorResponse(error: unknown) {
   if (error instanceof ApiError) return json({ error: error.message, code: error.code }, error.status);
-  if (error instanceof ZodError) return json({ error: "Vérifie les informations envoyées.", code: "INVALID_INPUT" }, 400);
+  if (error instanceof ZodError) return json({ error: "Vérifiez les informations envoyées.", code: "INVALID_INPUT" }, 400);
   console.error("[SaaScan] Erreur serveur", error instanceof Error ? error.message : "Erreur inconnue");
-  return json({ error: "Une erreur est survenue. Réessaie dans un instant.", code: "SERVER_ERROR" }, 500);
+  return json({ error: "Une erreur est survenue. Réessayez dans un instant.", code: "SERVER_ERROR" }, 500);
 }
 
 export function assertSameOrigin(request: Request) {
   const origin = request.headers.get("origin");
   if (!origin) return;
-  const allowed = new Set([new URL(request.url).origin]);
+  const url = new URL(request.url);
+  const host = request.headers.get("host");
+  // En local, request.url peut porter l’adresse d’écoute (0.0.0.0) plutôt que l’hôte ouvert dans le navigateur.
+  const allowed = new Set([url.origin, ...(host ? [`${url.protocol}//${host}`] : [])]);
   if (process.env.NEXT_PUBLIC_APP_URL) allowed.add(new URL(process.env.NEXT_PUBLIC_APP_URL).origin);
   if (!allowed.has(origin)) throw new ApiError("Cette requête provient d’une autre origine.", 403, "FORBIDDEN");
 }

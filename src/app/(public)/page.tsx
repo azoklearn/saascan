@@ -3,6 +3,8 @@ import { ArrowRight, BatteryFull, SignalHigh, Wifi } from "lucide-react";
 import { Reveal } from "@/components/landing/reveal";
 import { FAQ } from "@/components/landing/faq";
 import { HeroDecor } from "@/components/landing/hero-decor";
+import { ideas } from "@/lib/matching/filters";
+import { questions } from "@/lib/questionnaire/questions";
 
 const payments = [
   { amount: "39,00 €", sender: "xxxxxx@hotmail.fr", time: "maintenant" },
@@ -13,8 +15,8 @@ const payments = [
 const tools = ["Supabase", "GitHub", "Stripe", "Whop", "TikTok", "Claude"];
 
 const stats = [
-  ["20", "idées en banque, rédigées et taguées"],
-  ["20", "questions sur ta situation réelle"],
+  [String(ideas.length), "idées en banque, rédigées et taguées"],
+  [String(questions.length), "questions sur votre situation réelle"],
   ["~800", "mots de prompt, prêt à coller"],
   ["30", "jours de plan, semaine par semaine"],
 ];
@@ -25,9 +27,9 @@ export default function HomePage() {
     <section className="hero container">
       <div className="hero-copy">
         <div className="hero-eyebrow"><span className="status-dot" /> LE RADAR DES SAAS QUI MARCHENT</div>
-        <h1>Crée ton premier<br className="desktop-break" /> business <span>et obtiens<br className="desktop-break" /> tes premiers revenus.</span></h1>
-        <p className="hero-description">Trouve l’idée de ton premier site, mets-le en ligne et <strong>encaisse tes premiers paiements.</strong></p>
-        <div className="hero-actions"><Link href="/connexion" className="button button-primary button-large">Créer mon SaaS <ArrowRight size={18} /></Link></div>
+        <h1>Créez votre premier<br className="desktop-break" /> business <span>et obtenez<br className="desktop-break" /> vos premiers revenus.</span></h1>
+        <p className="hero-description">Trouvez l’idée de votre premier site, mettez-le en ligne et <strong>encaissez vos premiers paiements.</strong></p>
+        <div className="hero-actions"><Link href="/questionnaire" className="button button-primary button-large">Créer mon SaaS <ArrowRight size={18} /></Link></div>
       </div>
       <figure className="payments-scene">
         <div className="payments-phone" role="img" aria-label="Illustration : notifications de paiement Stripe sur un téléphone">
@@ -41,7 +43,7 @@ export default function HomePage() {
       </figure>
     </section>
 
-    <section className="tools-section" aria-label="Les outils sur lesquels tu vas construire"><div className="container"><p className="tools-intro">LES OUTILS SUR LESQUELS TU VAS CONSTRUIRE</p></div><div className="tools-marquee"><div className="tools-track">{[false, true].map((duplicate) => <div className="tools-set" key={String(duplicate)} aria-hidden={duplicate || undefined}>{tools.map((tool) => <span key={tool}>{tool}</span>)}</div>)}</div></div></section>
+    <section className="tools-section" aria-label="Les outils sur lesquels vous allez construire"><div className="container"><p className="tools-intro">LES OUTILS SUR LESQUELS VOUS ALLEZ CONSTRUIRE</p></div><div className="tools-marquee"><div className="tools-track">{[false, true].map((duplicate) => <div className="tools-set" key={String(duplicate)} aria-hidden={duplicate || undefined}>{tools.map((tool) => <span key={tool}>{tool}</span>)}</div>)}</div></div></section>
 
     <section className="container stats-section" aria-label="En chiffres"><Reveal><div className="stats-row">{stats.map(([number, label]) => <div key={label}><strong>{number}</strong><span>{label}</span></div>)}</div></Reveal></section>
 

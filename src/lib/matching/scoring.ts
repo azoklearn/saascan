@@ -1,40 +1,35 @@
 import type { Answers, Idea } from "@/types/domain";
 import type { UserProfile } from "@/lib/questionnaire/profile";
-import { filterIdeas, InsufficientIdeasError, resolveProfile } from "./filters";
-import { allowedChannels, ideaRules } from "./idea-rules";
+import { ideas, rejectionReasons, resolveProfile } from "./filters";
+import { ideaRules } from "./idea-rules";
 
-const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-const proximity = (text: string, keywords: string[]) => keywords.filter((keyword) => normalize(text).includes(keyword)).length;
+const billingMatches: Record<string, (idea: Idea) => boolean> = {
+  abonnement: (idea) => idea.modele_eco.startsWith("Abonnement"),
+  usage: (idea) => /crédits|par événement/i.test(idea.modele_eco),
+  licence: (idea) => /annuel/i.test(idea.modele_eco),
+};
 
 export function scoreIdea(idea: Idea, profile: UserProfile): number {
   const rule = ideaRules[idea.id];
   let score = 50;
-  score += proximity(profile.sector, rule.keywords) * 9;
-  score += proximity(profile.communities, rule.keywords) * 7;
-  score += proximity(profile.audience, rule.keywords) * 5;
-  score += profile.preferredTypes.filter((type) => idea.tags.includes(type)).length * 6;
-  score += allowedChannels(idea, profile).some((channel) => channel.id === "network") ? 4 : 0;
+  score += profile.domains.filter((domain) => rule.domains.includes(domain)).length * 12;
+  if (profile.buyer !== "decide") score += idea.tags.includes("b2b") === (profile.buyer === "b2b") ? 8 : -8;
+  score += billingMatches[profile.billing]?.(idea) ? 6 : 0;
   score += (profile.weeklyHours - rule.effort_mvp_heures) / 2;
-  score += Math.min(3, (profile.budgetEuros - idea.budget_min_euros) / 50);
-  score -= idea.difficulte_distribution * (6 - profile.salesSkill);
-  score -= idea.difficulte_technique * (profile.incomeExperience === "jamais" ? 2 : 0);
-  score -= profile.firstEuroDays === 30 ? idea.temps_mvp_jours : 0;
-  score += idea.tags.includes("ia") ? (profile.aiSkill - 3) * 4 : 0;
-  score += idea.tags.includes("design") ? (profile.designSkill - 3) * 3 : 0;
-  score += idea.tags.includes("video") ? (profile.videoSkill - 3) * 3 : 0;
-  score += profile.acceptsFace && allowedChannels(idea, profile).some((channel) => channel.requiresFace) ? 2 : 0;
-  score += profile.acceptsCold && allowedChannels(idea, profile).some((channel) => channel.requiresCold) ? 2 : 0;
-  score -= profile.risk === "faible" ? idea.difficulte_distribution * 2 + (idea.tags.includes("ia") ? 4 : 0) : 0;
-  score += profile.risk === "eleve" && idea.tags.includes("ia") ? 2 : 0;
-  score -= profile.dislikes.filter((dislike) => rule.dailyTasks.includes(dislike)).length * 7;
-  score += profile.ambition === "complement" ? 8 - rule.effort_mvp_heures / 2 : idea.modele_eco.includes("Abonnement") ? 5 : 0;
-  score += profile.codeLevel === "aucun" && idea.tags.includes("no-code") ? 4 : 0;
+  score -= Math.max(0, idea.difficulte_technique - profile.maxTechnicalDifficulty) * 6;
+  score += idea.tags.includes("no-code") && profile.maxTechnicalDifficulty <= 2 ? 4 : 0;
+  if (profile.competition === "differencier") score -= idea.difficulte_distribution * 2;
+  if (profile.competition === "nouveau" && idea.tags.includes("ia")) score += 3;
+  if (profile.revenueGoal >= 5000 && idea.modele_eco.startsWith("Abonnement")) score += 3;
   return score;
 }
 
+/** Ideas within every limit come first; when fewer than three fit, the closest ones complete the selection. */
 export function matchIdeas(input: Answers | UserProfile, limit = 8): Idea[] {
   const profile = resolveProfile(input);
-  const candidates = filterIdeas(profile);
-  if (candidates.length < 3) throw new InsufficientIdeasError(candidates.length);
-  return candidates.sort((a, b) => scoreIdea(b, profile) - scoreIdea(a, profile) || a.id.localeCompare(b.id)).slice(0, Math.max(3, limit));
+  const ranked = ideas.filter((idea) => ideaRules[idea.id]).sort((a, b) => scoreIdea(b, profile) - scoreIdea(a, profile) || a.id.localeCompare(b.id));
+  const fitting = ranked.filter((idea) => rejectionReasons(idea, profile).length === 0);
+  if (fitting.length >= 3) return fitting.slice(0, limit);
+  const closest = ranked.filter((idea) => !fitting.includes(idea)).sort((a, b) => rejectionReasons(a, profile).length - rejectionReasons(b, profile).length);
+  return [...fitting, ...closest].slice(0, 3);
 }

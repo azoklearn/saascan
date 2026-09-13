@@ -12,7 +12,7 @@ export function rateLimit(request: Request, scope: string, limit: number, durati
   if (buckets.size > 5000) for (const [id, bucket] of buckets) if (bucket.until <= now) buckets.delete(id);
   const bucket = buckets.get(key);
   if (bucket && bucket.until > now) {
-    if (bucket.count >= limit) throw new ApiError("Trop de demandes. Réessaie dans quelques minutes.", 429, "RATE_LIMITED");
+    if (bucket.count >= limit) throw new ApiError("Trop de demandes. Réessayez dans quelques minutes.", 429, "RATE_LIMITED");
     bucket.count += 1;
   } else buckets.set(key, { count: 1, until: now + durationMs });
 }

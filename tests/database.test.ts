@@ -3,7 +3,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { readFile } from "node:fs/promises";
 
 describe("Migrations PostgreSQL et droits RLS", () => {
-  it("exécute le schéma puis vérifie deux comptes, le paywall, les webhooks et le remboursement", async () => {
+  it("applique les migrations puis vérifie l’accès serveur, le paiement avant génération et le remboursement", async () => {
     const db = new PGlite();
     try {
       await db.exec(`
@@ -18,7 +18,7 @@ describe("Migrations PostgreSQL et droits RLS", () => {
         grant usage on schema public, auth to anon, authenticated, service_role;
         grant execute on function auth.uid() to anon, authenticated, service_role;
       `);
-      for (const file of ["202609120001_initial_schema.sql", "202609120002_server_transactions.sql"]) {
+      for (const file of ["202609120001_initial_schema.sql", "202609120002_server_transactions.sql", "202609130001_parcours_sans_compte.sql"]) {
         await db.exec(await readFile(`supabase/migrations/${file}`, "utf8"));
       }
       const tables = await db.query<{ count: number }>("select count(*)::int as count from pg_tables where schemaname = 'public' and rowsecurity = true");
