@@ -1,0 +1,4 @@
+{
+  "framework": "nextjs",
+  "crons": [{ "path": "/api/internal/retry-emails", "schedule": "0 5 * * *" }]
+}
