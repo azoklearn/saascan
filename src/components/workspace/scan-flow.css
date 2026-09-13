@@ -187,6 +187,40 @@
 .scan-offer-terms { max-width: 520px; line-height: 1.7; }
 .scan-offer-terms a { text-decoration: underline; text-underline-offset: 3px; }
 
+/* Compte : Google ou email et mot de passe, avant le questionnaire, puis l’espace. */
+.scan-auth, .scan-space { width: min(420px, 100%); margin: 0 auto; }
+.scan-auth { text-align: center; }
+.scan-auth .brand-logo, .scan-space .brand-logo { margin-bottom: 26px; }
+.scan-auth h1, .scan-space h1 { margin: 12px 0 8px; font-size: clamp(30px, 3.4vw, 38px); line-height: 1.12; letter-spacing: -1.3px; font-weight: 650; }
+.scan-auth-lead { margin: 0 0 26px; color: var(--scan-muted); font-size: 15px; }
+.scan-google { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 52px; padding: 0 20px; border: 1px solid #dadce0; border-radius: 11px; background: #fff; color: #1f1f1f; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; transition: transform 160ms var(--scan-ease-out), background-color 160ms ease; }
+@media (hover: hover) and (pointer: fine) { .scan-google:hover:not(:disabled) { background: #f1f3f4; } }
+.scan-google:active:not(:disabled) { transform: scale(.97); }
+.scan-google:disabled { opacity: .6; cursor: wait; }
+.scan-google:focus-visible { outline: 2px solid #9cf5e4; outline-offset: 4px; }
+.scan-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0; color: #7d888e; font-size: 12px; }
+.scan-divider::before, .scan-divider::after { content: ""; flex: 1; height: 1px; background: var(--scan-line); }
+.scan-field { display: grid; gap: 6px; margin-bottom: 14px; text-align: left; }
+.scan-field span { color: #c5ced2; font-size: 13px; font-weight: 550; }
+.scan-field small { color: #7d888e; font-size: 12px; }
+.scan-field input { width: 100%; min-height: 48px; padding: 0 14px; border: 1px solid var(--scan-line); border-radius: 10px; background: rgb(255 255 255 / .03); color: #f2f5f6; font: inherit; font-size: 15px; transition: border-color 160ms ease, box-shadow 160ms ease; }
+.scan-field input:focus { outline: none; border-color: var(--scan-accent); box-shadow: 0 0 0 3px rgb(0 194 160 / .18); }
+.scan-auth form .scan-button { width: 100%; margin-top: 10px; }
+.scan-auth form .scan-error { margin: 4px 0 6px; text-align: left; }
+.scan-auth-switch, .scan-auth-terms { margin: 18px 0 0; color: var(--scan-muted); font-size: 13px; }
+.scan-auth-terms { color: #7d888e; font-size: 12px; }
+.scan-auth-switch a, .scan-auth-terms a { color: #d5eee9; text-decoration: underline; text-underline-offset: 3px; }
+.scan-space-account { margin: 0 0 24px; color: var(--scan-muted); font-size: 14px; overflow-wrap: anywhere; }
+.scan-space-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.scan-space-item { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 18px; border: 1px solid var(--scan-line); border-radius: 12px; background: rgb(255 255 255 / .025); color: #f2f5f6; text-decoration: none; transition: border-color 160ms ease; }
+@media (hover: hover) and (pointer: fine) { .scan-space-item:hover { border-color: var(--scan-accent); } }
+.scan-space-item:focus-visible { outline: 2px solid #9cf5e4; outline-offset: 3px; }
+.scan-space-item strong { display: block; font-size: 16px; }
+.scan-space-item small { display: block; margin-top: 4px; color: var(--scan-muted); font-size: 13px; }
+.scan-space-item svg { flex: 0 0 auto; color: var(--scan-accent); }
+.scan-space-empty { display: grid; justify-items: start; gap: 16px; color: var(--scan-muted); }
+.scan-space-actions { display: flex; justify-content: flex-end; margin-top: 22px; }
+
 @keyframes scan-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes scan-spin { to { transform: rotate(360deg); } }
 @keyframes scan-tier { from { opacity: 0; filter: blur(3px); transform: translateY(5px); } }

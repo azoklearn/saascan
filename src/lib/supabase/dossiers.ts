@@ -68,3 +68,21 @@ export async function getDossierRecord(admin: SupabaseClient, token: string): Pr
   record.content = content;
   return record;
 }
+
+export type UserDossier = { token: string; ideaName: string | null; formule: string | null; refunded: boolean; access: boolean; cancelAtPeriodEnd: boolean; currentPeriodEnd: string | null };
+
+/** Dossiers payés du compte, du plus récent au plus ancien. */
+export async function listUserDossiers(admin: SupabaseClient, userId: string): Promise<UserDossier[]> {
+  const { data, error } = await admin.from("dossiers")
+    .select("access_token,statut,paid_at,refunded_at,generation_attempts,generation_started_at,formule,membership_status,cancel_at_period_end,current_period_end,extras_attempts,extras_started_at,selections(rang,idea_snapshot)")
+    .eq("user_id", userId).not("paid_at", "is", null).order("paid_at", { ascending: false });
+  databaseError(error);
+  return (data ?? []).map((row) => {
+    const first = (row.selections as { rang: number; idea_snapshot: { nom?: string } }[]).find((selection) => selection.rang === 1);
+    return {
+      token: row.access_token as string, ideaName: first?.idea_snapshot?.nom ?? null, formule: row.formule as string | null,
+      refunded: !!row.refunded_at, access: hasAccess(row as unknown as DossierState),
+      cancelAtPeriodEnd: !!row.cancel_at_period_end, currentPeriodEnd: row.current_period_end as string | null,
+    };
+  });
+}

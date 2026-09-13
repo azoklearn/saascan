@@ -6,7 +6,6 @@ import { ArrowDownToLine, ArrowRight, Braces, Check, ChevronDown, Clapperboard, 
 import { planWeeks } from "@/config/plan-weeks";
 import { findPlan, refundDays, type PlanId } from "@/config/pricing";
 import { loadDemoProgress, saveDemoProgress } from "@/lib/demo/storage";
-import { rememberDossier } from "@/lib/dossier/saved-link";
 import { countWords } from "@/lib/dossier/word-count";
 import { clearLocalAnswers } from "@/lib/questionnaire/local-answers";
 import type { DossierContent, DossierRecord, DossierState, PlanTask, Selection } from "@/types/domain";
@@ -86,8 +85,7 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
         if (cancelled) return;
         setRecord(data); setLoadError("");
         const { dossier, content } = data;
-        // Aucun email : le lien reste accessible depuis le menu du site sur cet appareil.
-        if (dossier.paid_at) { clearLocalAnswers(); rememberDossier(token); }
+        if (dossier.paid_at) clearLocalAnswers();
         const bonusPending = extrasMissing(dossier, content);
         const closed = !!dossier.refunded_at || (!!dossier.paid_at && !data.access);
         const generationOver = !content && dossier.statut === "echec" && dossier.generation_attempts >= 3;
@@ -135,7 +133,7 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
   }
   async function copyLink() {
     try { await navigator.clipboard.writeText(`${window.location.origin}/dossier/${token}`); setLinkCopied(true); setError(""); }
-    catch { setError("La copie n’est pas autorisée dans ce navigateur. Ajoutez cette page à vos favoris pour garder le lien."); }
+    catch { setError("La copie n’est pas autorisée dans ce navigateur. Votre dossier reste accessible depuis votre espace."); }
   }
   function download() {
     if (!record?.content) return;
@@ -166,10 +164,15 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
     await api("/api/abonnement", { method: "POST", body: JSON.stringify({ token }) });
     setRevision((value) => value + 1);
   });
-  // La redirection vers Whop garde le bouton occupé jusqu’au changement de page.
+  // La redirection vers Whop ou vers la connexion garde le bouton occupé jusqu’au changement de page.
   const reactivate = (formule: PlanId) => run(formule, "reactivate", async () => {
-    const { url } = await api<{ url: string }>("/api/checkout", { method: "POST", body: JSON.stringify({ formule, token }) });
-    window.location.assign(checkoutUrl(url));
+    try {
+      const { url } = await api<{ url: string }>("/api/checkout", { method: "POST", body: JSON.stringify({ formule, token }) });
+      window.location.assign(checkoutUrl(url));
+    } catch (cause) {
+      if (!(cause instanceof ApiError && cause.status === 401)) throw cause;
+      window.location.assign(`/connexion?suite=${encodeURIComponent(`/dossier/${token}`)}`);
+    }
     await new Promise(() => undefined);
   });
   const errorFor = (target: "cancel" | "reactivate") => action.target === target ? action.error : "";
@@ -182,7 +185,7 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
   if (dossier.refunded_at) return <ProblemScreen message="Ce dossier a été remboursé. Son contenu n’est plus accessible." demo={demo} />;
   if (!dossier.paid_at) {
     if (paymentFailed) return <Preparation title="Le paiement n’a pas abouti." text="Aucun abonnement n’a été créé. Vous pouvez choisir à nouveau votre formule quand vous voulez."><p className="ws-dossier-actions ws-centered"><Link className="ws-button" href="/debloquer">Choisir ma formule</Link></p></Preparation>;
-    return <Preparation title="Nous confirmons votre paiement." text={elapsed > 90_000 ? "La confirmation prend plus de temps que prévu. Gardez cette page ouverte : elle s’actualise dès que Whop confirme le paiement." : "Whop nous transmet la confirmation. Votre dossier s’ouvre juste après : ajoutez cette page à vos favoris, c’est votre accès."} />;
+    return <Preparation title="Nous confirmons votre paiement." text={elapsed > 90_000 ? "La confirmation prend plus de temps que prévu. Gardez cette page ouverte : elle s’actualise dès que Whop confirme le paiement." : "Whop nous transmet la confirmation. Votre dossier s’ouvre juste après et reste ensuite dans votre espace."} />;
   }
   if (!record.access) return <Shell><EndedScreen busy={action.target === "reactivate" && action.busy !== "cancel" ? action.busy : null} error={errorFor("reactivate")} onReactivate={reactivate} /></Shell>;
   if (!content) {
@@ -207,7 +210,7 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
   }
 
   return <Shell demo={demo}><div className="ws-dossier-top"><div><p className="ws-kicker">Votre dossier SaaScan</p><h1 className="ws-title">Vos idées. <em>Votre point de départ.</em></h1><p className="ws-subtitle">Trois pistes pour votre situation. Un prompt pour construire. Un plan pour avancer, une action à la fois.</p></div><div className="ws-dossier-actions"><button className="ws-button-secondary" onClick={download}><ArrowDownToLine size={14} /> Exporter le prompt</button></div></div>
-    {!demo && <div className="ws-link-save"><p><Link2 size={15} /><span><strong>Gardez ce lien, c’est l’accès à votre dossier.</strong> Aucun email n’est envoyé : copiez le lien dans vos notes ou ajoutez cette page à vos favoris. Sur cet appareil, il reste aussi dans le menu « Mon dossier ».</span></p><button className="ws-button-secondary" onClick={copyLink}>{linkCopied ? <Check size={14} /> : <Clipboard size={14} />}{linkCopied ? "Lien copié" : "Copier le lien"}</button><span role="status" className="sr-only">{linkCopied ? "Le lien du dossier est copié dans le presse-papiers." : ""}</span></div>}
+    {!demo && <div className="ws-link-save"><p><Link2 size={15} /><span><strong>Ce dossier reste dans votre espace.</strong> Retrouvez-le depuis « Mon espace » sur n’importe quel appareil. Son lien personnel l’ouvre aussi sans connexion : ne le partagez pas.</span></p><button className="ws-button-secondary" onClick={copyLink}>{linkCopied ? <Check size={14} /> : <Clipboard size={14} />}{linkCopied ? "Lien copié" : "Copier le lien"}</button><span role="status" className="sr-only">{linkCopied ? "Le lien du dossier est copié dans le presse-papiers." : ""}</span></div>}
     <div className="ws-tabs" role="tablist" aria-label="Les parties de votre dossier">{tabs.map(({ id: key, label, icon: Icon }, index) => <button key={key} className="ws-tab" id={`tab-${key}`} role="tab" aria-selected={tab === key} aria-controls={`panel-${key}`} tabIndex={tab === key ? 0 : -1} onClick={() => setTab(key)} onKeyDown={(event) => navigateTab(event, index)}><Icon size={15} />{label}{key === "plan" && <small>{done}/{content.tasks.length}</small>}{key === "videos" && !!content.videos?.length && <small>{content.videos.length}</small>}</button>)}</div>
     {error && <ErrorNotice>{error}</ErrorNotice>}
     <section id="panel-ideas" role="tabpanel" aria-labelledby="tab-ideas" hidden={tab !== "ideas"}>

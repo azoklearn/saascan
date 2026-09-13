@@ -4,7 +4,7 @@ import { BrandLogo } from "@/components/layout/brand-logo";
 import { brand } from "@/config/brand";
 import "./scan-flow.css";
 
-export type ScanStage = "intro" | "question" | "analysis" | "ready" | "offer";
+export type ScanStage = "intro" | "question" | "analysis" | "ready" | "offer" | "account";
 
 export function ScanShell({ children, stage, demo = false, aside }: { children: ReactNode; stage: ScanStage; demo?: boolean; aside?: ReactNode }) {
   return <main className="scan-shell" data-stage={stage}>

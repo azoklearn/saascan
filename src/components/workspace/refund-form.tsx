@@ -24,6 +24,6 @@ export function RefundForm() {
   }
   if (token === undefined) return null;
   if (success) return <div className="legal-notice" role="status"><p><Check size={16} /> Votre demande a été transmise à Whop et votre abonnement ne sera pas renouvelé. Le remboursement revient sur votre moyen de paiement initial ; le délai d’apparition dépend de votre banque. L’accès au dossier sera fermé dès la confirmation du remboursement.</p></div>;
-  if (!token) return <p>Ouvrez votre dossier avec votre lien personnel (sur l’appareil du paiement, il est aussi dans le menu « Mon dossier »), puis choisissez « Demander le remboursement » en bas de la page.</p>;
+  if (!token) return <p>Ouvrez votre dossier depuis votre espace ou avec votre lien personnel, puis choisissez « Demander le remboursement » en bas de la page.</p>;
   return <form className="refund-form" onSubmit={submit}>{error && <p role="alert" className="form-error">{error}</p>}<label className="refund-confirmation"><input type="checkbox" checked={accepted} onChange={(event) => setAccepted(event.target.checked)} /><span>Je confirme la demande de remboursement de mon premier paiement et la résiliation de mon abonnement. L’accès au dossier sera fermé après la confirmation du remboursement.</span></label><button className="button button-primary" disabled={!accepted || busy} type="submit">{busy ? <LoaderCircle size={15} /> : null}Confirmer le remboursement <ArrowRight size={15} /></button></form>;
 }

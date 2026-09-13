@@ -42,3 +42,11 @@ export function databaseError(error: { message: string; code?: string } | null) 
   if (error.code === "P0001") throw new ApiError(error.message, 429, "LIMIT_REACHED");
   throw new Error(error.message);
 }
+
+/** Origine publique du site, pour les redirections après connexion ou déconnexion. */
+export function siteOrigin(request: Request) {
+  if (process.env.NEXT_PUBLIC_APP_URL) return new URL(process.env.NEXT_PUBLIC_APP_URL).origin;
+  const url = new URL(request.url);
+  const host = request.headers.get("host");
+  return host ? `${url.protocol}//${host}` : url.origin;
+}

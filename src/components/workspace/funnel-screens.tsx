@@ -99,6 +99,8 @@ export function OfferScreen() {
       const { url } = await api<{ url: string }>("/api/checkout", { method: "POST", body: JSON.stringify({ formule, answers: questionnaireAnswers(readLocalAnswers()) }) });
       window.location.assign(checkoutUrl(url));
     } catch (cause) {
+      // Session expirée : reconnexion, puis retour sur l’offre.
+      if (cause instanceof ApiError && cause.status === 401) { window.location.assign("/connexion?suite=/debloquer"); return; }
       setError(friendlyError(cause));
       setNotConfigured(cause instanceof ApiError && cause.code === "NOT_CONFIGURED");
       setBusy(false);

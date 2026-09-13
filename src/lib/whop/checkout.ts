@@ -7,9 +7,9 @@ import { ApiError, appUrl } from "@/lib/security/config";
 import { databaseError } from "@/lib/security/http";
 import { getWhop, isWhopSandbox, whopPlanId } from "./client";
 
-type Target = { answers: Answers } | { dossierId: string; token: string };
+type Target = { answers: Answers; userId: string } | { dossierId: string; token: string; userId: string };
 
-/** Crée le dossier au passage en caisse, ou rouvre celui dont l’abonnement est terminé. */
+/** Crée le dossier du compte au passage en caisse, ou rouvre celui dont l’abonnement est terminé. */
 export async function createCheckout(formule: PlanId, target: Target): Promise<string> {
   const plan = findPlan(formule);
   if (!plan) throw new ApiError("Cette formule n’existe pas.", 400, "INVALID_INPUT");
@@ -20,8 +20,8 @@ export async function createCheckout(formule: PlanId, target: Target): Promise<s
   const admin = createAdminClient();
   const token = "answers" in target ? createAccessToken() : target.token;
   const started = "answers" in target
-    ? await admin.rpc("start_checkout", { p_answers: target.answers, p_access_token: token, p_formule: plan.id, p_montant: plan.cents })
-    : await admin.rpc("reopen_checkout", { p_dossier_id: target.dossierId, p_formule: plan.id, p_montant: plan.cents });
+    ? await admin.rpc("start_checkout", { p_answers: target.answers, p_access_token: token, p_formule: plan.id, p_montant: plan.cents, p_user_id: target.userId })
+    : await admin.rpc("reopen_checkout", { p_dossier_id: target.dossierId, p_formule: plan.id, p_montant: plan.cents, p_user_id: target.userId });
   databaseError(started.error);
   const { dossier_id: dossierId, payment_id: paymentId } = started.data as { dossier_id: string; payment_id: string };
   // Whop recopie ces métadonnées sur le paiement et l’abonnement. Le lien d’accès n’y figure jamais.

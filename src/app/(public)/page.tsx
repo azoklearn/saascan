@@ -1,16 +1,11 @@
 import Link from "next/link";
-import { ArrowRight, BatteryFull, SignalHigh, Wifi } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/landing/reveal";
 import { FAQ } from "@/components/landing/faq";
 import { HeroDecor } from "@/components/landing/hero-decor";
+import { PaymentsPhone } from "@/components/landing/payments-phone";
 import { ideas } from "@/lib/matching/filters";
 import { questions } from "@/lib/questionnaire/questions";
-
-const payments = [
-  { amount: "39,00 €", sender: "xxxxxx@hotmail.fr", time: "maintenant" },
-  { amount: "149,00 €", sender: "xxxxxx@icloud.com", time: "il y a 1 min" },
-  { amount: "79,98 €", sender: "xxxxxxx@outlook.fr", time: "il y a 2 min" },
-];
 
 const tools = ["Supabase", "GitHub", "Stripe", "Whop", "TikTok", "Claude"];
 
@@ -31,16 +26,7 @@ export default function HomePage() {
         <p className="hero-description">Trouvez l’idée de votre premier site, mettez-le en ligne et <strong>encaissez vos premiers paiements.</strong></p>
         <div className="hero-actions"><Link href="/questionnaire" className="button button-primary button-large">Créer mon SaaS <ArrowRight size={18} /></Link></div>
       </div>
-      <figure className="payments-scene">
-        <div className="payments-phone" role="img" aria-label="Illustration : notifications de paiement Stripe sur un téléphone">
-          <div className="phone-screen">
-            <div className="phone-status"><span>9:41</span><span className="phone-island" /><span className="phone-indicators"><SignalHigh size={13} /><Wifi size={13} /><BatteryFull size={17} /></span></div>
-            <p className="phone-clock">9:41</p>
-            <ul className="payment-stack">{payments.map(({ amount, sender, time }) => <li className="payment-card" key={amount}><span className="payment-app">S</span><div><p className="payment-head"><strong>Stripe</strong><span>{time}</span></p><p className="payment-text">Vous avez reçu un paiement d’un montant de <strong>{amount}</strong> émis par {sender}</p></div></li>)}</ul>
-          </div>
-        </div>
-        <figcaption>ILLUSTRATION</figcaption>
-      </figure>
+      <PaymentsPhone />
     </section>
 
     <section className="tools-section" aria-label="Les outils sur lesquels vous allez construire"><div className="container"><p className="tools-intro">LES OUTILS SUR LESQUELS VOUS ALLEZ CONSTRUIRE</p></div><div className="tools-marquee"><div className="tools-track">{[false, true].map((duplicate) => <div className="tools-set" key={String(duplicate)} aria-hidden={duplicate || undefined}>{tools.map((tool) => <span key={tool}>{tool}</span>)}</div>)}</div></div></section>

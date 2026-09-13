@@ -13,6 +13,9 @@ $$;
 create function pg_temp.pending_payment(token text) returns uuid language sql stable as $$
   select p.id from public.payments p join public.dossiers d on d.id = p.dossier_id where d.access_token = token and p.statut = 'en_attente';
 $$;
+create function pg_temp.user_id(n integer) returns uuid language sql immutable as $$
+  select ('00000000-0000-4000-8000-00000000000' || n)::uuid;
+$$;
 create function pg_temp.videos(amount integer) returns jsonb language sql stable as $$
   select jsonb_agg(jsonb_build_object('plateforme', 'TikTok', 'format', 'Face caméra', 'accroche', 'Accroche ' || i,
     'deroule', 'Déroulé de la vidéo', 'appel_action', 'Essayez gratuitement')) from generate_series(1, amount) i;
@@ -21,16 +24,23 @@ create function pg_temp.answers() returns jsonb language sql immutable as $$
   select '{"tranche_age":"25_34","cible_client":"b2b","domaines":["vente","productivite"],"competences":"sans_code","temps_jour":"1h","zone":"francophone","facturation":"abonnement","concurrence":"differencier","objectif_revenu":"2000"}'::jsonb;
 $$;
 
+-- Comptes Supabase Auth : le déclencheur de la première migration crée leur profil.
+insert into auth.users (id, email) values
+  (pg_temp.user_id(1), 'acheteur@example.invalid'),
+  (pg_temp.user_id(2), 'deux@example.invalid'),
+  (pg_temp.user_id(3), 'autre@example.invalid');
+select pg_temp.assert_true((select count(*) = 3 from public.profiles where email like '%@example.invalid'), 'profils créés avec les comptes');
+
 -- SaaScan n’envoie plus d’email : ni journal d’envoi ni rappel en base.
 select pg_temp.assert_true(to_regclass('public.renewal_reminders') is null
   and not exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'payment_events' and column_name like 'email%'), 'aucune trace des emails');
 
--- Les navigateurs n’ont aucun accès direct aux données ni aux transactions.
+-- Les navigateurs n’ont aucun accès direct aux données ni aux transactions, même connectés.
 set local role anon;
 do $$ begin
   begin perform 1 from public.dossiers; raise exception 'ÉCHEC : lecture anonyme des dossiers';
   exception when insufficient_privilege then null; end;
-  begin perform public.start_checkout('{}'::jsonb, 'test_lien_acces_dossier_saascan_0123456789a', 'mensuel', 1899);
+  begin perform public.start_checkout('{}'::jsonb, 'test_lien_acces_dossier_saascan_0123456789a', 'mensuel', 1899, gen_random_uuid());
     raise exception 'ÉCHEC : dossier créé depuis le navigateur';
   exception when insufficient_privilege then null; end;
 end $$;
@@ -39,6 +49,8 @@ set local role authenticated;
 do $$ begin
   begin perform 1 from public.marketing_videos; raise exception 'ÉCHEC : bonus lisibles avec une session';
   exception when insufficient_privilege then null; end;
+  begin perform 1 from public.profiles; raise exception 'ÉCHEC : profils lisibles avec une session';
+  exception when insufficient_privilege then null; end;
   begin perform public.apply_whop_event('msg_navigateur', 'payment.succeeded', 'pay_navigateur', now(), gen_random_uuid());
     raise exception 'ÉCHEC : paiement confirmé depuis le navigateur';
   exception when insufficient_privilege then null; end;
@@ -46,14 +58,18 @@ end $$;
 
 reset role;
 set local role service_role;
-select public.start_checkout(pg_temp.answers(), 'test_lien_acces_dossier_saascan_0123456789a', 'annuel', 6999);
+select public.start_checkout(pg_temp.answers(), 'test_lien_acces_dossier_saascan_0123456789a', 'annuel', 6999, pg_temp.user_id(1));
 select pg_temp.assert_true((select count(*) = 9 from public.responses where dossier_id = pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a')), 'réponses enregistrées au passage en caisse');
-select pg_temp.assert_true((select user_id is null and formule = 'annuel' and statut = 'brouillon' from public.dossiers where access_token = 'test_lien_acces_dossier_saascan_0123456789a'), 'dossier créé sans compte avec sa formule');
+select pg_temp.assert_true((select user_id = pg_temp.user_id(1) and formule = 'annuel' and statut = 'brouillon' from public.dossiers where access_token = 'test_lien_acces_dossier_saascan_0123456789a'), 'dossier rattaché au compte avec sa formule');
+select pg_temp.assert_true((select user_id = pg_temp.user_id(1) from public.payments where id = pg_temp.pending_payment('test_lien_acces_dossier_saascan_0123456789a')), 'paiement rattaché au compte');
 do $$ begin
-  begin perform public.start_checkout('{"question_inventee":"x"}'::jsonb, 'autre_lien_acces_dossier_saascan_0123456789', 'mensuel', 1899);
+  begin perform public.start_checkout(pg_temp.answers(), 'inco_lien_acces_dossier_saascan_0123456789c', 'mensuel', 1899, gen_random_uuid());
+    raise exception 'ÉCHEC : dossier créé pour un compte inconnu';
+  exception when insufficient_privilege then null; end;
+  begin perform public.start_checkout('{"question_inventee":"x"}'::jsonb, 'autre_lien_acces_dossier_saascan_0123456789', 'mensuel', 1899, pg_temp.user_id(1));
     raise exception 'ÉCHEC : question inconnue acceptée';
   exception when check_violation then null; end;
-  begin perform public.start_checkout(pg_temp.answers(), 'autre_lien_acces_dossier_saascan_0123456789', 'hebdomadaire', 500);
+  begin perform public.start_checkout(pg_temp.answers(), 'autre_lien_acces_dossier_saascan_0123456789', 'hebdomadaire', 500, pg_temp.user_id(1));
     raise exception 'ÉCHEC : formule inconnue acceptée';
   exception when check_violation then null; end;
   begin perform public.reserve_generation(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'));
@@ -124,23 +140,28 @@ do $$ begin
   begin perform public.reserve_extras(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'));
     raise exception 'ÉCHEC : bonus après remboursement';
   exception when object_not_in_prerequisite_state then null; end;
-  begin perform public.reopen_checkout(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'), 'mensuel', 1899);
+  begin perform public.reopen_checkout(pg_temp.dossier_id('test_lien_acces_dossier_saascan_0123456789a'), 'mensuel', 1899, pg_temp.user_id(1));
     raise exception 'ÉCHEC : dossier remboursé réactivé';
   exception when object_not_in_prerequisite_state then null; end;
 end $$;
 
--- Réactivation d’un abonnement terminé : le nouvel abonnement remplace l’ancien.
-select public.start_checkout(pg_temp.answers(), 'deux_lien_acces_dossier_saascan_0123456789b', 'mensuel', 1899);
+-- Réactivation d’un abonnement terminé, réservée au compte propriétaire : le nouvel abonnement remplace l’ancien.
+select public.start_checkout(pg_temp.answers(), 'deux_lien_acces_dossier_saascan_0123456789b', 'mensuel', 1899, pg_temp.user_id(2));
 select public.apply_whop_event('msg_test_d2_paid', 'payment.succeeded', 'pay_test_d2', now(), pg_temp.dossier_id('deux_lien_acces_dossier_saascan_0123456789b'),
   jsonb_build_object('id', 'pay_test_d2', 'local_id', pg_temp.pending_payment('deux_lien_acces_dossier_saascan_0123456789b'), 'formule', 'mensuel', 'total_cents', 1899, 'refunded_cents', 0, 'email', 'deux@example.invalid'),
   jsonb_build_object('id', 'mem_test_d2', 'status', 'canceled', 'current_period_end', now() - interval '1 day', 'formule', 'mensuel', 'synced_at', now()));
-select public.reopen_checkout(pg_temp.dossier_id('deux_lien_acces_dossier_saascan_0123456789b'), 'trimestriel', 2999);
+do $$ begin
+  begin perform public.reopen_checkout(pg_temp.dossier_id('deux_lien_acces_dossier_saascan_0123456789b'), 'trimestriel', 2999, pg_temp.user_id(3));
+    raise exception 'ÉCHEC : dossier réactivé par un autre compte';
+  exception when insufficient_privilege then null; end;
+end $$;
+select public.reopen_checkout(pg_temp.dossier_id('deux_lien_acces_dossier_saascan_0123456789b'), 'trimestriel', 2999, pg_temp.user_id(2));
 select public.apply_whop_event('msg_test_d2_back', 'payment.succeeded', 'pay_test_d2b', now(), pg_temp.dossier_id('deux_lien_acces_dossier_saascan_0123456789b'),
   jsonb_build_object('id', 'pay_test_d2b', 'local_id', pg_temp.pending_payment('deux_lien_acces_dossier_saascan_0123456789b'), 'formule', 'trimestriel', 'total_cents', 2999, 'refunded_cents', 0),
   jsonb_build_object('id', 'mem_test_d2b', 'status', 'active', 'current_period_end', now() + interval '90 days', 'formule', 'trimestriel', 'synced_at', now() + interval '1 second'));
 select public.sync_membership(pg_temp.dossier_id('deux_lien_acces_dossier_saascan_0123456789b'), jsonb_build_object('id', 'mem_test_d2', 'status', 'canceled', 'synced_at', now() + interval '2 seconds'));
-select pg_temp.assert_true((select membership_id = 'mem_test_d2b' and membership_status = 'active' and formule = 'trimestriel'
-  from public.dossiers where access_token = 'deux_lien_acces_dossier_saascan_0123456789b'), 'abonnement réactivé sans retour de l’ancien');
+select pg_temp.assert_true((select membership_id = 'mem_test_d2b' and membership_status = 'active' and formule = 'trimestriel' and user_id = pg_temp.user_id(2)
+  from public.dossiers where access_token = 'deux_lien_acces_dossier_saascan_0123456789b'), 'abonnement réactivé par son compte sans retour de l’ancien');
 
 reset role;
 rollback;

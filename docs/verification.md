@@ -1,6 +1,6 @@
 # Vérification de SaaScan
 
-Vérification locale du 13 septembre 2026. Les dossiers ne font appel à aucune IA : ils sont assemblés à partir des textes de `data/contenus`. SaaScan n’envoie aucun email. La clé Whop de production a servi à créer le catalogue et le webhook ; aucun paiement réel.
+Vérification locale du 13 septembre 2026. Un compte est demandé avant le questionnaire. Les dossiers ne font appel à aucune IA : ils sont assemblés à partir des textes de `data/contenus`. SaaScan n’envoie aucun email. La clé Whop de production a servi à créer le catalogue et le webhook ; aucun paiement réel.
 
 ## Vérifications automatisées
 
@@ -14,62 +14,72 @@ npm audit
 Les 93 tests se répartissent ainsi :
 
 - **Contenus (80 tests, 4 par idée) :** structure du fichier, longueurs, vouvoiement, apostrophe typographique, 60 accroches et déroulés distincts, au moins trois plateformes, aucun pourcentage dans les vidéos et le plan de A à Z, sept phases aux périodes imposées, et prompt de 700 à 900 mots pour chacun des 3 072 profils testés. Les prompts vont de 794 à 884 mots selon les idées et les profils.
-- **Domaine :** neuf questions et curseur final, réponses invalides, sélection des idées (assez d’idées, aucune, complément avec les plus proches), remontée des domaines choisis, dossier assemblé pour deux profils (trois idées, citations des neuf réponses, prompt de 700 à 900 mots, 24 tâches distinctes, risques rédigés), adaptation du prompt aux compétences et à la zone, bonus de chaque formule (0, 30 ou 60 vidéos, plan de A à Z avec l’objectif de revenu), canaux autorisés, prix par jour (0,63 €, 0,33 € et 0,19 €) et économies (−47 % et −69 %).
-- **Base de données :** PostgreSQL/PGlite applique les six migrations et le scénario `supabase/tests/rls.sql`. Le scénario couvre :
+- **Domaine :**
+  - neuf questions et curseur final, réponses invalides ;
+  - sélection des idées (assez d’idées, aucune, complément avec les plus proches) et remontée des domaines choisis ;
+  - dossier assemblé pour deux profils : trois idées, citations des neuf réponses, prompt de 700 à 900 mots, 24 tâches distinctes, risques rédigés ;
+  - adaptation du prompt aux compétences et à la zone ;
+  - bonus de chaque formule : 0, 30 ou 60 vidéos, plan de A à Z avec l’objectif de revenu ;
+  - canaux autorisés, prix par jour (0,63 €, 0,33 € et 0,19 €) et économies (−47 % et −69 %).
+- **Base de données :** PostgreSQL/PGlite applique les sept migrations et le scénario `supabase/tests/rls.sql`. Le scénario couvre :
+  - la création des profils avec les comptes ;
   - l’absence de table de rappels et de colonnes d’email dans le journal des paiements ;
-  - l’absence d’accès navigateur ;
-  - la création du dossier au passage en caisse ;
+  - l’absence d’accès navigateur, même connecté (dossiers, bonus, profils, transactions) ;
+  - le dossier et le paiement rattachés au compte au passage en caisse, et le refus d’un compte inconnu ;
   - le refus de publier avant paiement ;
   - le premier paiement Whop signalé pour la publication, avec l’email Whop enregistré, et la livraison répétée ;
-  - les 60 idées de vidéos exigées pour la formule 12 mois, avec 30 refusées ;
-  - la remise à zéro des tentatives ;
-  - le renouvellement ;
-  - la résiliation conservée malgré un état plus ancien ;
+  - les 60 idées de vidéos exigées pour la formule 12 mois, avec 30 refusées, et la remise à zéro des tentatives ;
+  - le renouvellement et la résiliation conservée malgré un état plus ancien ;
   - le remboursement signalé une seule fois et conservé malgré un succès tardif ;
-  - la réactivation d’un abonnement terminé.
+  - la réactivation d’un abonnement terminé, refusée pour un autre compte et acceptée pour le compte propriétaire.
+
+Le build produit les pages `/inscription`, `/connexion` et `/espace`, les routes `/auth/callback` et `/auth/deconnexion`, et le middleware de session.
 
 ## Whop
 
 `node scripts/whop-catalogue.mjs` a créé le produit masqué et les trois formules, sans frais initiaux : Whop affiche « €18.99 / month », « €29.99 / 3-months » et « €69.99 / year ». Une configuration de paiement d’essai renvoie une adresse `https://whop.com/checkout/ch_…/` et conserve ses métadonnées. Whop refuse une adresse de retour en `http://` : le paiement ne se teste pas sur localhost.
 
-`node scripts/whop-webhook.mjs https://saascan.vercel.app` a créé le webhook vers `/api/webhooks/whop` avec six événements ; Whop refuse `membership.went_valid` et `membership.went_invalid`. Le secret est enregistré dans `.env.local` sans être affiché. Après déploiement, la route répond `503 NOT_CONFIGURED` tant que `WHOP_WEBHOOK_SECRET` manque sur Vercel.
+`node scripts/whop-webhook.mjs https://saascan.vercel.app` a créé le webhook vers `/api/webhooks/whop` avec six événements ; Whop refuse `membership.went_valid` et `membership.went_invalid`. Le secret est enregistré dans `.env.local` sans être affiché. En production, la route refuse une requête sans signature Whop.
 
 ## Parcours navigateur vérifié
 
-Navigateur intégré, à 309 pixels de large puis à 375 × 812 pixels :
+Navigateur intégré, à 309 pixels de large, à 375 × 812 pixels et à 1280 × 800 pixels :
 
-1. **Offre (`/debloquer?demo=1`, après le questionnaire) :**
-   - bandeau « −69 % avec la formule 12 mois, par rapport au mensuel » et garantie 48 h ;
+1. **Compte obligatoire :**
+   - `/questionnaire` redirige vers `/inscription?suite=%2Fquestionnaire` ;
+   - `/espace` redirige vers `/inscription?suite=%2Fespace` ;
+   - `/questionnaire?demo=1` reste ouvert sans compte.
+2. **Création de compte (`/inscription`) :**
+   - logo, « Créez votre compte. », bouton « Continuer avec Google », champs email et mot de passe (8 caractères minimum) et lien « Se connecter » qui conserve la suite ;
+   - aucun en-tête du site en double, aucun débordement horizontal ;
+   - sans clé publishable locale, le formulaire et le bouton Google affichent « La connexion n’est pas encore configurée sur ce site. ».
+3. **Connexion (`/connexion`) :** « Connectez-vous. », bouton « Se connecter », mention « Mot de passe oublié ? Écrivez-nous… », lien « Créer un compte » qui conserve la suite.
+4. **Menu du site :** « Se connecter » sans session, vers `/connexion`, sur ordinateur et dans le menu mobile.
+5. **Hero :** téléphone animé (flottement, ombre, notification toutes les trois secondes environ), sans débordement à 375 et 1280 pixels.
+6. **Offre (`/debloquer?demo=1`) :**
    - trois formules, chacune avec son prix barré de référence mensuelle, son pourcentage, son prix par jour et son contenu (30 idées de vidéos pour 3 mois, 60 et le plan de A à Z pour 12 mois) ;
-   - badge « Recommandé » sur 3 mois, sélection d’une formule à l’autre, aucun débordement horizontal.
-2. **Offre sans démo (`/debloquer`) :** les conditions rappellent le renouvellement de la formule choisie, et « Continuer » affiche en local « Whop exige une adresse HTTPS… ».
-3. **Dossier d’exemple (`/dossier/demo`) :**
+   - badge « Recommandé » sur 3 mois.
+7. **Dossier d’exemple (`/dossier/demo`) :**
    - BriefChantier avec cinq onglets, dont « Vidéos marketing » (60 idées) et « Plan de A à Z » (sept phases de A à G) ;
    - prompt de 813 mots ;
-   - objectif de revenu remplacé dans la dernière phase, sans balise restante ;
    - tâche cochée conservée après rechargement ;
-   - pas de bloc de lien ni d’abonnement en démonstration, aucun débordement horizontal.
-4. **Menu « Mon dossier » :**
-   - avec un lien de dossier au bon format dans le stockage local, « Mon dossier » apparaît dans le menu ordinateur et dans le menu mobile, vers `/dossier/<lien>` ;
-   - sans lien enregistré, il disparaît ;
-   - un lien inconnu affiche « Ce dossier est introuvable. Vérifiez votre lien personnel. ».
-5. **CGV :** elles indiquent que SaaScan n’envoie aucun email et ne promettent plus de rappel avant renouvellement.
-6. **Contenu payant :** ni le HTML ni les scripts chargés par le dossier d’exemple ne contiennent le texte des autres idées. Les contenus restent côté serveur.
+   - aucun texte des autres idées dans le HTML ni dans les scripts chargés.
 
-Le questionnaire et l’analyse n’ont pas changé depuis la vérification précédente. Le bloc « Gardez ce lien » et son bouton de copie ne s’affichent que sur un vrai dossier payé : ils restent à voir après un premier paiement.
+La connexion réelle (Google et email), l’espace avec un dossier payé et le bloc « Ce dossier reste dans votre espace » restent à voir avec la clé publishable et un premier paiement.
 
 ## À vérifier avec les services configurés
 
-- Migrations `202609130003_contenus_rediges.sql` et `202609130004_sans_emails.sql` appliquées sur la base Supabase.
+- Migrations `202609130004_sans_emails.sql` et `202609130005_comptes.sql` appliquées sur la base Supabase.
+- Connexion :
+  - « Confirm email » désactivé ;
+  - création de compte par email puis connexion ;
+  - « Continuer avec Google » avec retour sur la suite du parcours ;
+  - déconnexion depuis l’espace.
 - Paiement réel ou dans le bac à sable Whop :
+  - dossier rattaché au compte et visible dans `/espace` ;
   - retour sur `/dossier/<lien>` et publication immédiate du dossier et des bonus ;
-  - bouton « Copier le lien » et menu « Mon dossier » ;
-  - webhook répété ;
-  - renouvellement ;
-  - passage de 3 à 12 mois ;
-  - résiliation depuis le dossier ;
-  - remboursement sous 48 heures, suivi de l’annulation de l’abonnement ;
-  - réactivation.
-- Téléchargement du prompt et tâches cochées avec un vrai lien de dossier.
+  - webhook répété, renouvellement, passage de 3 à 12 mois ;
+  - résiliation depuis le dossier, remboursement sous 48 heures, puis annulation de l’abonnement ;
+  - réactivation, avec reconnexion si la session a expiré.
 
-Ces cas ont été revus dans le code et vérifiés par TypeScript et par le scénario SQL, mais restent à exercer avec Whop.
+Ces cas ont été revus dans le code et vérifiés par TypeScript et par le scénario SQL, mais restent à exercer avec Supabase Auth, Google et Whop.

@@ -5,5 +5,5 @@ import type { ReactNode } from "react";
 
 export function SiteChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  return /^\/(questionnaire|analyse|debloquer)(\/|$)/.test(pathname) ? null : children;
+  return /^\/(inscription|connexion|espace|questionnaire|analyse|debloquer)(\/|$)/.test(pathname) ? null : children;
 }

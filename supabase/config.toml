@@ -12,12 +12,21 @@ port = 54322
 shadow_port = 54320
 major_version = 17
 
-# Le parcours ne crée aucun compte : le serveur accède à la base avec service_role.
+# Compte obligatoire avant le questionnaire : Google, ou email et mot de passe sans
+# email de confirmation. Les données restent lues par le serveur avec service_role.
 [auth]
 enabled = true
 site_url = "http://localhost:3000"
-enable_signup = false
+additional_redirect_urls = ["http://localhost:3000/auth/callback"]
+enable_signup = true
 enable_anonymous_sign_ins = false
+minimum_password_length = 8
 
 [auth.email]
-enable_signup = false
+enable_signup = true
+enable_confirmations = false
+
+[auth.external.google]
+enabled = true
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
