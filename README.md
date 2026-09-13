@@ -77,7 +77,7 @@ Après paiement, Whop renvoie vers `/dossier/<lien>`. Le retour navigateur ne d�
 
 Le contenu est accessible quand le premier paiement est confirmé, non remboursé, et que l’abonnement est `active`, `trialing`, `past_due` ou `canceling`. Si un webhook manque, la page du dossier relit l’abonnement chez Whop au plus toutes les dix minutes. La résiliation prend effet en fin de période. Une demande de remboursement arrête d’abord le renouvellement, puis rembourse le premier paiement ; l’accès se ferme à la confirmation et l’abonnement est alors annulé.
 
-Sans `WHOP_API_URL`, le client vise la production : le passage en caisse exige aussi `LEGAL_COMPANY_NAME`, `LEGAL_COMPANY_ADDRESS`, `LEGAL_COMPANY_REGISTRATION` et `NEXT_PUBLIC_CONTACT_EMAIL`. Ce contrôle de présence ne remplace pas la vérification des textes applicables à l’activité. SaaScan n’envoie aucun rappel avant le renouvellement des formules 3 et 12 mois : vérifier les obligations d’information du vendeur pour les contrats reconduits tacitement (article L215-1 du Code de la consommation).
+Sans `WHOP_API_URL`, le client vise la production. Les informations du vendeur (`LEGAL_COMPANY_NAME`, `LEGAL_COMPANY_ADDRESS`, `LEGAL_COMPANY_REGISTRATION`, `NEXT_PUBLIC_CONTACT_EMAIL`) ne bloquent pas le paiement : tant qu’elles manquent, les pages légales restent en version préparatoire. SaaScan n’envoie aucun rappel avant le renouvellement des formules 3 et 12 mois : vérifier les obligations d’information du vendeur pour les contrats reconduits tacitement (article L215-1 du Code de la consommation).
 
 ## Sans email
 

@@ -37,7 +37,7 @@ Les écritures venant du navigateur contrôlent l’origine. Les réponses JSON 
 
 `POST /api/checkout` est limité à dix demandes par adresse IP sur dix minutes, par instance.
 
-Sans `WHOP_API_URL`, le client Whop vise la production : le passage en caisse exige alors LEGAL_COMPANY_NAME, LEGAL_COMPANY_ADDRESS, LEGAL_COMPANY_REGISTRATION et NEXT_PUBLIC_CONTACT_EMAIL. Whop refuse une adresse de retour qui ne commence pas par `https://` : le passage en caisse renvoie `503 NOT_CONFIGURED` sur `http://localhost`. Les pages légales restent à compléter et vérifier pour l’éditeur réel.
+Sans `WHOP_API_URL`, le client Whop vise la production. Les informations du vendeur ne bloquent pas le passage en caisse ; tant qu’elles manquent, les pages légales restent en version préparatoire. Whop refuse une adresse de retour qui ne commence pas par `https://` : le passage en caisse renvoie `503 NOT_CONFIGURED` sur `http://localhost`. Les pages légales restent à compléter et vérifier pour l’éditeur réel.
 
 Les erreurs suivent `{error,code?}`.
 

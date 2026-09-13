@@ -3,7 +3,7 @@ import type { Answers } from "@/types/domain";
 import { findPlan, type PlanId } from "@/config/pricing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createAccessToken } from "@/lib/security/access-token";
-import { ApiError, appUrl, requireEnv } from "@/lib/security/config";
+import { ApiError, appUrl } from "@/lib/security/config";
 import { databaseError } from "@/lib/security/http";
 import { getWhop, isWhopSandbox, whopPlanId } from "./client";
 
@@ -16,9 +16,6 @@ export async function createCheckout(formule: PlanId, target: Target): Promise<s
   const whop = getWhop(); const planId = whopPlanId(plan); const origin = appUrl();
   if (!origin.startsWith("https://")) {
     throw new ApiError("Whop exige une adresse HTTPS pour le retour après paiement : testez le paiement sur l’adresse Vercel du site.", 503, "NOT_CONFIGURED");
-  }
-  if (!isWhopSandbox()) {
-    for (const key of ["LEGAL_COMPANY_NAME", "LEGAL_COMPANY_ADDRESS", "LEGAL_COMPANY_REGISTRATION", "NEXT_PUBLIC_CONTACT_EMAIL"]) requireEnv(key);
   }
   const admin = createAdminClient();
   const token = "answers" in target ? createAccessToken() : target.token;
