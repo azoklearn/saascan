@@ -18,7 +18,7 @@ describe("Migrations PostgreSQL et droits RLS", () => {
         grant usage on schema public, auth to anon, authenticated, service_role;
         grant execute on function auth.uid() to anon, authenticated, service_role;
       `);
-      for (const file of ["202609120001_initial_schema.sql", "202609120002_server_transactions.sql", "202609130001_parcours_sans_compte.sql", "202609130002_abonnements_whop.sql", "202609130003_contenus_rediges.sql", "202609130004_sans_emails.sql", "202609130005_comptes.sql"]) {
+      for (const file of ["202609120001_initial_schema.sql", "202609120002_server_transactions.sql", "202609130001_parcours_sans_compte.sql", "202609130002_abonnements_whop.sql", "202609130003_contenus_rediges.sql", "202609130004_sans_emails.sql", "202609130005_comptes.sql", "202609130006_paiements_gratuits.sql"]) {
         await db.exec(await readFile(`supabase/migrations/${file}`, "utf8"));
       }
       const tables = await db.query<{ count: number }>("select count(*)::int as count from pg_tables where schemaname = 'public' and rowsecurity = true");

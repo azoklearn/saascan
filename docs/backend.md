@@ -6,7 +6,7 @@ Le backend utilise Supabase (comptes et base de données) et Whop réellement co
 
 Copier `.env.example` dans `.env.local`, remplir les valeurs, puis redémarrer Next.js. Les variables absentes entraînent une réponse JSON `503 NOT_CONFIGURED`.
 
-Appliquer dans cet ordre les migrations `202609120001_initial_schema.sql`, `202609120002_server_transactions.sql`, `202609130001_parcours_sans_compte.sql`, `202609130002_abonnements_whop.sql`, `202609130003_contenus_rediges.sql`, `202609130004_sans_emails.sql` et `202609130005_comptes.sql`. La troisième retire les droits navigateur, ajoute le lien d’accès secret et impose la publication après paiement. La quatrième passe aux abonnements Whop. La cinquième retire les lots quotidiens de vidéos et fixe le nombre d’idées de vidéos par formule (30 ou 60). La sixième supprime le journal d’envoi d’emails et les rappels de renouvellement. La septième rattache chaque nouveau dossier à un compte.
+Appliquer dans cet ordre les migrations `202609120001_initial_schema.sql`, `202609120002_server_transactions.sql`, `202609130001_parcours_sans_compte.sql`, `202609130002_abonnements_whop.sql`, `202609130003_contenus_rediges.sql`, `202609130004_sans_emails.sql`, `202609130005_comptes.sql` et `202609130006_paiements_gratuits.sql`. La troisième retire les droits navigateur, ajoute le lien d’accès secret et impose la publication après paiement. La quatrième passe aux abonnements Whop. La cinquième retire les lots quotidiens de vidéos et fixe le nombre d’idées de vidéos par formule (30 ou 60). La sixième supprime le journal d’envoi d’emails et les rappels de renouvellement. La septième rattache chaque nouveau dossier à un compte.
 
 ## Comptes
 

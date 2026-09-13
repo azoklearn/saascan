@@ -21,7 +21,7 @@ Les 93 tests se répartissent ainsi :
   - adaptation du prompt aux compétences et à la zone ;
   - bonus de chaque formule : 0, 30 ou 60 vidéos, plan de A à Z avec l’objectif de revenu ;
   - canaux autorisés, prix par jour (0,63 €, 0,33 € et 0,19 €) et économies (−47 % et −69 %).
-- **Base de données :** PostgreSQL/PGlite applique les sept migrations et le scénario `supabase/tests/rls.sql`. Le scénario couvre :
+- **Base de données :** PostgreSQL/PGlite applique les huit migrations et le scénario `supabase/tests/rls.sql`. Le scénario couvre, en plus d’un paiement à 0 € obtenu avec un code promo (dossier ouvert, jamais compté comme remboursé, montant négatif refusé) :
   - la création des profils avec les comptes ;
   - l’absence de table de rappels et de colonnes d’email dans le journal des paiements ;
   - l’absence d’accès navigateur, même connecté (dossiers, bonus, profils, transactions) ;

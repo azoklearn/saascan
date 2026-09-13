@@ -163,5 +163,19 @@ select public.sync_membership(pg_temp.dossier_id('deux_lien_acces_dossier_saasca
 select pg_temp.assert_true((select membership_id = 'mem_test_d2b' and membership_status = 'active' and formule = 'trimestriel' and user_id = pg_temp.user_id(2)
   from public.dossiers where access_token = 'deux_lien_acces_dossier_saascan_0123456789b'), 'abonnement réactivé par son compte sans retour de l’ancien');
 
+-- Code promo de 100 % : un paiement à 0 € ouvre le dossier et ne passe jamais pour un remboursement.
+select public.start_checkout(pg_temp.answers(), 'prom_lien_acces_dossier_saascan_0123456789d', 'trimestriel', 2999, pg_temp.user_id(3));
+select pg_temp.assert_true((public.apply_whop_event('msg_test_promo', 'payment.succeeded', 'pay_test_promo', now(), pg_temp.dossier_id('prom_lien_acces_dossier_saascan_0123456789d'),
+  jsonb_build_object('id', 'pay_test_promo', 'local_id', pg_temp.pending_payment('prom_lien_acces_dossier_saascan_0123456789d'), 'formule', 'trimestriel', 'total_cents', 0, 'refunded_cents', 0, 'paid_at', now()),
+  jsonb_build_object('id', 'mem_test_promo', 'status', 'active', 'formule', 'trimestriel', 'synced_at', now())) ->> 'first_payment')::boolean, 'paiement à 0 € signalé pour la publication');
+select pg_temp.assert_true((select paid_at is not null and refunded_at is null from public.dossiers where access_token = 'prom_lien_acces_dossier_saascan_0123456789d')
+  and (select statut = 'paye' and montant = 0 from public.payments where provider_payment_id = 'pay_test_promo'), 'dossier ouvert par un code promo, sans remboursement');
+do $$ begin
+  begin perform public.apply_whop_event('msg_test_negatif', 'payment.succeeded', 'pay_test_negatif', now(), pg_temp.dossier_id('prom_lien_acces_dossier_saascan_0123456789d'),
+    jsonb_build_object('id', 'pay_test_negatif', 'formule', 'trimestriel', 'total_cents', -1, 'refunded_cents', 0));
+    raise exception 'ÉCHEC : montant négatif accepté';
+  exception when raise_exception then if sqlerrm like 'ÉCHEC%' then raise; end if; end;
+end $$;
+
 reset role;
 rollback;

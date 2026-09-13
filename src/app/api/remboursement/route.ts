@@ -8,7 +8,7 @@ import { findDossier } from "@/lib/supabase/dossiers";
 import { getWhop } from "@/lib/whop/client";
 export const runtime = "nodejs";
 
-type AccessPayment = { id: string; provider_payment_id: string | null; statut: string; paid_at: string | null };
+type AccessPayment = { id: string; provider_payment_id: string | null; statut: string; paid_at: string | null; montant: number };
 
 export async function POST(request: Request) {
   try {
@@ -20,9 +20,10 @@ export async function POST(request: Request) {
     databaseError(access.error);
     const accessPaymentId = access.data?.access_payment_id as string | null | undefined;
     if (!accessPaymentId) throw new ApiError("Aucun paiement confirmé pour ce dossier.", 404);
-    const result = await admin.from("payments").select("id,provider_payment_id,statut,paid_at").eq("id", accessPaymentId).single();
+    const result = await admin.from("payments").select("id,provider_payment_id,statut,paid_at,montant").eq("id", accessPaymentId).single();
     databaseError(result.error); const payment = result.data as AccessPayment;
     if (!payment.paid_at || !payment.provider_payment_id) throw new ApiError("Aucun paiement confirmé pour ce dossier.", 404);
+    if (payment.montant === 0) throw new ApiError("Ce dossier a été obtenu avec un code promo : aucun montant n’est à rembourser.", 409, "NOTHING_TO_REFUND");
     if (payment.statut === "rembourse") return json({ ok: true, status: "succeeded" });
     if (Date.now() - Date.parse(payment.paid_at) > refundDays * 24 * 60 * 60_000) throw new ApiError("La garantie de 48 heures est dépassée. Contactez-nous pour examiner votre situation.", 409, "REFUND_WINDOW_EXPIRED");
     const whop = getWhop();

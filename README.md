@@ -37,7 +37,7 @@ Pour parcourir tout le parcours sans compte ni paiement : [questionnaire de dém
 - Offre à trois formules définies dans `src/config/plans.json`. Les prix barrés et les pourcentages comparent au même nombre de mois en formule mensuelle ; aucun faux compte à rebours.
 - Abonnements Whop : webhook signé et idempotent, accès lié à l’abonnement, résiliation en fin de période depuis le dossier, remboursement du premier paiement sous 48 heures.
 - Dossier : trois idées, copie et export `.md` du prompt, plan à cocher, vidéos et plan de A à Z selon la formule, lien personnel à copier.
-- Sept migrations PostgreSQL : RLS sur toutes les tables, aucun droit pour les rôles du navigateur, transactions réservées au serveur.
+- Huit migrations PostgreSQL : RLS sur toutes les tables, aucun droit pour les rôles du navigateur, transactions réservées au serveur.
 - Pages de contact, garantie, confidentialité, mentions légales et CGV configurables. Les textes légaux sont une base préparatoire à adapter au vendeur réel avant commercialisation.
 
 ## Configurer Supabase
@@ -52,10 +52,11 @@ Pour parcourir tout le parcours sans compte ni paiement : [questionnaire de dém
    - `supabase/migrations/202609130003_contenus_rediges.sql`
    - `supabase/migrations/202609130004_sans_emails.sql`
    - `supabase/migrations/202609130005_comptes.sql`
+   - `supabase/migrations/202609130006_paiements_gratuits.sql`
 4. Authentication → Sign In / Providers → Email : garder le fournisseur actif et désactiver « Confirm email », puisque le site n’envoie aucun email.
 5. Authentication → URL Configuration : Site URL `https://<domaine>` et Redirect URLs `https://<domaine>/auth/callback` et `http://localhost:3000/auth/callback`.
 
-La troisième migration retire tous les droits des rôles `anon` et `authenticated`, ajoute le lien d’accès et l’email de l’acheteur, et impose la publication après paiement. La quatrième passe aux abonnements : paiements et journal d’événements indépendants du prestataire, formule et état de l’abonnement sur le dossier, tables des vidéos et du plan de A à Z. La cinquième supprime les lots quotidiens de vidéos et accepte 60 idées pour la formule 12 mois. La sixième retire le journal d’envoi et les rappels par email. La septième rattache chaque nouveau dossier et son paiement à un compte, et réserve la réactivation d’un dossier à son compte. Les tables de paiement utilisent des clés `ON DELETE RESTRICT` afin de ne pas effacer l’historique de paiement par cascade.
+La troisième migration retire tous les droits des rôles `anon` et `authenticated`, ajoute le lien d’accès et l’email de l’acheteur, et impose la publication après paiement. La quatrième passe aux abonnements : paiements et journal d’événements indépendants du prestataire, formule et état de l’abonnement sur le dossier, tables des vidéos et du plan de A à Z. La cinquième supprime les lots quotidiens de vidéos et accepte 60 idées pour la formule 12 mois. La sixième retire le journal d’envoi et les rappels par email. La septième rattache chaque nouveau dossier et son paiement à un compte, et réserve la réactivation d’un dossier à son compte. La huitième accepte les paiements à 0 € obtenus avec un code promo Whop de 100 % : ils ouvrent le dossier et ne passent jamais pour un remboursement. Les tables de paiement utilisent des clés `ON DELETE RESTRICT` afin de ne pas effacer l’historique de paiement par cascade.
 
 ## Configurer la connexion avec Google
 
