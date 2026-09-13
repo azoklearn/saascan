@@ -1,6 +1,6 @@
 # Vérification de SaaScan
 
-Vérification locale du 13 septembre 2026, sans clés de services : aucun paiement, aucune génération et aucun email réel.
+Vérification locale du 13 septembre 2026. Les dossiers ne font appel à aucune IA : ils sont assemblés à partir des textes de `data/contenus`. La clé Whop de production a servi à créer le catalogue ; aucun paiement et aucun email réel.
 
 ## Vérifications automatisées
 
@@ -11,27 +11,59 @@ npm run build
 npm audit
 ```
 
-Les 15 tests couvrent les neuf questions et le curseur final, les réponses invalides (option inconnue, plus de trois domaines, montant hors du curseur), la sélection des idées quand il y en a assez, quand aucune ne convient et quand il faut compléter avec les plus proches, la remontée des domaines choisis, un dossier complet pour plusieurs profils (trois idées, prompt de 700 à 900 mots, 24 tâches, toutes les réponses citées) et le contrat de génération (idée inventée, faux verbatim, réponse oubliée, canal incompatible, champ injecté). PostgreSQL/PGlite applique les trois migrations et le scénario `supabase/tests/rls.sql` : aucun accès navigateur, dossier créé au passage en caisse, génération refusée avant paiement, webhook répété, email avec lien et remboursement.
+Les 93 tests se répartissent ainsi :
+
+- **Contenus (80 tests, 4 par idée) :** structure du fichier, longueurs, vouvoiement, apostrophe typographique, 60 accroches et déroulés distincts, au moins trois plateformes, aucun pourcentage dans les vidéos et le plan de A à Z, sept phases aux périodes imposées, et prompt de 700 à 900 mots pour chacun des 3 072 profils testés. Les prompts vont de 794 à 884 mots selon les idées et les profils.
+- **Domaine :** neuf questions et curseur final, réponses invalides, sélection des idées (assez d’idées, aucune, complément avec les plus proches), remontée des domaines choisis, dossier assemblé pour deux profils (trois idées, citations des neuf réponses, prompt de 700 à 900 mots, 24 tâches distinctes, risques rédigés), adaptation du prompt aux compétences et à la zone, bonus de chaque formule (0, 30 ou 60 vidéos, plan de A à Z avec l’objectif de revenu), canaux autorisés, prix par jour (0,63 €, 0,33 € et 0,19 €) et économies (−47 % et −69 %).
+- **Base de données :** PostgreSQL/PGlite applique les cinq migrations et le scénario `supabase/tests/rls.sql`. Le scénario couvre :
+  - l’absence d’accès navigateur ;
+  - la création du dossier au passage en caisse ;
+  - le refus de publier avant paiement ;
+  - le premier paiement Whop et la livraison répétée ;
+  - l’email avec le lien ;
+  - les 60 idées de vidéos exigées pour la formule 12 mois, avec 30 refusées ;
+  - la remise à zéro des tentatives ;
+  - le renouvellement et le rappel de reconduction ;
+  - la résiliation conservée malgré un état plus ancien ;
+  - le remboursement conservé malgré un succès tardif ;
+  - la réactivation d’un abonnement terminé.
+
+## Catalogue Whop
+
+`node scripts/whop-catalogue.mjs` a créé le produit masqué et les trois formules, sans frais initiaux : Whop affiche « €18.99 / month », « €29.99 / 3-months » et « €69.99 / year ». Une configuration de paiement d’essai renvoie une adresse `https://whop.com/checkout/ch_…/` et conserve ses métadonnées. Whop refuse une adresse de retour en `http://` : le paiement ne se teste pas sur localhost.
 
 ## Parcours navigateur vérifié
 
-Navigateur intégré, sur ordinateur (1440 × 900) et à 390 × 844 pixels :
+Navigateur intégré, à 309 pixels de large puis à 375 × 812 pixels :
 
-1. `/` : titre sans débordement ; « Créer mon SaaS », dans l’en-tête et le hero, mène à `/questionnaire` ; les chiffres affichent 20 idées et 9 questions.
-2. `/questionnaire` : les deux écrans d’introduction, puis les neuf questions. Le compteur suit les réponses données ; les pastilles reprennent les réponses précédentes.
-3. Domaines : grille sur deux colonnes sur ordinateur, une colonne sur mobile ; à « 3 sur 3 sélectionnés », les autres choix sont bloqués.
-4. Curseur : 2 000 € par défaut, flèches du clavier (5 000 €), glisser à la souris (20 000 €). La valeur est enregistrée dans le navigateur ; après rechargement, le questionnaire reprend à la dernière question avec les pastilles.
-5. « Lancer l’analyse » : animation en quatre étapes, puis `/debloquer` avec l’écran « Prêt », « Lancer mon SaaS » et l’offre à 39 €.
-6. Sans clé Stripe, le paiement affiche « Service non configuré » et un lien vers le dossier de démonstration.
-7. `/dossier/demo?demo=1` : trois idées, prompt et plan au vouvoiement, sans mention d’idée incompatible pour un profil qui n’en avait aucune (non technique, moins d’une heure par jour, zone anglophone). Pas de débordement horizontal à 390 pixels ; les onglets défilent dans leur propre zone.
+1. **Offre (`/debloquer?demo=1`, après le questionnaire) :**
+   - bandeau « −69 % avec la formule 12 mois, par rapport au mensuel » et garantie 48 h ;
+   - trois formules, chacune avec son prix barré de référence mensuelle, son pourcentage, son prix par jour et son contenu (30 idées de vidéos pour 3 mois, 60 et le plan de A à Z pour 12 mois) ;
+   - badge « Recommandé » sur 3 mois, sélection d’une formule à l’autre, aucun débordement horizontal.
+2. **Offre sans démo (`/debloquer`) :** les conditions rappellent le renouvellement de la formule choisie, et « Continuer » affiche en local « Whop exige une adresse HTTPS… ».
+3. **Dossier d’exemple (`/dossier/demo`) :**
+   - BriefChantier avec cinq onglets, dont « Vidéos marketing » (60 idées) et « Plan de A à Z » (sept phases de A à G) ;
+   - prompt de 813 mots ;
+   - objectif de revenu remplacé dans la dernière phase, sans balise restante ;
+   - tâche cochée conservée après rechargement ;
+   - pas de bloc d’abonnement en démonstration, aucun débordement horizontal.
+4. **Contenu payant :** ni le HTML ni les scripts chargés par le dossier d’exemple ne contiennent le texte des autres idées. Les contenus restent côté serveur.
 
-Profil principal : 25 à 34 ans, B2B, Vente & CRM + Marketing & acquisition + Trading & marchés, non technique, moins d’une heure par jour, anglophone, facturation à l’usage, « Ça dépend du problème », 20 000 € par mois. Profil mobile : 18 à 24 ans, SaaScan décide, Santé & bien-être, application complète, journée entière, francophone, abonnement, besoin inexploré.
+Le questionnaire et l’analyse n’ont pas changé depuis la vérification précédente.
 
 ## À vérifier avec les services configurés
 
-- Paiement Stripe de test : création du dossier, retour sur `/dossier/<lien>`, webhook, email avec le lien, préparation par l’IA, annulation (retour sur l’offre), webhook répété et remboursement depuis le dossier.
-- Génération Anthropic réelle : durée, réponse invalide, relance après échec, préparation interrompue plus de quatre minutes et échec définitif après trois tentatives.
-- Envoi Resend, nouvel essai après erreur et exécution du cron Vercel.
+- Migration `202609130003_contenus_rediges.sql` appliquée sur la base Supabase.
+- Webhook Whop vers l’adresse Vercel, puis paiement :
+  - retour sur `/dossier/<lien>` et publication immédiate du dossier et des bonus ;
+  - email avec le lien ;
+  - webhook répété ;
+  - renouvellement ;
+  - passage de 3 à 12 mois ;
+  - résiliation depuis le dossier ;
+  - remboursement sous 48 heures ;
+  - réactivation.
+- Envoi Resend, reprise après erreur, rappel de reconduction et exécution du cron Vercel.
 - Téléchargement du prompt et tâches cochées avec un vrai lien de dossier.
 
 Ces cas ont été revus dans le code et vérifiés par TypeScript et par le scénario SQL, mais restent à exercer avec les API réelles.

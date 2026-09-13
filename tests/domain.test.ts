@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { Answers } from "@/types/domain";
 import { questions } from "@/lib/questionnaire/questions";
@@ -6,23 +7,22 @@ import { buildProfile } from "@/lib/questionnaire/profile";
 import { ideas, rejectionReasons } from "@/lib/matching/filters";
 import { matchIdeas } from "@/lib/matching/scoring";
 import { acquisitionFor, allowedChannels, ideaRules } from "@/lib/matching/idea-rules";
-import { demoAnswers, generateDemoContent } from "@/lib/demo/content";
-import { countWords } from "@/lib/generation/word-count";
-import { contentFromDraft, validateGeneratedDraft, type GeneratedDraft } from "@/lib/generation/schemas";
+import { buildDossierContent, buildExtras, demoAnswers, type IdeaContent } from "@/lib/dossier/content";
+import { countWords } from "@/lib/dossier/word-count";
+import { formatCents, monthlyEquivalent, perDay, plans, savingsPercent } from "@/config/pricing";
 
+const lookup = (id: string) => JSON.parse(readFileSync(`data/contenus/${id}.json`, "utf8")) as IdeaContent;
 const unmatchedAnswers: Answers = { ...demoAnswers, competences: "aucune", temps_jour: "moins_1h", zone: "anglophone" };
 
-function generationFixture() {
-  const profile = buildProfile(demoAnswers);
-  const candidates = matchIdeas(profile);
-  const content = generateDemoContent(demoAnswers);
-  const draft: GeneratedDraft = {
-    selections: content.selections.map(({ id, idea_snapshot, canal_acquisition, ...selection }) => ({ ...selection, canal_id: allowedChannels(idea_snapshot)[0].id })),
-    build_prompt: content.build_prompt,
-    tasks: content.tasks.map(({ id, done, ...task }) => ({ ...task, canal_id: "none" })),
-  };
-  return { profile, candidates, draft };
-}
+describe("Formules d’abonnement", () => {
+  it("calcule les prix par jour et les économies à partir du prix mensuel réel", () => {
+    const text = (value: string) => value.replace(/\s/g, " ");
+    expect(plans.map((plan) => [plan.id, plan.cents, plan.periodDays, plan.videoIdeas, plan.roadmap])).toEqual([["mensuel", 1899, 30, 0, false], ["trimestriel", 2999, 90, 30, false], ["annuel", 6999, 365, 60, true]]);
+    expect(plans.map((plan) => text(perDay(plan)))).toEqual(["0,63 €", "0,33 €", "0,19 €"]);
+    expect(plans.map(savingsPercent)).toEqual([0, 47, 69]);
+    expect(plans.slice(1).map((plan) => text(formatCents(monthlyEquivalent(plan))))).toEqual(["56,97 €", "227,88 €"]);
+  });
+});
 
 describe("Questionnaire et banque éditoriale", () => {
   it("pose neuf questions, termine par le curseur de revenu et renseigne vingt idées", () => {
@@ -81,52 +81,39 @@ describe("Sélection des idées", () => {
   });
 });
 
-describe("Dossier et contrat de génération", () => {
+describe("Dossier assemblé à partir des contenus rédigés", () => {
   it.each([["le profil de démonstration", demoAnswers], ["un profil sans idée compatible", unmatchedAnswers]])("livre trois idées, un prompt de 700 à 900 mots et six tâches par semaine pour %s", (_label, answers) => {
-    const content = generateDemoContent(answers);
+    const content = buildDossierContent(answers, lookup);
     expect(content.selections).toHaveLength(3); expect(content.tasks).toHaveLength(24);
+    expect(new Set(content.tasks.map((task) => task.id)).size).toBe(24);
     expect(countWords(content.build_prompt)).toBeGreaterThanOrEqual(700);
     expect(countWords(content.build_prompt)).toBeLessThanOrEqual(900);
     for (let week = 1; week <= 4; week++) expect(content.tasks.filter((task) => task.semaine === week)).toHaveLength(6);
     expect(new Set(content.selections.flatMap((selection) => selection.reponses_citees.map((citation) => citation.question_id))).size).toBe(questions.length);
+    for (const selection of content.selections) expect(selection.risque).toContain(lookup(selection.idea_id).risque);
   });
-  it.each([
-    { competences: "application", zone: "francophone", tranche_age: "25_34", cible_client: "b2b", facturation: "abonnement" },
-    { competences: "interface", zone: "europe", tranche_age: "moins_18", cible_client: "b2c", facturation: "usage" },
-    { competences: "sans_code", zone: "mondial", tranche_age: "55_plus", cible_client: "decide", facturation: "licence" },
-    { competences: "aucune", zone: "anglophone", tranche_age: "moins_18", cible_client: "b2c", facturation: "indifferent" },
-  ])("maintient le prompt entre 700 et 900 mots ($competences, $zone, $tranche_age)", (variant) => {
-    const words = countWords(generateDemoContent({ ...demoAnswers, ...variant }).build_prompt);
-    expect(words).toBeGreaterThanOrEqual(700); expect(words).toBeLessThanOrEqual(900);
+  it("adapte le prompt aux compétences, à la zone et au périmètre de l’idée", () => {
+    const content = buildDossierContent(demoAnswers, lookup);
+    const idea = content.selections[0].idea_snapshot;
+    expect(content.build_prompt).toContain("no-code");
+    expect(content.build_prompt).toContain(lookup(idea.id).prompt.ecrans[0]);
+    const english = buildDossierContent({ ...demoAnswers, zone: "anglophone", competences: "application" }, lookup).build_prompt;
+    expect(english).toContain("Next.js"); expect(english).toContain("en anglais");
   });
-  it("rejette les idées inventées, les faux verbatims, les réponses oubliées et les prompts trop courts", () => {
-    const { profile, candidates, draft } = generationFixture();
-    expect(() => validateGeneratedDraft(draft, candidates, profile)).not.toThrow();
-    expect(() => validateGeneratedDraft({ ...draft, build_prompt: "Trop court." }, candidates, profile)).toThrow();
-    const invented = structuredClone(draft); invented.selections[0].idea_id = "idee-inventee";
-    expect(() => validateGeneratedDraft(invented, candidates, profile)).toThrow();
-    const falseCitation = structuredClone(draft); falseCitation.selections[0].reponses_citees[0].reponse = "Je vise un million d’euros par mois.";
-    expect(() => validateGeneratedDraft(falseCitation, candidates, profile)).toThrow();
-    const forgotten = structuredClone(draft);
-    const citation = forgotten.selections.flatMap((selection) => selection.reponses_citees).find((entry) => entry.question_id === "objectif_revenu")!;
-    const owner = forgotten.selections.find((selection) => selection.reponses_citees.includes(citation))!;
-    const replacement = profile.evidence.find((entry) => !owner.reponses_citees.some((cited) => cited.question_id === entry.question_id))!;
-    Object.assign(citation, { question_id: replacement.question_id, reponse: replacement.reponse });
-    expect(() => validateGeneratedDraft(forgotten, candidates, profile)).toThrow(/réponses doivent avoir un effet/);
+  it("donne à chaque formule ses bonus, avec l’objectif de revenu dans le plan de A à Z", () => {
+    const ideaId = buildDossierContent(demoAnswers, lookup).selections[0].idea_id;
+    expect(buildExtras(demoAnswers, ideaId, { videos: 0, roadmap: false }, lookup)).toEqual({});
+    expect(buildExtras(demoAnswers, ideaId, { videos: 30, roadmap: false }, lookup).videos).toEqual(lookup(ideaId).videos.slice(0, 30));
+    const annual = buildExtras(demoAnswers, ideaId, { videos: 60, roadmap: true }, lookup);
+    expect(annual.videos).toHaveLength(60); expect(annual.roadmap).toHaveLength(7);
+    const roadmap = JSON.stringify(annual.roadmap);
+    expect(roadmap).not.toMatch(/\{[a-z_]+\}/);
+    expect(roadmap.replace(/\s/g, " ")).toContain("2 000 € par mois");
+    expect(() => buildExtras(demoAnswers, "idee-inventee", { videos: 30, roadmap: false }, lookup)).toThrow();
   });
-  it("construit le canal affiché depuis le choix autorisé et refuse un canal libre", () => {
-    const { profile, candidates, draft } = generationFixture();
-    const selected = draft.selections.find((selection) => allowedChannels(candidates.find((idea) => idea.id === selection.idea_id)!).length > 1)!;
-    const idea = candidates.find((candidate) => candidate.id === selected.idea_id)!;
-    selected.canal_id = allowedChannels(idea)[1].id;
-    const content = contentFromDraft(validateGeneratedDraft(draft, candidates, profile), candidates);
-    expect(content.selections.find((selection) => selection.idea_id === idea.id)!.canal_acquisition).toBe(acquisitionFor(idea, selected.canal_id));
-    expect(acquisitionFor(idea, selected.canal_id)).not.toBe(acquisitionFor(idea));
+  it("construit le canal affiché depuis les canaux autorisés de l’idée", () => {
+    const idea = ideas.find((entry) => allowedChannels(entry).length > 1 && !allowedChannels(entry).some((channel) => channel.id === "face"))!;
+    expect(acquisitionFor(idea, allowedChannels(idea)[1].id)).not.toBe(acquisitionFor(idea));
     expect(() => acquisitionFor(idea, "face")).toThrow();
-    const wrongChannel = structuredClone(draft); wrongChannel.tasks[0].canal_id = "face";
-    expect(() => validateGeneratedDraft(wrongChannel, candidates, profile)).toThrow(/canal incompatible/);
-    const injected = structuredClone(draft);
-    Object.assign(injected.selections[0], { canal_acquisition: "Envoyez dix messages à froid aux commerçants de votre ville." });
-    expect(() => validateGeneratedDraft(injected, candidates, profile)).toThrow();
   });
 });

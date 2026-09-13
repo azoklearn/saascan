@@ -2,7 +2,7 @@ import { z } from "zod";
 import { parseAccessToken } from "@/lib/security/access-token";
 import { ApiError } from "@/lib/security/config";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { findDossier } from "@/lib/supabase/dossiers";
+import { assertContentAccess, findDossier } from "@/lib/supabase/dossiers";
 import { databaseError, errorResponse, json, readJson } from "@/lib/security/http";
 export async function PATCH(request: Request, context: { params: Promise<{ token: string; taskId: string }> }) {
   try {
@@ -12,7 +12,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ token
     const body = z.object({ done: z.boolean() }).strict().parse(await readJson(request));
     const admin = createAdminClient();
     const dossier = await findDossier(admin, token);
-    if (dossier.statut !== "pret" || !dossier.paid_at || dossier.refunded_at) throw new ApiError("Ce dossier n’est pas accessible.", 403, "FORBIDDEN");
+    assertContentAccess(dossier);
     const { data, error } = await admin.from("plan_tasks").update({ done: body.done }).eq("id", taskId).eq("dossier_id", dossier.id).select("id").maybeSingle();
     databaseError(error);
     if (!data) throw new ApiError("Cette tâche est introuvable.", 404, "NOT_FOUND");

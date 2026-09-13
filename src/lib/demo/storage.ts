@@ -1,25 +1,18 @@
-import type { DossierContent } from "@/types/domain";
-import { isComplete } from "@/lib/questionnaire/schemas";
-import { questionnaireAnswers, readLocalAnswers } from "@/lib/questionnaire/local-answers";
-import { generateDemoContent } from "./content";
+// Le dossier de démonstration est assemblé par le serveur ; seules les tâches cochées restent dans le navigateur.
+const storageKey = "saascan:dossier-demo:v4";
 
-const storageKey = "saascan:dossier-demo:v2";
+export function loadDemoProgress(): string[] {
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(storageKey) ?? "[]");
+    if (Array.isArray(stored)) return stored.filter((value): value is string => typeof value === "string");
+  } catch {}
+  return [];
+}
 
-export function saveDemoDossier(content: DossierContent) {
-  try { window.localStorage.setItem(storageKey, JSON.stringify(content)); } catch {}
+export function saveDemoProgress(done: string[]) {
+  try { window.localStorage.setItem(storageKey, JSON.stringify(done)); } catch {}
 }
 
 export function resetDemoDossier() {
   try { window.localStorage.removeItem(storageKey); } catch {}
-}
-
-export function loadDemoDossier(): DossierContent {
-  try {
-    const stored = JSON.parse(window.localStorage.getItem(storageKey) ?? "null");
-    if (stored?.selections?.length === 3 && Array.isArray(stored.tasks)) return stored as DossierContent;
-  } catch {}
-  const answers = questionnaireAnswers(readLocalAnswers());
-  const content = generateDemoContent(isComplete(answers) ? answers : undefined);
-  saveDemoDossier(content);
-  return content;
 }

@@ -1,0 +1,5 @@
+[
+  { "id": "mensuel", "label": "1 mois", "cents": 1899, "periodDays": 30, "months": 1, "cadence": "mois", "renewal": "tous les mois", "videoIdeas": 0, "roadmap": false, "popular": false },
+  { "id": "trimestriel", "label": "3 mois", "cents": 2999, "periodDays": 90, "months": 3, "cadence": "3 mois", "renewal": "tous les 3 mois", "videoIdeas": 30, "roadmap": false, "popular": true },
+  { "id": "annuel", "label": "12 mois", "cents": 6999, "periodDays": 365, "months": 12, "cadence": "an", "renewal": "tous les ans", "videoIdeas": 60, "roadmap": true, "popular": false }
+]

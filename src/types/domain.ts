@@ -1,3 +1,5 @@
+import type { PlanId } from "@/config/pricing";
+
 export type AnswerValue = string | string[];
 export type Answers = Record<string, AnswerValue>;
 
@@ -50,10 +52,33 @@ export type PlanTask = {
   done: boolean;
 };
 
+export type VideoIdea = {
+  id: string;
+  lot: number;
+  position: number;
+  plateforme: string;
+  format: string;
+  accroche: string;
+  deroule: string;
+  appel_action: string;
+};
+
+export type RoadmapPhase = {
+  titre: string;
+  periode: string;
+  objectif: string;
+  actions: string[];
+  indicateur: string;
+};
+
 export type DossierContent = {
   selections: Selection[];
   build_prompt: string;
   tasks: PlanTask[];
+  /** Formules 3 et 12 mois. */
+  videos?: VideoIdea[];
+  /** Formule 12 mois. */
+  roadmap?: RoadmapPhase[];
 };
 
 export type DossierState = {
@@ -62,9 +87,17 @@ export type DossierState = {
   refunded_at: string | null;
   generation_attempts: number;
   generation_started_at: string | null;
+  formule: PlanId | null;
+  membership_status: string | null;
+  cancel_at_period_end: boolean;
+  current_period_end: string | null;
+  extras_attempts: number;
+  extras_started_at: string | null;
 };
 
 export type DossierRecord = {
   dossier: DossierState;
+  /** Payé, non remboursé et abonnement valide. */
+  access: boolean;
   content?: DossierContent;
 };

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { defaultPlanId, type PlanId } from "@/config/pricing";
 import { resetDemoDossier } from "@/lib/demo/storage";
 import { questionnaireAnswers, readLocalAnswers, writeLocalAnswers } from "@/lib/questionnaire/local-answers";
 import { questions } from "@/lib/questionnaire/questions";
@@ -10,7 +11,7 @@ import type { AnswerValue, Answers } from "@/types/domain";
 import { QuestionnaireView, ScanIntro } from "./questionnaire-view";
 import { ScanAnalysis, ScanOffer, ScanReady } from "./scan-result-views";
 import { ScanShell } from "./scan-shell";
-import { ApiError, api, demoHref, friendlyError, useDemoMode } from "./shared";
+import { ApiError, api, checkoutUrl, demoHref, friendlyError, useDemoMode } from "./shared";
 
 const firstIntro = -2;
 
@@ -84,24 +85,19 @@ export function OfferScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notConfigured, setNotConfigured] = useState(false);
+  const [formule, setFormule] = useState<PlanId>(defaultPlanId);
   useEffect(() => {
     if (!ready) return;
     if (!isComplete(questionnaireAnswers(readLocalAnswers()))) { router.replace(demoHref("/questionnaire", demo)); return; }
     setAllowed(true);
-    if (new URLSearchParams(window.location.search).get("paiement") === "annule") {
-      setShowOffer(true);
-      setError("Le paiement a été annulé. Vous pouvez reprendre quand vous voulez.");
-    }
   }, [ready, demo, router]);
 
   async function checkout() {
     setBusy(true); setError(""); setNotConfigured(false);
     if (demo) { resetDemoDossier(); router.push("/dossier/demo?demo=1"); return; }
     try {
-      const { url } = await api<{ url: string }>("/api/checkout", { method: "POST", body: JSON.stringify({ answers: questionnaireAnswers(readLocalAnswers()) }) });
-      const checkoutUrl = new URL(url);
-      if (checkoutUrl.protocol !== "https:" || !(checkoutUrl.hostname === "checkout.stripe.com" || checkoutUrl.hostname.endsWith(".stripe.com"))) throw new Error("Le lien de paiement reçu n’est pas valide. Réessayez.");
-      window.location.assign(checkoutUrl.href);
+      const { url } = await api<{ url: string }>("/api/checkout", { method: "POST", body: JSON.stringify({ formule, answers: questionnaireAnswers(readLocalAnswers()) }) });
+      window.location.assign(checkoutUrl(url));
     } catch (cause) {
       setError(friendlyError(cause));
       setNotConfigured(cause instanceof ApiError && cause.code === "NOT_CONFIGURED");
@@ -111,5 +107,5 @@ export function OfferScreen() {
 
   if (!allowed) return <ScanShell stage="ready" demo={demo}><p className="scan-loading" role="status">Chargement…</p></ScanShell>;
   if (!showOffer) return <ScanReady demo={demo} onContinue={() => setShowOffer(true)} />;
-  return <ScanOffer demo={demo} busy={busy} error={error} notConfigured={notConfigured} onCheckout={checkout} />;
+  return <ScanOffer demo={demo} busy={busy} error={error} notConfigured={notConfigured} selected={formule} onSelect={setFormule} onCheckout={checkout} />;
 }

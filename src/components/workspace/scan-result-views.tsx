@@ -1,18 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, LoaderCircle, LockKeyhole } from "lucide-react";
+import { ArrowRight, Check, LoaderCircle, LockKeyhole, ShieldCheck } from "lucide-react";
 import { BrandLogo } from "@/components/layout/brand-logo";
+import { formatCents, monthlyEquivalent, perDay, planIncludes, plans, refundDays, savingsPercent, type PlanId } from "@/config/pricing";
 import { ScanError, ScanShell } from "./scan-shell";
 
 const analysisSteps = ["Analyse de vos réponses", "Comparaison avec la banque d’idées", "Croisement avec votre objectif de revenu", "Votre résultat est prêt"];
-const offerIncludes = [
-  "Trois idées choisies pour votre profil, votre temps et votre objectif de revenu",
-  "Pour chaque idée : une version du produit, un premier canal d’acquisition et le risque à surveiller",
-  "Un prompt de 700 à 900 mots pour construire la première idée",
-  "Un plan de quatre semaines, avec des tâches à cocher",
-  "Le prompt à copier ou à télécharger en Markdown",
-];
+const bestSavings = Math.max(...plans.map(savingsPercent));
+const bestPlan = plans.find((plan) => savingsPercent(plan) === bestSavings)!;
 
 export function ScanAnalysis({ demo, step }: { demo: boolean; step: number }) {
   const done = step >= analysisSteps.length - 1;
@@ -40,18 +36,39 @@ export function ScanReady({ demo, onContinue }: { demo: boolean; onContinue: () 
   </div></ScanShell>;
 }
 
-export function ScanOffer({ demo, busy, error, notConfigured, onCheckout }: { demo: boolean; busy: boolean; error: string; notConfigured: boolean; onCheckout: () => void }) {
+type OfferProps = { demo: boolean; busy: boolean; error: string; notConfigured: boolean; selected: PlanId; onSelect: (plan: PlanId) => void; onCheckout: () => void };
+
+export function ScanOffer({ demo, busy, error, notConfigured, selected, onSelect, onCheckout }: OfferProps) {
+  const chosen = plans.find((plan) => plan.id === selected)!;
   return <ScanShell stage="offer" demo={demo}><section className="scan-offer">
-    <p className="scan-count">VOTRE FORMULE</p>
-    <h1 className="scan-offer-title">Débloquez votre dossier.</h1>
-    <div className="scan-offer-guarantee"><strong>Pas de résultat ? On vous rembourse intégralement.</strong><span>Garantie 48 h</span><p>Vous appliquez la méthode pendant 48 heures : si elle ne vous convient pas, nous remboursons votre dossier.</p></div>
-    <div className="scan-offer-summary">
-      <div className="scan-offer-top"><div><h2>Le dossier SaaScan</h2><p>3 idées · Un prompt de construction · Un plan sur 30 jours</p></div><div className="scan-offer-price">39 €<small>TTC · Paiement unique</small></div></div>
-      <ul className="scan-offer-includes">{offerIncludes.map((label) => <li key={label}><Check size={16} />{label}</li>)}</ul>
+    <p className="scan-offer-banner"><strong>−{bestSavings} %</strong><span>avec la formule {bestPlan.label}, par rapport au mensuel</span></p>
+    <div className="scan-offer-guarantee">
+      <ShieldCheck size={22} aria-hidden="true" />
+      <div><strong>Pas de résultat ? On vous rembourse intégralement.</strong><span>Garantie 48 h</span><p>Vous appliquez la méthode pendant 48 heures : si elle ne vous convient pas, nous remboursons votre premier paiement. <Link href="/remboursement">Voir les conditions</Link></p></div>
     </div>
-    <button className="scan-button" disabled={busy} onClick={onCheckout}>{busy ? <><LoaderCircle size={16} className="scan-spinner" /> Ouverture du paiement…</> : demo ? "Ouvrir le dossier de démonstration" : "Débloquer mon dossier — 39 €"}</button>
+    <h1 className="scan-offer-title">Choisissez votre formule.</h1>
+    <fieldset className="scan-plans">
+      <legend className="sr-only">Formules d’abonnement</legend>
+      {plans.map((plan) => {
+        const savings = savingsPercent(plan);
+        const checked = plan.id === selected;
+        return <label key={plan.id} className="scan-plan" data-selected={checked} data-popular={plan.popular}>
+          <input type="radio" name="formule" value={plan.id} checked={checked} onChange={() => onSelect(plan.id)} />
+          {plan.popular && <span className="scan-plan-flag">Recommandé</span>}
+          <span className="scan-plan-radio" aria-hidden="true">{checked && <Check size={13} strokeWidth={3} />}</span>
+          <span className="scan-plan-main">
+            <span className="scan-plan-name">{plan.label}{savings > 0 && <span className="scan-plan-badge">−{savings} %</span>}</span>
+            <span className="scan-plan-price">{savings > 0 && <s title="Le même nombre de mois en formule mensuelle">{formatCents(monthlyEquivalent(plan))}</s>}<b>{formatCents(plan.cents)}</b> / {plan.cadence}</span>
+            <span className="scan-plan-includes">{planIncludes(plan).join(" + ")}</span>
+          </span>
+          <span className="scan-plan-day"><b>{perDay(plan)}</b>/ jour</span>
+        </label>;
+      })}
+    </fieldset>
+    <p className="scan-plans-note">Prix barrés : le même nombre de mois en formule mensuelle. Prix TTC, sans engagement : résiliable à tout moment depuis votre dossier.</p>
+    <button className="scan-button" disabled={busy} onClick={onCheckout}>{busy ? <><LoaderCircle size={16} className="scan-spinner" /> Ouverture du paiement…</> : demo ? "Ouvrir le dossier de démonstration" : "Continuer"}</button>
     {error && <ScanError>{error}{notConfigured && <> <Link href="/dossier/demo?demo=1">Voir le dossier de démonstration</Link></>}</ScanError>}
-    <p className="scan-offer-note"><LockKeyhole size={12} /> {demo ? "Cette démonstration s’ouvre gratuitement. Aucune carte, aucun paiement." : "Paiement sécurisé par Stripe · Votre dossier est préparé dès la confirmation"}</p>
-    <p className="scan-offer-terms">{!demo && <>En continuant, vous acceptez les <Link href="/cgv">CGV</Link>. </>}Consultez la <Link href="/remboursement">garantie de remboursement</Link>. Les idées et le plan sont des pistes à valider auprès de vrais clients.</p>
+    <p className="scan-offer-note"><LockKeyhole size={12} /> {demo ? "Cette démonstration s’ouvre gratuitement. Aucune carte, aucun paiement." : "Paiement sécurisé par Whop · Votre dossier est préparé dès la confirmation"}</p>
+    <p className="scan-offer-terms">{!demo && <>En continuant, vous acceptez les <Link href="/cgv">CGV</Link> et le renouvellement automatique de la formule {chosen.label} ({formatCents(chosen.cents)} {chosen.renewal}) jusqu’à sa résiliation. </>}Garantie de remboursement de {refundDays * 24} heures sur le premier paiement. Les idées et le plan sont des pistes à valider auprès de vrais clients.</p>
   </section></ScanShell>;
 }

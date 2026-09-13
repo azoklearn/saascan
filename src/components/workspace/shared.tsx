@@ -16,6 +16,13 @@ export async function api<T>(url: string, options?: RequestInit): Promise<T> {
   return data as T;
 }
 
+/** Seules les pages de paiement Whop sont acceptées comme destination. */
+export function checkoutUrl(url: string) {
+  const target = new URL(url);
+  if (target.protocol !== "https:" || !(target.hostname === "whop.com" || target.hostname.endsWith(".whop.com"))) throw new Error("Le lien de paiement reçu n’est pas valide. Réessayez.");
+  return target.href;
+}
+
 export function friendlyError(error: unknown) { return error instanceof Error ? error.message : "Une erreur est survenue. Réessayez dans un instant."; }
 export function demoHref(path: string, demo: boolean) { return `${path}${demo ? "?demo=1" : ""}`; }
 
@@ -33,7 +40,7 @@ export function downloadMarkdown(contents: string, name: string) {
 }
 
 export function Shell({ children, demo = false }: { children: ReactNode; demo?: boolean }) {
-  return <main className="ws-shell">{demo && <div className="ws-demo-banner"><ScanLine size={16} /><span><b>Mode démo.</b> Données enregistrées dans ce navigateur. Aucun paiement ni appel à l’IA.</span><Link href="/questionnaire">Créer mon vrai dossier <span aria-hidden>↗</span></Link></div>}{children}</main>;
+  return <main className="ws-shell">{demo && <div className="ws-demo-banner"><ScanLine size={16} /><span><b>Mode démo.</b> Dossier d’exemple pour un profil fictif, avec les bonus de la formule 12 mois. Votre progression reste dans ce navigateur.</span><Link href="/questionnaire">Créer mon vrai dossier <span aria-hidden>↗</span></Link></div>}{children}</main>;
 }
 
 export function Spinner({ label }: { label: string }) { return <div className="ws-loading" role="status"><LoaderCircle size={26} className="ws-spinner" /><span>{label}</span></div>; }

@@ -10,16 +10,15 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.78.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.90.1",
+    "@whop/sdk": "1.1.4",
     "lucide-react": "^0.468.0",
     "next": "^15.5.12",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "resend": "^6.8.0",
     "server-only": "^0.0.1",
-    "stripe": "^20.3.0",
     "zod": "^4.6.4"
   },
   "devDependencies": {

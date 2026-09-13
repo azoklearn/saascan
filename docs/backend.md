@@ -1,20 +1,22 @@
 # Backend SaaScan
 
-Le backend utilise Supabase, Stripe, Anthropic et Resend réellement configurés. Il ne fournit aucune génération, donnée payante ou transaction fictive. Le mode démonstration reste dans le stockage local du navigateur.
+Le backend utilise Supabase, Whop et Resend réellement configurés. Il n’appelle aucune IA : les dossiers sont assemblés à partir de textes rédigés à l’avance (`data/contenus`). Il ne fournit aucune donnée payante ni transaction fictive. Le dossier de démonstration est assemblé pour un profil fictif fixe.
 
 ## Configuration
 
 Copier `.env.example` dans `.env.local`, remplir les valeurs, puis redémarrer Next.js. Les variables absentes entraînent une réponse JSON `503 NOT_CONFIGURED`.
 
-Appliquer dans cet ordre les migrations `202609120001_initial_schema.sql`, `202609120002_server_transactions.sql` et `202609130001_parcours_sans_compte.sql`. La troisième remplace le modèle à comptes : dossiers sans utilisateur, lien d’accès secret, email de l’acheteur, suppression des droits navigateur et génération après paiement. Elle s’applique aussi sur une base déjà migrée et conserve l’historique éventuel.
+Appliquer dans cet ordre les migrations `202609120001_initial_schema.sql`, `202609120002_server_transactions.sql`, `202609130001_parcours_sans_compte.sql`, `202609130002_abonnements_whop.sql` et `202609130003_contenus_rediges.sql`. La troisième remplace le modèle à comptes : dossiers sans utilisateur, lien d’accès secret, email de l’acheteur, suppression des droits navigateur et publication après paiement. La quatrième passe aux abonnements Whop. La cinquième retire les lots quotidiens de vidéos et fixe le nombre d’idées de vidéos par formule (30 ou 60).
 
 Supabase Auth n’est pas utilisé.
 
 ## Modèle d’accès
 
-Le questionnaire ne parle pas au serveur : les réponses restent dans le stockage local jusqu’au paiement. `POST /api/checkout` valide les neuf réponses, génère un lien d’accès de 32 octets aléatoires (43 caractères base64url) et appelle `start_checkout`, qui crée dans une transaction le dossier, ses réponses et le paiement en attente.
+Le questionnaire ne parle pas au serveur : les réponses restent dans le stockage local jusqu’au paiement. `POST /api/checkout` valide les neuf réponses et la formule, génère un lien d’accès de 32 octets aléatoires (43 caractères base64url) et appelle `start_checkout`, qui crée dans une transaction le dossier, ses réponses et le paiement en attente au prix de la formule. Avec un lien de dossier à la place des réponses, `reopen_checkout` prépare la réactivation d’un abonnement terminé.
 
-Toutes les routes utilisent la clé `service_role` côté serveur ; les rôles `anon` et `authenticated` n’ont plus aucun droit sur les tables ni sur les fonctions. Le lien du dossier est la seule autorisation : il figure dans l’URL de retour Stripe et dans l’email envoyé après le paiement. La page du dossier demande `no-referrer` pour que ce lien ne parte pas vers un autre site. Un lien au mauvais format produit la même réponse 404 qu’un lien inconnu.
+Toutes les routes utilisent la clé `service_role` côté serveur ; les rôles `anon` et `authenticated` n’ont aucun droit sur les tables ni sur les fonctions. Le lien du dossier est la seule autorisation : il figure dans l’URL de retour Whop et dans l’email envoyé après le paiement, jamais dans les métadonnées transmises à Whop. La page du dossier demande `no-referrer` pour que ce lien ne parte pas vers un autre site. Un lien au mauvais format produit la même réponse 404 qu’un lien inconnu.
+
+Le contenu (sélections, prompt, tâches, vidéos, plan de A à Z) n’est renvoyé que si le dossier est prêt, que son premier paiement est confirmé et non remboursé, et que l’abonnement est `active`, `trialing`, `past_due` ou `canceling`. Un abonnement pas encore relu juste après le paiement ne bloque pas l’accès. Les vidéos affichées se limitent au nombre inclus dans la formule actuelle.
 
 ## Contrat des routes
 
@@ -22,53 +24,60 @@ Les écritures venant du navigateur contrôlent l’origine. Les réponses JSON 
 
 | Route | Entrée | Sortie |
 |---|---|---|
-| `POST /api/checkout` | `{answers}` | `{url}` |
-| `GET /api/dossiers/[lien]` | — | `{dossier,content?}` |
-| `POST /api/generate` | `{token}` | `{ok:true}` |
+| `POST /api/checkout` | `{formule, answers}` ou `{formule, token}` | `{url}` |
+| `GET /api/dossiers/[lien]` | — | `{dossier, access, content?}` |
+| `POST /api/generate` | `{token, part?}` (`dossier` ou `bonus`) | `{ok:true}` |
 | `PATCH /api/dossiers/[lien]/taches/[id]` | `{done}` | `{ok:true}` |
 | `GET /api/dossiers/[lien]/export` | — | Prompt Markdown téléchargé |
+| `POST /api/abonnement` | `{token}` | `{ok:true}` |
 | `POST /api/remboursement` | `{token}` | `{ok:true,status}` |
-| `POST /api/webhooks/stripe` | Corps Stripe brut + signature | `{received:true}` |
-| `GET` ou `POST /api/internal/retry-emails` | `Authorization: Bearer CRON_SECRET` | `{sent,failed}` |
+| `POST /api/webhooks/whop` | Corps Whop brut + en-têtes `webhook-*` | `{received:true}` |
+| `GET` ou `POST /api/internal/retry-emails` | `Authorization: Bearer CRON_SECRET` | `{sent,failed,reminders_queued}` |
 
-`POST /api/checkout` est limité à dix demandes par adresse IP sur dix minutes, par instance. Le contenu du dossier (sélections, prompt, tâches) n’est renvoyé que si le dossier est prêt, payé et non remboursé.
+`POST /api/checkout` est limité à dix demandes par adresse IP sur dix minutes, par instance.
 
-Avant d’utiliser une clé Stripe de production, renseigner aussi LEGAL_COMPANY_NAME, LEGAL_COMPANY_ADDRESS, LEGAL_COMPANY_REGISTRATION et NEXT_PUBLIC_CONTACT_EMAIL. Checkout vérifie ces champs en mode live. Les pages légales restent à compléter et vérifier pour l’éditeur réel.
+Sans `WHOP_API_URL`, le client Whop vise la production : le passage en caisse exige alors LEGAL_COMPANY_NAME, LEGAL_COMPANY_ADDRESS, LEGAL_COMPANY_REGISTRATION et NEXT_PUBLIC_CONTACT_EMAIL. Whop refuse une adresse de retour qui ne commence pas par `https://` : le passage en caisse renvoie `503 NOT_CONFIGURED` sur `http://localhost`. Les pages légales restent à compléter et vérifier pour l’éditeur réel.
 
 Les erreurs suivent `{error,code?}`.
 
-## Génération
+## Publication du dossier
 
-La génération ne commence qu’après paiement. `reserve_generation` refuse un dossier non payé ou remboursé, verrouille le dossier et renvoie un instantané des réponses ; la contrainte `dossiers_generation_after_payment` empêche aussi tout passage en génération d’un dossier impayé. Le serveur valide l’instantané avant l’appel à Anthropic.
+Le dossier n’est publié qu’après paiement. `reserve_generation` refuse un dossier non payé ou remboursé, verrouille le dossier et renvoie un instantané des réponses ; la contrainte `dossiers_generation_after_payment` empêche aussi tout passage en préparation d’un dossier impayé. Le serveur valide l’instantané, puis `buildDossierContent` assemble le contenu sans aucun appel externe.
 
-Le webhook de paiement lance la rédaction après avoir répondu à Stripe, avec `after()` de Next.js. La page du dossier interroge l’état toutes les trois secondes et appelle `POST /api/generate` quand un dossier payé n’est pas en préparation, après un échec, ou quand une préparation dépasse quatre minutes. Un conflit 409 signifie qu’une préparation est déjà en cours.
+L’assemblage (`src/lib/dossier/content.ts`) choisit trois idées de façon déterministe (`src/lib/matching`), écrit la justification, l’adaptation et les citations des neuf réponses à partir de phrases types, reprend le risque rédigé pour chaque idée, puis compose le prompt de l’idée n°1 : sections rédigées (produit, écrans, données, critères) et sections qui dépendent du profil (temps, objectif de revenu, stack selon les compétences, facturation, langue, canal). Les tâches de la semaine 2 reprennent les étapes de construction rédigées pour l’idée. Quand moins de trois idées respectent les compétences, le temps et la zone, les plus proches complètent la liste sans que l’écart soit signalé.
 
-Chaque dossier a droit à trois tentatives. La route dispose de 180 secondes ; le numéro de tentative empêche un ancien résultat de remplacer une tentative plus récente. `publish_generation` insère les trois sélections, le prompt de 700–900 mots et les quatre semaines de cinq à sept tâches dans une même transaction, puis rend le dossier prêt. Aucun prompt partiel n’est publié. Après trois échecs, la page propose le remboursement et le contact.
+Le webhook de paiement publie le dossier puis les bonus après avoir répondu à Whop, avec `after()` de Next.js. La page du dossier interroge l’état et appelle `POST /api/generate` si un dossier payé n’est pas prêt, puis avec `part: "bonus"` tant que les bonus de la formule manquent. Un conflit 409 signifie qu’une publication est déjà en cours.
 
-La sélection des candidats est déterministe (`src/lib/matching`). Quand moins de trois idées respectent les compétences, le temps et la zone, les plus proches complètent la liste ; les consignes de génération demandent d’adapter le périmètre sans signaler cet écart.
+`publish_generation` insère les trois sélections, le prompt de 700–900 mots et les quatre semaines de tâches dans une même transaction, puis rend le dossier prêt. Le numéro de tentative empêche une ancienne tentative de remplacer une plus récente, et trois échecs mènent à l’état d’échec avec remboursement proposé.
 
-## Stripe
+Les bonus suivent le même modèle : `reserve_extras` détermine ce qui manque selon la formule (30 idées de vidéos pour 3 mois, 60 et le plan de A à Z pour 12 mois), `publish_extras` vérifie le nombre d’idées et publie tout ou rien, `fail_extras` libère la réservation. Un passage de 3 à 12 mois complète les bonus manquants ; un succès remet le compteur d’échecs à zéro. Dans le plan de A à Z, `{objectif_revenu}` et `{heures_par_semaine}` sont remplacés selon le profil.
 
-Le prix est fixé exclusivement par le serveur : 3 900 centimes, EUR, Checkout `mode=payment`. Chaque passage en caisse crée un nouveau dossier, avec une clé d’idempotence liée à son paiement. Checkout revient vers `/dossier/[lien]` après paiement et vers `/debloquer?paiement=annule` après annulation.
+`tests/contenus.test.ts` contrôle les vingt fichiers rédigés (structure, longueurs, vouvoiement, accroches distinctes, aucun pourcentage dans les vidéos et le plan) et calcule le prompt de chaque idée pour 3 072 profils.
 
-Abonner le webhook aux événements : `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`, `charge.refunded`, `refund.created`, `refund.updated` et `refund.failed`. En local, utiliser `stripe listen --forward-to localhost:3000/api/webhooks/stripe`, puis copier son secret `whsec_…` dans `.env.local`. Les clés et webhooks de test et production sont séparés.
+## Whop
 
-Le webhook vérifie la signature du corps brut et relit l’état actuel de la session. Il rapproche le paiement enregistré, ses métadonnées, la devise et les 39 €, puis enregistre l’email saisi dans Checkout. Un événement de Checkout impayé ne donne aucun accès. Les remboursements sont cumulés uniquement lorsque leur statut Stripe est `succeeded`.
+Les prix sont fixés par `src/config/plans.json` et par les formules créées sur Whop avec `scripts/whop-catalogue.mjs` : renouvellement tous les 30, 90 ou 365 jours, en euros, sans frais initiaux. Chaque passage en caisse crée une configuration de paiement Whop pour la formule choisie, avec `dossier_id` et `payment_id` en métadonnées et `/dossier/[lien]` comme adresse de retour.
 
-`apply_stripe_event` déduplique les événements et modifie le paiement, le droit d’accès et le journal d’email dans une transaction. Un succès arrivé après un remboursement ne réactive pas l’accès.
+Abonner le webhook aux événements `payment.succeeded`, `membership.activated`, `membership.deactivated`, `membership.cancel_at_period_end_changed`, `refund.created` et `refund.updated`. Le secret `ws_…` du webhook va dans `WHOP_WEBHOOK_SECRET`.
 
-Le endpoint de remboursement soumet un remboursement intégral Stripe idempotent pour un paiement de moins de 48 heures, identifié par le lien du dossier. Le navigateur ne peut définir aucun montant. Le statut retourné peut être `pending` ; l’accès n’est fermé qu’après confirmation du remboursement par webhook. Les téléchargements déjà effectués ne peuvent pas être révoqués.
+La route vérifie la signature Standard Webhooks du corps brut avec `unwrapWebhook`, puis relit chez Whop l’état actuel du paiement et de l’abonnement : le contenu de la livraison ne sert qu’à identifier les objets. Un paiement doit porter l’une des trois formules, être en euros et avoir une date de paiement. `apply_whop_event` déduplique les livraisons par `webhook-id` et modifie dans une transaction le paiement, le droit d’accès, l’état de l’abonnement et le journal d’email. Le premier paiement ouvre le dossier ; un renouvellement ajoute un paiement au même dossier. Un succès arrivé après un remboursement ne réactive pas l’accès, et un état d’abonnement relu plus tôt ne remplace pas un état plus récent. Whop attend une réponse en moins de cinq secondes : la publication, l’email et l’annulation d’un abonnement remboursé continuent après la réponse.
+
+Si un webhook manque, `GET /api/dossiers/[lien]` relit l’abonnement chez Whop quand l’état connu date de plus de dix minutes, ou quand la période est échue alors que l’abonnement paraît encore valide.
+
+`POST /api/abonnement` résilie en fin de période et enregistre aussitôt le nouvel état. `POST /api/remboursement` accepte un premier paiement de moins de 48 heures, identifié par le lien du dossier : il arrête d’abord le renouvellement, puis demande à Whop le remboursement intégral. Le navigateur ne peut définir aucun montant. L’accès n’est fermé qu’après confirmation du remboursement par webhook ; les téléchargements déjà effectués ne peuvent pas être révoqués.
 
 ## Emails et exploitation
 
-Les emails sont envoyés après la transaction de paiement : « Votre dossier est en préparation », avec le lien personnel du dossier, puis la confirmation d’un éventuel remboursement. Une panne Resend ne retire jamais un droit payé. Le journal d’événements conserve une réservation de deux minutes, le nombre d’essais (huit maximum) et la date d’envoi ; une clé d’idempotence stable est aussi transmise à Resend.
+Les emails sont envoyés après la transaction de paiement : « Votre dossier vous attend », avec le lien personnel du dossier et le rappel des conditions de renouvellement, puis la confirmation d’un éventuel remboursement. Une panne Resend ne retire jamais un droit payé. Le journal d’événements conserve une réservation de deux minutes, le nombre d’essais (huit maximum) et la date d’envoi ; une clé d’idempotence stable est aussi transmise à Resend.
 
-Appeler la route interne de reprise régulièrement avec `CRON_SECRET` ou la configurer comme Vercel Cron. Un secret absent ne permet aucun accès. Les événements épuisant leurs huit essais restent consultables côté administration Supabase. L’idempotence Resend expire après 24 heures : une panne rare après envoi et avant enregistrement SQL peut produire un email répété lors d’une reprise plus tardive ; elle n’affecte pas le paiement. [Documentation Resend](https://resend.com/docs/dashboard/emails/idempotency-keys)
+La tâche quotidienne `retry-emails` reprend ces envois et programme les rappels de renouvellement : pour une formule de 3 ou 12 mois active et non résiliée, `queue_renewal_reminders` crée un rappel entre 35 et 50 jours avant l’échéance, et `claim_renewal_reminder` l’abandonne si l’abonnement a été résilié, remboursé ou déjà renouvelé entre-temps.
 
-Les clés service-role, Stripe, Resend et Anthropic restent côté serveur. Les fonctions SQL privilégiées ont explicitement perdu le droit `EXECUTE` public et ne sont appelables que par `service_role`.
+Appeler la route interne régulièrement avec `CRON_SECRET` ou la configurer comme Vercel Cron. Un secret absent ne permet aucun accès. Les envois épuisant leurs huit essais restent consultables côté administration Supabase. L’idempotence Resend expire après 24 heures : une panne rare après envoi et avant enregistrement SQL peut produire un email répété lors d’une reprise plus tardive ; elle n’affecte pas le paiement. [Documentation Resend](https://resend.com/docs/dashboard/emails/idempotency-keys)
+
+Les clés service-role, Whop et Resend restent côté serveur. Les fonctions SQL privilégiées ont explicitement perdu le droit `EXECUTE` public et ne sont appelables que par `service_role`.
 
 ## Vérification
 
-Avec une base locale migrée, exécuter `psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls.sql`. Le test vérifie l’absence d’accès navigateur, la création du dossier au passage en caisse, le refus de générer avant paiement, les webhooks répétés, l’email avec le lien du dossier et le remboursement. Il se termine par `ROLLBACK`.
+Avec une base locale migrée, exécuter `psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/tests/rls.sql`. Le test vérifie l’absence d’accès navigateur, la création du dossier au passage en caisse, le refus de publier avant paiement, les bonus de la formule 12 mois, le renouvellement, le rappel, la résiliation, les webhooks répétés ou tardifs, l’email avec le lien du dossier, le remboursement et la réactivation. Il se termine par `ROLLBACK`.
 
-Les essais réels d’Anthropic, de Checkout, des webhooks et de Resend nécessitent les comptes de test des fournisseurs. Aucune clé ou infrastructure réelle n’est incluse dans ce dépôt.
+Les essais réels de Whop, des webhooks et de Resend nécessitent les comptes des fournisseurs. Aucune clé ou infrastructure réelle n’est incluse dans ce dépôt.
