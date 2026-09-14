@@ -10,7 +10,8 @@ export type Plan = {
 export const plans = catalogue as Plan[];
 export const planIds = plans.map((plan) => plan.id) as [PlanId, ...PlanId[]];
 export const defaultPlanId: PlanId = "trimestriel";
-export const refundDays = 2;
+/** Case cochée avant chaque paiement : accès immédiat et renonciation à la rétractation (art. L221-28, 13° du Code de la consommation). */
+export const withdrawalWaiver = "Je demande l’accès immédiat à mon dossier dès le paiement et je renonce expressément à mon droit de rétractation de 14 jours.";
 
 const euros = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" });
 export const formatCents = (cents: number) => euros.format(cents / 100);

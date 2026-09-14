@@ -32,18 +32,17 @@ Les écritures venant du navigateur contrôlent l’origine. Les réponses JSON 
 
 | Route | Entrée | Sortie |
 |---|---|---|
-| `POST /api/checkout` | Session + `{formule, answers}` ou `{formule, token}` | `{url}` |
+| `POST /api/checkout` | Session + `{formule, answers, renonciation_retractation: true}` ou `{formule, token, renonciation_retractation: true}` | `{url}` |
 | `GET /api/dossiers/[lien]` | — | `{dossier, access, content?}` |
 | `POST /api/generate` | `{token, part?}` (`dossier` ou `bonus`) | `{ok:true}` |
 | `PATCH /api/dossiers/[lien]/taches/[id]` | `{done}` | `{ok:true}` |
 | `GET /api/dossiers/[lien]/export` | — | Prompt Markdown téléchargé |
 | `POST /api/abonnement` | `{token}` | `{ok:true}` |
-| `POST /api/remboursement` | `{token}` | `{ok:true,status}` |
 | `POST /api/webhooks/whop` | Corps Whop brut + en-têtes `webhook-*` | `{received:true}` |
 | `GET /auth/callback` | `code`, `suite` | Redirection |
 | `POST /auth/deconnexion` | Session | Redirection vers l’accueil |
 
-`POST /api/checkout` est limité à dix demandes par adresse IP sur dix minutes, par instance.
+`POST /api/checkout` est limité à dix demandes par adresse IP sur dix minutes, par instance. Une fois le passage en caisse créé, la route envoie l’événement Vercel Web Analytics `Checkout Started` (`formule`, `parcours` : `nouveau` ou `reactivation`), sans cookie ni référent, puisque l’adresse d’origine peut contenir le lien secret d’un dossier.
 
 Sans `WHOP_API_URL`, le client Whop vise la production. Les informations du vendeur ne bloquent pas le passage en caisse ; tant qu’elles manquent, les pages légales restent en version préparatoire. Whop refuse une adresse de retour qui ne commence pas par `https://` : le passage en caisse renvoie `503 NOT_CONFIGURED` sur `http://localhost`. Les pages légales restent à compléter et vérifier pour l’éditeur réel.
 
@@ -57,7 +56,7 @@ L’assemblage (`src/lib/dossier/content.ts`) choisit trois idées de façon dé
 
 Le webhook de paiement publie le dossier puis les bonus après avoir répondu à Whop, avec `after()` de Next.js. La page du dossier interroge l’état et appelle `POST /api/generate` si un dossier payé n’est pas prêt, puis avec `part: "bonus"` tant que les bonus de la formule manquent. Un conflit 409 signifie qu’une publication est déjà en cours.
 
-`publish_generation` insère les trois sélections, le prompt de 700–900 mots et les quatre semaines de tâches dans une même transaction, puis rend le dossier prêt. Le numéro de tentative empêche une ancienne tentative de remplacer une plus récente, et trois échecs mènent à l’état d’échec avec remboursement proposé.
+`publish_generation` insère les trois sélections, le prompt de 700–900 mots et les quatre semaines de tâches dans une même transaction, puis rend le dossier prêt. Le numéro de tentative empêche une ancienne tentative de remplacer une plus récente, et trois échecs mènent à l’état d’échec, qui invite à contacter l’éditeur.
 
 Les bonus suivent le même modèle : `reserve_extras` détermine ce qui manque selon la formule (30 idées de vidéos pour 3 mois, 60 et le plan de A à Z pour 12 mois), `publish_extras` vérifie le nombre d’idées et publie tout ou rien, `fail_extras` libère la réservation. Un passage de 3 à 12 mois complète les bonus manquants ; un succès remet le compteur d’échecs à zéro. Dans le plan de A à Z, `{objectif_revenu}` et `{heures_par_semaine}` sont remplacés selon le profil.
 
@@ -65,7 +64,7 @@ Les bonus suivent le même modèle : `reserve_extras` détermine ce qui manque s
 
 ## Whop
 
-Les prix sont fixés par `src/config/plans.json` et par les formules créées sur Whop avec `scripts/whop-catalogue.mjs` : renouvellement tous les 30, 90 ou 365 jours, en euros, sans frais initiaux. Chaque passage en caisse crée une configuration de paiement Whop pour la formule choisie, avec `dossier_id` et `payment_id` en métadonnées et `/dossier/[lien]` comme adresse de retour.
+Les prix sont fixés par `src/config/plans.json` et par les formules créées sur Whop avec `scripts/whop-catalogue.mjs` : renouvellement tous les 30, 90 ou 365 jours, en euros, sans frais initiaux. Chaque passage en caisse crée une configuration de paiement Whop pour la formule choisie, avec `dossier_id`, `payment_id` et l’heure de `renonciation_retractation` en métadonnées et `/dossier/[lien]` comme adresse de retour.
 
 `scripts/whop-webhook.mjs` abonne le webhook aux événements `payment.succeeded`, `membership.activated`, `membership.deactivated`, `membership.cancel_at_period_end_changed`, `refund.created` et `refund.updated`, et écrit son secret `ws_…` dans `WHOP_WEBHOOK_SECRET`. Whop refuse `membership.went_valid` et `membership.went_invalid`.
 
@@ -73,7 +72,7 @@ La route vérifie la signature Standard Webhooks du corps brut avec `unwrapWebho
 
 Si un webhook manque, `GET /api/dossiers/[lien]` relit l’abonnement chez Whop quand l’état connu date de plus de dix minutes, ou quand la période est échue alors que l’abonnement paraît encore valide.
 
-`POST /api/abonnement` résilie en fin de période et enregistre aussitôt le nouvel état. `POST /api/remboursement` accepte un premier paiement de moins de 48 heures, identifié par le lien du dossier : il arrête d’abord le renouvellement, puis demande à Whop le remboursement intégral. Le navigateur ne peut définir aucun montant. L’accès n’est fermé qu’après confirmation du remboursement par webhook ; les téléchargements déjà effectués ne peuvent pas être révoqués.
+`POST /api/abonnement` résilie en fin de période et enregistre aussitôt le nouvel état. `POST /api/checkout` exige `renonciation_retractation: true` : la personne coche, avant chaque paiement, une case qui demande l’accès immédiat au dossier et renonce au droit de rétractation (article L221-28, 13° du Code de la consommation). Le site ne propose aucun remboursement ; un remboursement accordé depuis Whop ferme l’accès après sa confirmation par webhook.
 
 Aucun rappel n’est envoyé avant le renouvellement ; la date du prochain renouvellement est affichée dans le dossier et dans l’espace. Les obligations d’information applicables aux formules reconduites tacitement restent à vérifier par l’éditeur.
 

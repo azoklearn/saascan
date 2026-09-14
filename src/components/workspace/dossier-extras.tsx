@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { CalendarClock, LoaderCircle, Megaphone, Target } from "lucide-react";
-import { findPlan, formatCents, plans, type PlanId } from "@/config/pricing";
+import { findPlan, formatCents, plans, withdrawalWaiver, type PlanId } from "@/config/pricing";
 import type { DossierState, RoadmapPhase, VideoIdea } from "@/types/domain";
 import { ErrorNotice } from "./shared";
 
@@ -43,9 +43,9 @@ export function RoadmapPanel({ roadmap, failed }: { roadmap?: RoadmapPhase[]; fa
   </>;
 }
 
-type SubscriptionProps = { dossier: DossierState; refundHref: string | null; busy: boolean; error: string; onCancel: () => void };
+type SubscriptionProps = { dossier: DossierState; busy: boolean; error: string; onCancel: () => void };
 
-export function SubscriptionPanel({ dossier, refundHref, busy, error, onCancel }: SubscriptionProps) {
+export function SubscriptionPanel({ dossier, busy, error, onCancel }: SubscriptionProps) {
   const [confirming, setConfirming] = useState(false);
   const plan = findPlan(dossier.formule);
   const end = dossier.current_period_end ? longDate.format(new Date(dossier.current_period_end)) : null;
@@ -60,7 +60,6 @@ export function SubscriptionPanel({ dossier, refundHref, busy, error, onCancel }
       {error && <ErrorNotice>{error}</ErrorNotice>}
     </div>
     <div className="ws-subscription-actions">
-      {refundHref && !confirming && <Link className="ws-button-secondary" href={refundHref}>Demander le remboursement</Link>}
       {!dossier.cancel_at_period_end && (confirming
         ? <><button className="ws-button-secondary" disabled={busy} onClick={() => setConfirming(false)}>Garder mon abonnement</button><button className="ws-button" disabled={busy} onClick={onCancel}>{busy && <LoaderCircle size={14} className="ws-spinner" />}Confirmer la résiliation</button></>
         : <button className="ws-button-secondary" onClick={() => setConfirming(true)}>Résilier l’abonnement</button>)}
@@ -69,12 +68,14 @@ export function SubscriptionPanel({ dossier, refundHref, busy, error, onCancel }
 }
 
 export function EndedScreen({ busy, error, onReactivate }: { busy: PlanId | null; error: string; onReactivate: (plan: PlanId) => void }) {
+  const [waived, setWaived] = useState(false);
   return <div className="ws-empty ws-panel">
     <div className="ws-dossier-icon"><CalendarClock size={21} /></div>
     <h1 className="ws-title">Votre abonnement est terminé.</h1>
     <p>Votre dossier est conservé. Choisissez une formule pour retrouver vos idées, votre prompt et votre plan.</p>
     {error && <ErrorNotice>{error}</ErrorNotice>}
-    <div className="ws-reactivate">{plans.map((plan) => <button key={plan.id} className={plan.popular ? "ws-button" : "ws-button-secondary"} disabled={!!busy} onClick={() => onReactivate(plan.id)}>
+    <label className="ws-consent"><input type="checkbox" checked={waived} onChange={(event) => setWaived(event.target.checked)} /><span>{withdrawalWaiver}</span></label>
+    <div className="ws-reactivate">{plans.map((plan) => <button key={plan.id} className={plan.popular ? "ws-button" : "ws-button-secondary"} disabled={!!busy || !waived} onClick={() => onReactivate(plan.id)}>
       {busy === plan.id && <LoaderCircle size={14} className="ws-spinner" />}{plan.label} · {formatCents(plan.cents)}
     </button>)}</div>
   </div>;

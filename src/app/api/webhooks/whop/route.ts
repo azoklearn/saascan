@@ -30,7 +30,7 @@ export async function POST(request: Request) {
             .catch(logFailure("Publication du dossier à reprendre", result.dossierId));
         }
         if (result.refund_confirmed && result.membership_id) {
-          await getWhop().memberships.cancel({ id: result.membership_id, reason: "Remboursement au titre de la garantie de 48 heures" })
+          await getWhop().memberships.cancel({ id: result.membership_id, reason: "Paiement remboursé" })
             .catch(logFailure("Abonnement remboursé à résilier", result.dossierId));
         }
       });

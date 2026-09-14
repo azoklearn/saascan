@@ -96,7 +96,7 @@ export function OfferScreen() {
     setBusy(true); setError(""); setNotConfigured(false);
     if (demo) { resetDemoDossier(); router.push("/dossier/demo?demo=1"); return; }
     try {
-      const { url } = await api<{ url: string }>("/api/checkout", { method: "POST", body: JSON.stringify({ formule, answers: questionnaireAnswers(readLocalAnswers()) }) });
+      const { url } = await api<{ url: string }>("/api/checkout", { method: "POST", body: JSON.stringify({ formule, answers: questionnaireAnswers(readLocalAnswers()), renonciation_retractation: true }) });
       window.location.assign(checkoutUrl(url));
     } catch (cause) {
       // Session expirée : reconnexion, puis retour sur l’offre.

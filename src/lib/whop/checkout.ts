@@ -25,9 +25,10 @@ export async function createCheckout(formule: PlanId, target: Target): Promise<s
   databaseError(started.error);
   const { dossier_id: dossierId, payment_id: paymentId } = started.data as { dossier_id: string; payment_id: string };
   // Whop recopie ces métadonnées sur le paiement et l’abonnement. Le lien d’accès n’y figure jamais.
+  // La date de renonciation à la rétractation, cochée juste avant, reste attachée au paiement.
   const checkout = await whop.checkoutConfigurations.create({
     plan_id: planId,
-    metadata: { dossier_id: dossierId, payment_id: paymentId },
+    metadata: { dossier_id: dossierId, payment_id: paymentId, renonciation_retractation: new Date().toISOString() },
     redirect_url: `${origin}/dossier/${token}`,
   });
   const attached = await admin.from("payments").update({ checkout_id: checkout.id }).eq("id", paymentId).eq("statut", "en_attente");

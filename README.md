@@ -23,7 +23,7 @@ Pour parcourir tout le parcours sans compte ni paiement : [questionnaire de dém
 3. Une animation de calcul mène à l’écran « Prêt », puis au choix de la formule : 1 mois à 18,99 €, 3 mois à 29,99 € ou 12 mois à 69,99 €, renouvelés automatiquement.
 4. Au paiement, le serveur vérifie la session, valide les réponses, crée le dossier du compte avec un lien d’accès secret et ouvre la page de paiement Whop.
 5. Le webhook confirme le paiement et publie le dossier et les bonus de la formule en quelques secondes. Au retour de Whop, `/dossier/<lien>` affiche le dossier ; il reste ensuite dans l’espace du compte (`/espace`). La base de données refuse toute publication avant la confirmation du paiement.
-6. Le dossier reste accessible tant que l’abonnement est actif. La personne peut le résilier depuis le dossier, demander le remboursement du premier paiement pendant 48 heures, ou réactiver un abonnement terminé depuis le même dossier.
+6. Le dossier reste accessible tant que l’abonnement est actif. La personne peut le résilier depuis le dossier ou réactiver un abonnement terminé depuis le même dossier. Avant chaque paiement, elle coche une case qui demande l’accès immédiat au dossier et renonce au droit de rétractation ; aucun remboursement n’est proposé dans le site.
 
 ## Ce qui est inclus
 
@@ -35,10 +35,11 @@ Pour parcourir tout le parcours sans compte ni paiement : [questionnaire de dém
 - Contenus rédigés à l’avance dans `data/contenus/<idée>.json` : risque, produit, écrans, données et critères du prompt, tâches de construction, 60 idées de vidéos et plan de A à Z en sept phases. `src/lib/dossier/content.ts` les combine avec les neuf réponses : trois idées argumentées qui citent chaque réponse, prompt de 700 à 900 mots adapté aux compétences, au temps, à la zone et à la facturation, plan de six tâches par semaine.
 - Bonus selon la formule : 30 idées de vidéos marketing (3 mois), 60 idées et un plan de A à Z sur douze mois (12 mois).
 - Offre à trois formules définies dans `src/config/plans.json`. Les prix barrés et les pourcentages comparent au même nombre de mois en formule mensuelle ; aucun faux compte à rebours.
-- Abonnements Whop : webhook signé et idempotent, accès lié à l’abonnement, résiliation en fin de période depuis le dossier, remboursement du premier paiement sous 48 heures.
+- Abonnements Whop : webhook signé et idempotent, accès lié à l’abonnement, résiliation en fin de période depuis le dossier, renonciation à la rétractation cochée avant chaque paiement.
+- Vercel Web Analytics : visites mesurées sans cookie, lien secret des dossiers masqué, et événement serveur `Checkout Started` (formule, parcours `nouveau` ou `reactivation`) à chaque ouverture de la page de paiement.
 - Dossier : trois idées, copie et export `.md` du prompt, plan à cocher, vidéos et plan de A à Z selon la formule, lien personnel à copier.
 - Huit migrations PostgreSQL : RLS sur toutes les tables, aucun droit pour les rôles du navigateur, transactions réservées au serveur.
-- Pages de contact, garantie, confidentialité, mentions légales et CGV configurables. Les textes légaux sont une base préparatoire à adapter au vendeur réel avant commercialisation.
+- Pages de contact, confidentialité, mentions légales et CGV configurables. Les textes légaux sont une base préparatoire à adapter au vendeur réel avant commercialisation.
 
 ## Configurer Supabase
 
@@ -88,7 +89,7 @@ Les dossiers déjà publiés gardent le texte de leur publication : une correcti
 
 Après paiement, Whop renvoie vers `/dossier/<lien>`. Le retour navigateur ne débloque rien : seule la confirmation serveur le fait. Chaque webhook vérifie la signature du corps brut, puis relit chez Whop l’état actuel du paiement et de l’abonnement. Les métadonnées du passage en caisse relient le paiement au dossier ; les renouvellements sont rattachés par l’abonnement. Un ancien événement ne rouvre pas un dossier remboursé et un état d’abonnement plus ancien ne remplace pas un état plus récent.
 
-Le contenu est accessible quand le premier paiement est confirmé, non remboursé, et que l’abonnement est `active`, `trialing`, `past_due` ou `canceling`. Si un webhook manque, la page du dossier relit l’abonnement chez Whop au plus toutes les dix minutes. La résiliation prend effet en fin de période. Une demande de remboursement arrête d’abord le renouvellement, puis rembourse le premier paiement ; l’accès se ferme à la confirmation et l’abonnement est alors annulé.
+Le contenu est accessible quand le premier paiement est confirmé, non remboursé, et que l’abonnement est `active`, `trialing`, `past_due` ou `canceling`. Si un webhook manque, la page du dossier relit l’abonnement chez Whop au plus toutes les dix minutes. La résiliation prend effet en fin de période. Un remboursement accordé depuis Whop ferme l’accès à sa confirmation et annule l’abonnement.
 
 Sans `WHOP_API_URL`, le client vise la production. Les informations du vendeur (`LEGAL_COMPANY_NAME`, `LEGAL_COMPANY_ADDRESS`, `LEGAL_COMPANY_REGISTRATION`, `NEXT_PUBLIC_CONTACT_EMAIL`) ne bloquent pas le paiement : tant qu’elles manquent, les pages légales restent en version préparatoire. SaaScan n’envoie aucun rappel avant le renouvellement des formules 3 et 12 mois : vérifier les obligations d’information du vendeur pour les contrats reconduits tacitement (article L215-1 du Code de la consommation).
 
@@ -100,9 +101,9 @@ SaaScan n’envoie aucun email ; Whop envoie ses propres reçus de paiement. Les
 
 1. Importer le dépôt dans Vercel en tant que projet Next.js.
 2. Garder `npm run build` et la sortie Next.js par défaut ; choisir Node 22 ou 24 selon les versions proposées.
-3. Ajouter les variables de `.env.example` dans l’environnement souhaité. Renseigner `NEXT_PUBLIC_APP_URL` avec l’URL HTTPS finale. Les variables `NEXT_PUBLIC_*` sont fixées lors du build : redéployer après leur modification.
+3. Ajouter les variables de `.env.example` dans l’environnement souhaité. Renseigner `NEXT_PUBLIC_APP_URL` avec l’URL HTTPS finale. Les variables `NEXT_PUBLIC_*` sont fixées lors du build : redéployer après leur modification. Activer Web Analytics dans l’onglet Analytics du projet ; les événements personnalisés comme `Checkout Started` dépendent de l’offre Vercel du compte.
 4. Appliquer les migrations à la base de cet environnement, configurer la connexion (email, Google, URLs de redirection), puis créer le webhook Whop avec l’URL finale.
-5. Faire le parcours complet dans le bac à sable Whop : création de compte, questionnaire, paiement, dossier et bonus, espace, tâche cochée, résiliation et remboursement. Passer en production seulement après cette vérification et la finalisation des informations commerciales.
+5. Faire le parcours complet dans le bac à sable Whop : création de compte, questionnaire, paiement, dossier et bonus, espace, tâche cochée, résiliation et réactivation. Passer en production seulement après cette vérification et la finalisation des informations commerciales.
 
 Les environnements preview et production doivent utiliser des bases et clés cohérentes. Ne jamais donner des clés de production à un déploiement de démonstration non maîtrisé.
 

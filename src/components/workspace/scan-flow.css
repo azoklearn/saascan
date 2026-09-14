@@ -152,12 +152,6 @@
 .scan-offer > :nth-child(4) { animation-delay: 150ms; }
 .scan-offer-banner { display: flex; align-items: center; gap: 12px; margin: 0 0 14px; padding: 12px 18px; border: 1px solid var(--scan-line); border-radius: 12px; background: rgb(255 255 255 / .03); color: #c5ced2; font-size: 14px; }
 .scan-offer-banner strong { flex: 0 0 auto; color: var(--scan-accent); font-size: 22px; font-weight: 750; letter-spacing: -.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.scan-offer-guarantee { display: flex; gap: 14px; margin-bottom: 26px; padding: 16px 18px; border: 1px solid rgb(0 194 160 / .5); border-radius: 12px; background: linear-gradient(135deg, rgb(0 194 160 / .13), rgb(0 194 160 / .04)); }
-.scan-offer-guarantee > svg { flex: 0 0 auto; margin-top: 2px; color: var(--scan-accent); }
-.scan-offer-guarantee strong { display: block; color: #6ff0d6; font-size: 16px; line-height: 1.35; }
-.scan-offer-guarantee span { display: inline-block; margin-top: 8px; padding: 2px 8px; border-radius: 6px; background: rgb(0 194 160 / .16); color: #8ff5e1; font: 600 11px ui-monospace, monospace; }
-.scan-offer-guarantee p { margin: 8px 0 0; color: #a9b8b5; font-size: 13px; }
-.scan-offer-guarantee a { color: #d5eee9; text-decoration: underline; text-underline-offset: 3px; }
 .scan-offer-title { margin: 0 0 22px; font-size: clamp(30px, 3.4vw, 42px); line-height: 1.1; letter-spacing: -1.4px; font-weight: 650; }
 .scan-plans { display: grid; gap: 14px; min-width: 0; margin: 0; padding: 0; border: 0; }
 .scan-plan { position: relative; display: flex; align-items: center; gap: 16px; padding: 20px 22px; border: 1px solid var(--scan-line); border-radius: 14px; background: linear-gradient(135deg, #141a1d, #0f1416); cursor: pointer; transition: border-color 160ms ease, box-shadow 220ms ease, transform 160ms var(--scan-ease-out); }
@@ -181,6 +175,9 @@
 .scan-plan-day { flex: 0 0 auto; color: var(--scan-muted); font-size: 12px; text-align: right; }
 .scan-plan-day b { display: block; color: #f2f5f6; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .scan-plans-note { margin: 14px 0 0; color: #7d888e; font-size: 12px; text-align: center; }
+.scan-consent { display: flex; align-items: flex-start; gap: 12px; margin: 20px 0 0; padding: 14px 16px; border: 1px solid var(--scan-line); border-radius: 12px; background: rgb(255 255 255 / .03); color: #c5ced2; font-size: 13px; line-height: 1.6; cursor: pointer; }
+.scan-consent input { flex: 0 0 auto; width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--scan-accent); cursor: pointer; }
+.scan-consent:has(input:focus-visible) { outline: 2px solid #9cf5e4; outline-offset: 3px; }
 .scan-offer > .scan-button { width: 100%; margin-top: 20px; }
 .scan-offer-note, .scan-offer-terms { margin: 14px auto 0; color: #86919a; font-size: 12px; text-align: center; }
 .scan-offer-note { display: flex; align-items: center; justify-content: center; gap: 6px; }

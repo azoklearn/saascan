@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { ArrowDownToLine, ArrowRight, Braces, Check, ChevronDown, Clapperboard, Clipboard, FileText, Layers3, Link2, ListChecks, LoaderCircle, Route, ShieldCheck, Sparkles, Target, TriangleAlert } from "lucide-react";
 import { planWeeks } from "@/config/plan-weeks";
-import { findPlan, refundDays, type PlanId } from "@/config/pricing";
+import { findPlan, type PlanId } from "@/config/pricing";
 import { loadDemoProgress, saveDemoProgress } from "@/lib/demo/storage";
 import { countWords } from "@/lib/dossier/word-count";
 import { clearLocalAnswers } from "@/lib/questionnaire/local-answers";
@@ -24,7 +24,6 @@ type Tab = typeof allTabs[number]["id"];
 const preparationSteps = ["Paiement confirmé", "Sélection de vos trois idées", "Adaptation du prompt de construction", "Préparation de votre plan sur 30 jours"];
 // Le serveur accepte une nouvelle réservation quatre minutes après une préparation interrompue.
 const stalledAfterMs = 245_000;
-const refundWindowMs = refundDays * 24 * 60 * 60_000;
 const isRunning = (startedAt: string | null) => !!startedAt && Date.now() - Date.parse(startedAt) <= stalledAfterMs;
 // Étiquettes internes de data/ideas.json, dites en mots simples.
 const tagLabels: Record<string, string> = { b2b: "Pour les professionnels", b2c: "Pour les particuliers", "no-code": "Sans code", ia: "Avec l’IA" };
@@ -170,7 +169,7 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
   // La redirection vers Whop ou vers la connexion garde le bouton occupé jusqu’au changement de page.
   const reactivate = (formule: PlanId) => run(formule, "reactivate", async () => {
     try {
-      const { url } = await api<{ url: string }>("/api/checkout", { method: "POST", body: JSON.stringify({ formule, token }) });
+      const { url } = await api<{ url: string }>("/api/checkout", { method: "POST", body: JSON.stringify({ formule, token, renonciation_retractation: true }) });
       window.location.assign(checkoutUrl(url));
     } catch (cause) {
       if (!(cause instanceof ApiError && cause.status === 401)) throw cause;
@@ -184,7 +183,6 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
   if (!record) return <ProblemScreen message={loadError} demo={demo} retry={() => { setLoadError(""); setRevision((value) => value + 1); }} />;
   const { dossier, content } = record;
   const plan = findPlan(dossier.formule);
-  const refundable = !demo && !!dossier.paid_at && !dossier.refunded_at && Date.now() - Date.parse(dossier.paid_at) <= refundWindowMs;
   if (dossier.refunded_at) return <ProblemScreen message="Ce dossier a été remboursé. Son contenu n’est plus accessible." demo={demo} />;
   if (!dossier.paid_at) {
     if (paymentFailed) return <Preparation title="Le paiement n’a pas abouti." text="Aucun abonnement n’a été créé. Vous pouvez choisir à nouveau votre formule quand vous voulez."><p className="ws-dossier-actions ws-centered"><Link className="ws-button" href="/debloquer">Choisir ma formule</Link></p></Preparation>;
@@ -192,8 +190,8 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
   }
   if (!record.access) return <Shell><EndedScreen busy={action.target === "reactivate" && action.busy !== "cancel" ? action.busy : null} error={errorFor("reactivate")} onReactivate={reactivate} /></Shell>;
   if (!content) {
-    if (dossier.statut === "echec" && dossier.generation_attempts >= 3) return <Preparation title="La préparation n’a pas abouti." text="Nous n’avons pas pu préparer votre dossier. Vous pouvez demander son remboursement intégral ou nous écrire.">
-      <p className="ws-dossier-actions ws-centered">{refundable && <Link className="ws-button" href={`/remboursement?dossier=${token}`}>Demander le remboursement</Link>}<Link className="ws-button-secondary" href="/contact">Nous contacter</Link></p>
+    if (dossier.statut === "echec" && dossier.generation_attempts >= 3) return <Preparation title="La préparation n’a pas abouti." text="Nous n’avons pas pu préparer votre dossier. Écrivez-nous : nous le préparons pour vous ou nous remboursons votre paiement.">
+      <p className="ws-dossier-actions ws-centered"><Link className="ws-button" href="/contact">Nous contacter</Link></p>
     </Preparation>;
     return <Preparation title="Votre dossier se prépare." text="Nous assemblons vos trois idées, votre prompt et votre plan. Cela ne prend que quelques secondes : gardez cette page ouverte." step={elapsed < 2_000 ? 1 : elapsed < 5_000 ? 2 : 3}>
       {generationError && <><ErrorNotice>{generationError}</ErrorNotice><button className="ws-button-secondary" onClick={() => { requestedAttempt.current = null; setGenerationError(""); setRevision((value) => value + 1); }}>Relancer la préparation</button></>}
@@ -226,6 +224,6 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
     <section id="panel-plan" role="tabpanel" aria-labelledby="tab-plan" hidden={tab !== "plan"}><div className="ws-section-intro"><div><h2>Un mois pour transformer l’idée en test réel.</h2><p>Cochez vos avancées. {demo ? "Elles restent enregistrées dans ce navigateur." : "Votre progression est enregistrée avec votre dossier."}</p></div></div><div className="ws-plan-progress ws-panel"><strong>{progress}%</strong><div><p><span>Chaque petite étape compte.</span><span>{done} / {content.tasks.length} tâches</span></p><div className="ws-progress-track" role="progressbar" aria-valuemin={0} aria-valuemax={content.tasks.length} aria-valuenow={done} aria-label="Tâches terminées"><div className="ws-progress-fill" style={{ width: `${progress}%` }} /></div></div></div>{planWeeks.map((week) => { const tasks = content.tasks.filter((task) => task.semaine === week.semaine).sort((a, b) => a.position - b.position); return <details className="ws-week" key={week.semaine} open><summary><span className="ws-week-number">S0{week.semaine}</span><div><h3>{week.title}</h3><p>{week.description} · {tasks.filter((task) => task.done).length}/{tasks.length}</p></div><ChevronDown size={17} /></summary><div className="ws-week-tasks">{tasks.map((task) => <label className="ws-task" data-done={task.done} key={task.id}><input type="checkbox" checked={task.done} disabled={pending.includes(task.id)} onChange={() => void toggleTask(task)} /><span>{task.libelle}</span>{pending.includes(task.id) && <LoaderCircle size={12} className="ws-spinner" />}</label>)}</div></details>; })}</section>
     {!!plan?.videoIdeas && <section id="panel-videos" role="tabpanel" aria-labelledby="tab-videos" hidden={tab !== "videos"}><VideosPanel videos={content.videos ?? []} failed={bonusFailed} /></section>}
     {!!plan?.roadmap && <section id="panel-roadmap" role="tabpanel" aria-labelledby="tab-roadmap" hidden={tab !== "roadmap"}><RoadmapPanel roadmap={content.roadmap} failed={bonusFailed} /></section>}
-    {!demo && <SubscriptionPanel dossier={dossier} refundHref={refundable ? `/remboursement?dossier=${token}` : null} busy={action.busy === "cancel"} error={errorFor("cancel")} onCancel={cancelSubscription} />}
+    {!demo && <SubscriptionPanel dossier={dossier} busy={action.busy === "cancel"} error={errorFor("cancel")} onCancel={cancelSubscription} />}
   </Shell>;
 }

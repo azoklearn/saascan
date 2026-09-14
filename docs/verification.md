@@ -79,7 +79,8 @@ La connexion réelle (Google et email), l’espace avec un dossier payé et le b
   - dossier rattaché au compte et visible dans `/espace` ;
   - retour sur `/dossier/<lien>` et publication immédiate du dossier et des bonus ;
   - webhook répété, renouvellement, passage de 3 à 12 mois ;
-  - résiliation depuis le dossier, remboursement sous 48 heures, puis annulation de l’abonnement ;
+  - case de renonciation à la rétractation obligatoire avant le paiement et avant la réactivation ;
+  - résiliation depuis le dossier, puis fin de l’accès à l’échéance ;
   - réactivation, avec reconnexion si la session a expiré.
 
 Ces cas ont été revus dans le code et vérifiés par TypeScript et par le scénario SQL, mais restent à exercer avec Supabase Auth, Google et Whop.
