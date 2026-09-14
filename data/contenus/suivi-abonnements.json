@@ -1,0 +1,535 @@
+{
+  "idea_id": "suivi-abonnements",
+  "risque": "Le principal risque est qu’une simple note sur le téléphone paraisse suffisante, et que personne ne veuille payer 2 € par mois pour une liste. Avant de construire, aidez dix personnes à lister leurs abonnements avec les dates de prélèvement, envoyez-leur vous-même un message quelques jours avant chaque échéance pendant un mois, puis comptez les rappels qu’elles jugent vraiment utiles.",
+  "prompt": {
+    "produit": "AbosMalins aide un particulier à garder sous les yeux tous ses abonnements : streaming, salle de sport, forfait mobile, applis et essais gratuits. La personne saisit chaque abonnement à la main avec son prix, sa fréquence et sa prochaine date de prélèvement. L’outil calcule le total du mois et envoie un rappel par email avant chaque échéance ou fin d’essai gratuit. Il ne se connecte à aucune banque, ne résilie rien à la place de la personne et ne compare pas les offres.",
+    "ecrans": [
+      "Tableau de bord : total du mois en grand, échéances des trente prochains jours et bouton « Ajouter un abonnement ». Sans abonnement, l’écran propose des exemples courants à cocher, sans prix.",
+      "Ajout d’un abonnement : nom, catégorie, prix, fréquence mensuelle ou annuelle, prochaine date de prélèvement, essai gratuit ou non. Un prix vide ou une date passée affiche une erreur claire.",
+      "Liste des abonnements : abonnements actifs triés par prochaine échéance, prix ramené au mois, badge « essai gratuit » et filtre par catégorie. L’état vide renvoie vers l’ajout.",
+      "Fiche abonnement : prix, fréquence, prochaine échéance, note libre pour savoir où résilier et bouton « Je l’ai résilié » qui archive l’abonnement et le retire du total.",
+      "Rappels : délai par défaut de un, trois ou sept jours, délai propre à un abonnement et liste des prochains rappels prévus. Un rappel qui n’a pas pu partir est signalé.",
+      "Compte : adresse email des rappels, formule choisie, statut du paiement, export de la liste en fichier tableur et suppression du compte après confirmation."
+    ],
+    "donnees": "Prévois une personne (identifiant, email, délai de rappel par défaut, formule, statut du paiement), des abonnements liés à la personne (nom, catégorie, prix, fréquence, prochaine échéance, essai gratuit, délai de rappel, note, statut actif ou résilié) et des rappels liés à chaque abonnement (date prévue, date d’envoi, statut). Le total du mois est calculé en ramenant les prix annuels au mois. Chaque personne voit uniquement ses abonnements et ses rappels.",
+    "criteres": [
+      "Un abonnement annuel compte pour un douzième de son prix dans le total du mois.",
+      "Un rappel part au délai choisi avant l’échéance, puis la prochaine échéance avance automatiquement.",
+      "Un essai gratuit affiche sa date de fin et déclenche un rappel avant de devenir payant.",
+      "Un abonnement marqué « résilié » disparaît du total et des rappels à venir.",
+      "Aucun écran ne demande d’identifiants bancaires ni ne propose de résilier à la place de la personne."
+    ]
+  },
+  "construction": [
+    "Créer le formulaire d’ajout d’un abonnement avec prix, fréquence, prochaine échéance et essai gratuit, puis la liste triée par date.",
+    "Calculer le total du mois en ramenant les abonnements annuels au mois, et l’afficher sur le tableau de bord avec les échéances à venir.",
+    "Mettre en place l’envoi des rappels avant chaque échéance et fin d’essai, puis vérifier avec un abonnement fictif dont la date tombe le lendemain.",
+    "Faire saisir leurs vrais abonnements à trois proches, puis vérifier avec eux pendant une semaine que chaque rappel arrive au bon moment."
+  ],
+  "videos": [
+    {
+      "plateforme": "TikTok",
+      "format": "Problème vécu",
+      "accroche": "J’ai additionné tous mes abonnements du mois. Voici le total, sans tricher.",
+      "deroule": "Face caméra, listez vos vrais abonnements un par un sur une feuille ou dans AbosMalins : streaming, musique, forfait, salle de sport, stockage en ligne. Révélez le total mensuel à la fin, uniquement s’il s’agit de vos vrais chiffres. Dites seulement ce que vous avez réellement ressenti en le découvrant.",
+      "appel_action": "Invitez à écrire « liste » en commentaire pour recevoir le lien de l’outil."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Erreur fréquente",
+      "accroche": "L’essai gratuit de sept jours qui devient payant le huitième : comment l’éviter.",
+      "deroule": "Face caméra, racontez une situation d’essai gratuit oublié, en affichant à l’écran qu’elle est fictive. Montrez ensuite le réflexe simple : au moment de s’inscrire, noter la date de fin d’essai et prévoir un rappel quelques jours avant. Terminez par l’ajout de cet essai dans AbosMalins, avec le badge « essai gratuit » visible.",
+      "appel_action": "Proposez d’enregistrer la vidéo avant le prochain essai gratuit."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Démonstration à l’écran",
+      "accroche": "Tous les abonnements d’un mois fictif sur un seul écran, triés par date.",
+      "deroule": "Enregistrez l’écran d’un téléphone, sans visage. Ajoutez cinq abonnements fictifs dans AbosMalins, dont un annuel et un essai gratuit. Montrez le tableau de bord qui affiche le total du mois et les prochaines échéances, avec la mention « exemple fictif » visible pendant toute la vidéo.",
+      "appel_action": "Invitez à rejoindre la liste des testeurs en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Checklist",
+      "accroche": "Six abonnements faciles à oublier, à chercher sur votre relevé.",
+      "deroule": "Tournez sans visage : un relevé de compte fictif, flouté, et un surligneur. Faites apparaître une ligne à la fois : stockage en ligne, appli de sport, option de forfait, magazine numérique, jeu vidéo, service de livraison. Terminez en conseillant de noter chaque ligne trouvée avec sa date de prélèvement.",
+      "appel_action": "Demandez en commentaire lequel ils ont retrouvé sur leur relevé."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Avant et après",
+      "accroche": "Avant : des prélèvements surprises. Après : un rappel quelques jours avant chacun.",
+      "deroule": "Premier plan sans visage : une notification de prélèvement fictive qui arrive par surprise. Deuxième plan : l’email de rappel d’AbosMalins reçu trois jours avant la même échéance, puis la fiche de l’abonnement. Indiquez à l’écran que les noms et les montants sont inventés.",
+      "appel_action": "Proposez de tester les rappels pendant la bêta, en message privé."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Coulisses de la construction",
+      "accroche": "Pourquoi mon outil d’abonnements ne vous demandera jamais vos codes bancaires.",
+      "deroule": "Face caméra, expliquez votre choix : chaque abonnement est saisi à la main, sans aucun accès au compte bancaire. Reconnaissez honnêtement la contrepartie, quelques minutes de saisie au départ. Montrez ensuite l’écran d’ajout d’AbosMalins en cours de construction.",
+      "appel_action": "Demandez en commentaire s’ils préfèrent saisir à la main ou relier leur banque."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Idée reçue",
+      "accroche": "« Je sais exactement combien je paie en abonnements. » Vraiment ? Faites le test.",
+      "deroule": "Face caméra, proposez un petit test : annoncer de tête son total mensuel, puis le calculer ligne par ligne. Montrez les deux étapes à l’écran avec des montants fictifs dans AbosMalins, en expliquant qu’un abonnement annuel se ramène au mois. Ne citez aucun écart moyen, laissez chacun comparer.",
+      "appel_action": "Invitez à dire en commentaire si leur estimation était proche du vrai total."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Tutoriel express",
+      "accroche": "Retrouver tous ses abonnements : les trois endroits à vérifier.",
+      "deroule": "Voix off sur un téléphone, sans visage, montrez trois endroits où chercher : le relevé bancaire des derniers mois, la boîte mail avec le mot « abonnement », les réglages d’abonnements du téléphone. Utilisez des écrans floutés ou fictifs. Terminez en notant tout sur une simple liste.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour faire le tri ce week-end."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Journée type",
+      "accroche": "Une semaine de rappels d’abonnements, jour par jour, pour un personnage fictif.",
+      "deroule": "Montez de courts plans sans visage, un par jour : lundi, un rappel pour la salle de sport ; mercredi, la fin d’un essai gratuit ; samedi, le forfait mobile. À chaque rappel, montrez la décision du personnage : garder, ou résilier lui-même auprès du service. Précisez dès le début que tout est fictif.",
+      "appel_action": "Demandez en commentaire quel rappel leur aurait été le plus utile ce mois-ci."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Question de la cible",
+      "accroche": "« Comment savoir si un abonnement vaut encore le coup ? »",
+      "deroule": "Affichez la question à l’écran, puis répondez face caméra avec deux questions simples : quand l’avez-vous utilisé pour la dernière fois, et le reprendriez-vous aujourd’hui au même prix. Montrez la note libre d’AbosMalins où l’on peut écrire sa réponse. Précisez que la décision reste personnelle.",
+      "appel_action": "Invitez à partager en commentaire l’abonnement qu’ils hésitent à garder."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Transparence sur le prix",
+      "accroche": "Un outil d’abonnements qui coûte lui-même 2 € par mois : je vous explique.",
+      "deroule": "Face caméra, abordez l’ironie franchement. Expliquez le prix, 2 € par mois ou 15 € par an, et ce qui est inclus : la liste, le total du mois et les rappels. Précisez ce que l’outil ne fait pas, comme résilier à votre place, et montrez où supprimer son compte à tout moment.",
+      "appel_action": "Invitez à poser leurs questions sur le prix en commentaire."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Exemple fictif commenté",
+      "accroche": "Je commente les abonnements d’un couple fictif : doublons, oublis et essais en cours.",
+      "deroule": "Écran seul avec voix off : affichez dans AbosMalins la liste inventée d’un couple, avec deux abonnements musique en double et un essai gratuit qui se termine bientôt. Commentez chaque ligne sans jugement, en posant la question garder ou résilier. Rappelez à l’écran que le couple et les montants sont fictifs.",
+      "appel_action": "Demandez en commentaire s’ils ont déjà découvert un abonnement en double."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Comparaison",
+      "accroche": "Note du téléphone, calendrier ou outil dédié : où suivre ses abonnements ?",
+      "deroule": "Face caméra, présentez les trois options en trois plans. Pour chacune, citez honnêtement un avantage et une limite : la note est gratuite mais ne prévient pas, le calendrier prévient mais ne calcule aucun total. Montrez ensuite AbosMalins et laissez chacun choisir ce qui lui convient.",
+      "appel_action": "Demandez en commentaire comment ils suivent leurs abonnements aujourd’hui."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Série",
+      "accroche": "Épisode 1 : je fais le tri dans mes abonnements pendant un mois, devant vous.",
+      "deroule": "Face caméra, présentez le principe : lister tous vos abonnements dans AbosMalins, puis décider pour chacun à l’approche de son échéance. Montrez la liste de départ, montants floutés si vous préférez. Annoncez le jour du prochain épisode et engagez-vous à ne raconter que ce qui se passe vraiment.",
+      "appel_action": "Invitez à suivre le compte et à faire le tri en même temps."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Problème vécu",
+      "accroche": "La salle de sport qu’on paie encore alors qu’on n’y va plus depuis des mois.",
+      "deroule": "Face caméra, devant un sac de sport posé dans un coin, racontez cette situation en précisant s’il s’agit de votre histoire ou d’un exemple. Affichez à l’écran la question à se poser avant la prochaine échéance. Montrez comment une note dans AbosMalins aide à retrouver la démarche de résiliation au bon moment.",
+      "appel_action": "Demandez en commentaire quel abonnement ils paient sans vraiment l’utiliser."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Démonstration à l’écran",
+      "accroche": "Voici le rappel reçu quelques jours avant la fin d’un essai gratuit.",
+      "deroule": "Enregistrez l’écran d’un téléphone sans visage : ouvrez la boîte mail et montrez le rappel d’AbosMalins pour un essai gratuit fictif. Ouvrez la fiche de l’abonnement, précisez que la résiliation se fait directement auprès du service, puis touchez « Je l’ai résilié ». Montrez le total mis à jour, mention « exemple fictif » visible.",
+      "appel_action": "Proposez de rejoindre la bêta pour recevoir ce rappel sur leurs propres essais."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Erreur fréquente",
+      "accroche": "Oublier qu’un abonnement annuel va être prélevé en une seule fois.",
+      "deroule": "Face caméra, expliquez le piège : un abonnement payé une fois par an s’oublie facilement entre deux prélèvements. Montrez un exemple fictif dans AbosMalins où l’abonnement annuel est ramené au mois dans le total et déclenche un rappel une semaine avant. Précisez que le montant est inventé.",
+      "appel_action": "Demandez en commentaire quels abonnements annuels ils ont en ce moment."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Checklist",
+      "accroche": "Avant de dire oui à un essai gratuit, trois choses à noter tout de suite.",
+      "deroule": "Tournez sans visage : une main tient un téléphone sur une page d’inscription fictive. Faites apparaître trois points à l’écran : la date exacte de fin d’essai, le prix après l’essai, l’endroit où résilier. Terminez par l’enregistrement de ces trois informations dans AbosMalins.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour le prochain essai gratuit."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Coulisses de la construction",
+      "accroche": "Le calcul le plus piégeux de mon outil : les abonnements annuels.",
+      "deroule": "Face caméra, puis écran de construction. Expliquez simplement pourquoi un abonnement annuel doit être divisé par douze pour obtenir un total mensuel juste, et ce qui se passe le mois où il est prélevé. Montrez le test que vous avez fait avec des abonnements fictifs et ce que vous avez corrigé.",
+      "appel_action": "Demandez en commentaire s’ils préfèrent voir le total par mois ou par an."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Réponse à un commentaire",
+      "accroche": "« Ma banque me montre déjà mes prélèvements. » Oui, et voici la différence.",
+      "deroule": "Affichez le vrai commentaire à l’écran, sans le nom de son auteur. Face caméra, reconnaissez que le relevé montre bien les prélèvements passés. Expliquez ensuite ce qu’AbosMalins ajoute : les échéances à venir, les fins d’essai et un rappel avant. Montrez les deux écrans côte à côte, avec des données fictives ou floutées.",
+      "appel_action": "Invitez à laisser d’autres questions en commentaire pour une prochaine vidéo."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Idée reçue",
+      "accroche": "« Résilier un abonnement, c’est forcément compliqué. » Pas si on s’y prend à l’avance.",
+      "deroule": "Face caméra, affichez l’idée reçue. Expliquez que la difficulté vient souvent du moment : on découvre le prélèvement trop tard. Montrez comment noter dans AbosMalins, dès l’inscription, l’endroit où résilier, puis recevoir un rappel quelques jours avant. Ne citez aucune marque ni aucune règle juridique.",
+      "appel_action": "Demandez en commentaire l’abonnement le plus compliqué qu’ils ont eu à résilier."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Tutoriel express",
+      "accroche": "Ajouter un abonnement dans l’outil pas à pas, chronomètre affiché.",
+      "deroule": "Enregistrez l’écran sans visage avec un chronomètre dans un coin. Saisissez un abonnement fictif dans AbosMalins : nom, prix, fréquence, prochaine date et délai du rappel. Montrez l’abonnement qui apparaît dans la liste et le total qui se met à jour. Gardez la vraie durée affichée, sans couper.",
+      "appel_action": "Invitez à tester l’outil en écrivant « abos » en message privé."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Question de la cible",
+      "accroche": "« Et les abonnements partagés en famille, je les compte comment ? »",
+      "deroule": "Affichez la question à l’écran, puis répondez face caméra. Proposez de noter seulement la part que l’on paie vraiment, et d’indiquer dans la note avec qui l’abonnement est partagé. Montrez un exemple fictif dans AbosMalins, en précisant que chaque personne garde son propre compte.",
+      "appel_action": "Demandez en commentaire s’ils partagent des abonnements en famille ou entre amis."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Comparaison",
+      "accroche": "Payer au mois ou à l’année : ce qu’il faut regarder avant de choisir.",
+      "deroule": "Face caméra, présentez un abonnement fictif proposé au mois ou à l’année. Montrez à l’écran comment ramener le prix annuel au mois pour comparer, puis rappelez la contrepartie : un engagement plus long. Terminez par la fiche AbosMalins qui affiche les deux informations, sans recommander l’une ou l’autre formule.",
+      "appel_action": "Demandez en commentaire s’ils choisissent plutôt le mois ou l’année."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Appel à testeurs",
+      "accroche": "Je cherche des testeurs qui cumulent les abonnements et craignent d’en oublier un.",
+      "deroule": "Face caméra, expliquez ce que vous attendez : saisir ses abonnements, garder les rappels actifs pendant un mois et répondre à trois questions. Précisez ce que les testeurs reçoivent, un accès gratuit pendant le test, sans carte bancaire demandée. Montrez rapidement le tableau de bord d’AbosMalins avec des données fictives.",
+      "appel_action": "Invitez à écrire « testeur » en commentaire pour recevoir le lien."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Journée type",
+      "accroche": "Le jour de paie, la petite routine pour vérifier ses prélèvements du mois.",
+      "deroule": "Plans calmes sans visage : un café, un téléphone, un carnet. Montrez l’ouverture d’AbosMalins, la liste des échéances du mois, un abonnement marqué comme résilié et le total mis à jour, avec des données fictives précisées à l’écran. Terminez sur une question notée à la main pour le prochain renouvellement.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour la ressortir le prochain jour de paie."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Série",
+      "accroche": "Épisode 2 : premier rappel reçu, il a fallu décider, garder ou résilier.",
+      "deroule": "Face caméra, racontez le premier vrai rappel reçu pendant la série : l’abonnement concerné, la question que vous vous êtes posée et la décision prise. Montrez la fiche dans AbosMalins, montants floutés si vous le souhaitez. Ne racontez qu’une décision réellement prise.",
+      "appel_action": "Demandez en commentaire ce qu’ils auraient décidé à votre place."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Exemple fictif commenté",
+      "accroche": "L’étudiant fictif qui cumule quatre services de streaming : on regarde ensemble.",
+      "deroule": "Écran seul avec voix off : affichez la liste inventée d’un étudiant dans AbosMalins, avec quatre services de vidéo et de musique. Montrez le total du mois, puis la date de chaque prochaine échéance. Posez la question de ce qu’il pourrait garder, sans imposer de réponse, et affichez « exemple fictif » tout du long.",
+      "appel_action": "Demandez en commentaire lequel ils garderaient en premier."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Défi",
+      "accroche": "Défi du week-end : retrouvez tous vos abonnements et notez leur date de prélèvement.",
+      "deroule": "Face caméra, présentez les règles en trois points à l’écran : vérifier le relevé, la boîte mail et les réglages du téléphone ; noter nom, prix et date ; ne rien résilier dans la précipitation. Montrez que cela fonctionne sur papier ou dans AbosMalins. Donnez rendez-vous lundi pour une vidéo de bilan.",
+      "appel_action": "Invitez à écrire « défi » en commentaire pour le relever ensemble."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Coulisses de la construction",
+      "accroche": "Deux versions de mon écran d’accueil : j’ai gardé celle-ci, voici pourquoi.",
+      "deroule": "Face caméra, puis écrans d’AbosMalins en cours de construction. Montrez une première version centrée sur la liste complète, puis la version gardée, avec le total du mois et les échéances à venir en haut. Expliquez ce que les premiers essais vous ont appris, uniquement à partir de vrais retours, avec des données fictives.",
+      "appel_action": "Demandez en commentaire quelle version ils trouvent la plus claire."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Erreur fréquente",
+      "accroche": "S’inscrire à un essai gratuit avec une adresse mail qu’on ne consulte jamais.",
+      "deroule": "Face caméra, racontez une situation fictive : l’email annonçant la fin de l’essai arrive dans une boîte oubliée. Montrez à l’écran le réflexe simple de noter l’adresse utilisée dans la fiche de l’abonnement. Terminez par l’ajout de cet essai dans AbosMalins, avec un rappel envoyé sur l’adresse principale.",
+      "appel_action": "Demandez en commentaire s’ils utilisent plusieurs adresses mail pour leurs inscriptions."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Checklist",
+      "accroche": "Retour de vacances : les abonnements pris pendant l’été à vérifier.",
+      "deroule": "Tournez sans visage : une valise qu’on défait, puis un carnet. Faites apparaître les lignes une à une : appli de voyage, option de forfait à l’étranger, service de streaming pris pour les soirées, essai d’appli de sport. Terminez en montrant ces abonnements ajoutés dans AbosMalins avec des dates fictives.",
+      "appel_action": "Proposez d’enregistrer la liste pour le retour des prochaines vacances."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Problème vécu",
+      "accroche": "Le prélèvement d’une appli dont vous ne vous souvenez même plus du nom.",
+      "deroule": "Face caméra, racontez une situation fictive : une ligne au nom étrange sur le relevé, impossible de savoir à quoi elle correspond. Montrez à l’écran comment chercher ce nom dans sa boîte mail. Terminez en l’ajoutant dans AbosMalins avec une note claire pour la reconnaître la prochaine fois.",
+      "appel_action": "Demandez en commentaire le nom de prélèvement le plus mystérieux qu’ils ont vu."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Question de la cible",
+      "accroche": "« Combien de jours avant faut-il être prévenu pour avoir le temps de résilier ? »",
+      "deroule": "Affichez la question à l’écran, puis répondez face caméra : cela dépend du service, et le plus sûr est de vérifier ses conditions. Montrez dans AbosMalins le réglage du délai de rappel, un, trois ou sept jours, et l’exemple fictif d’une salle de sport réglée plus tôt qu’une appli.",
+      "appel_action": "Demandez en commentaire quel délai de rappel leur semble le plus pratique."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Coulisses de la construction",
+      "accroche": "J’ai refusé d’ajouter la résiliation automatique à mon outil. Voici pourquoi.",
+      "deroule": "Face caméra, expliquez votre choix : résilier à la place de quelqu’un demande des accès sensibles et peut mal tourner. Montrez l’écran d’AbosMalins où la personne, après avoir résilié elle-même, touche « Je l’ai résilié ». Présentez ce choix comme une limite assumée, sans critiquer d’autres services.",
+      "appel_action": "Demandez en commentaire s’ils confieraient leurs accès à un outil pour résilier à leur place."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Démonstration à l’écran",
+      "accroche": "Marquer un abonnement comme résilié et voir le total baisser.",
+      "deroule": "Enregistrez l’écran sans visage : ouvrez la liste d’AbosMalins avec des abonnements fictifs, choisissez-en un, touchez « Je l’ai résilié ». Montrez l’abonnement qui passe dans les archives et le total du mois qui se met à jour. Laissez la mention « exemple fictif » visible pendant toute la vidéo.",
+      "appel_action": "Proposez de tester l’outil sur leurs propres abonnements, en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Idée reçue",
+      "accroche": "« Quelques euros par mois, ce n’est rien. » Et sur une année entière ?",
+      "deroule": "Face caméra, affichez l’idée reçue. Montrez à l’écran le calcul d’un petit abonnement fictif multiplié par douze, puis celui de cinq petits abonnements fictifs. Précisez que les montants sont inventés et que chacun peut faire le calcul avec ses propres abonnements dans AbosMalins.",
+      "appel_action": "Demandez en commentaire s’ils ont déjà fait ce calcul sur une année."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Tutoriel express",
+      "accroche": "Régler ses rappels pour ne recevoir que ceux qui comptent.",
+      "deroule": "Enregistrez l’écran d’un téléphone sans visage : ouvrez les réglages de rappels d’AbosMalins. Choisissez un délai par défaut, puis modifiez-le pour un seul abonnement fictif qui demande plus de temps pour résilier. Terminez sur la liste des prochains rappels prévus.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour régler leurs rappels plus tard."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Série",
+      "accroche": "Épisode 3 : les abonnements que j’ai décidé de garder, et pourquoi.",
+      "deroule": "Face caméra, présentez les abonnements que vous avez décidé de garder pendant la série, avec la raison de chacun. Montrez leur fiche dans AbosMalins, montants floutés si vous préférez. Expliquez qu’il ne s’agit pas de tout supprimer, mais de choisir en connaissance de cause.",
+      "appel_action": "Demandez en commentaire l’abonnement qu’ils ne résilieraient pour rien au monde."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Transparence sur le prix",
+      "accroche": "2 € par mois ou 15 € par an : voici exactement ce qui est inclus.",
+      "deroule": "Enregistrez l’écran du compte dans AbosMalins : formule, statut du paiement, bouton d’export, suppression du compte. Face caméra, détaillez les deux formules et ce qui se passe si l’on arrête de payer, selon ce que vous avez réellement prévu. Ne promettez aucune économie.",
+      "appel_action": "Invitez à poser en commentaire toute question sur les deux formules."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Exemple fictif commenté",
+      "accroche": "Le mois fictif de Karim : trois rappels, trois décisions différentes.",
+      "deroule": "Écran seul avec voix off : présentez les rappels reçus par Karim, personnage inventé, dans AbosMalins. Commentez chaque décision : garder la salle de sport, résilier un essai de musique, repousser la décision pour un stockage en ligne. Affichez dès la première seconde que Karim et ses montants sont fictifs.",
+      "appel_action": "Demandez en commentaire ce qu’ils auraient fait à la place de Karim."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Tutoriel express",
+      "accroche": "Vous avez oublié la date d’un prélèvement ? Deux endroits où la retrouver.",
+      "deroule": "Face caméra, montrez deux pistes avec des écrans floutés ou fictifs : le relevé bancaire des mois précédents, puis l’email de confirmation reçu à l’inscription. Terminez par la saisie de la date retrouvée dans AbosMalins, qui calcule ensuite les échéances suivantes.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour le jour où la question se posera."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Coulisses en accéléré",
+      "accroche": "Une session de construction de mon outil d’abonnements, en accéléré.",
+      "deroule": "Filmez votre écran d’ordinateur en accéléré pendant une session de travail sur AbosMalins, sans visage. Ajoutez des sous-titres courts : formulaire d’ajout, calcul du total, test d’un rappel. Terminez face caméra sur ce qui reste à faire avant d’ouvrir la bêta.",
+      "appel_action": "Invitez à suivre le compte pour voir l’ouverture de la bêta."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Erreur fréquente",
+      "accroche": "Résilier un abonnement… puis continuer à le compter dans ses dépenses.",
+      "deroule": "Face caméra, racontez une situation fictive : un abonnement résilié qui reste dans une liste de dépenses et fausse le total pendant des mois. Montrez à l’écran le geste qui l’évite dans AbosMalins : marquer l’abonnement comme résilié pour qu’il sorte du total. Précisez que l’exemple est inventé.",
+      "appel_action": "Demandez en commentaire s’ils mettent à jour leur liste après chaque résiliation."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Problème vécu",
+      "accroche": "Nouvelle carte bancaire : les abonnements à mettre à jour avant une coupure.",
+      "deroule": "Face caméra, racontez une situation fictive : une nouvelle carte arrive et un service coupe l’accès faute de paiement. Montrez comment la liste d’AbosMalins sert de checklist pour mettre à jour chaque service, un par un. Précisez à l’écran que l’exemple est inventé.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour la prochaine carte bancaire."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Retour de testeur",
+      "accroche": "Ce qu’un testeur m’a fait changer dans mon outil d’abonnements.",
+      "deroule": "Face caméra, citez un vrai retour reçu pendant les tests, avec l’accord de la personne et sans son nom si elle préfère. Montrez l’écran d’AbosMalins avant ce retour, puis la version corrigée. Ne tournez cette vidéo qu’à partir d’un retour réellement reçu.",
+      "appel_action": "Invitez à rejoindre les testeurs pour proposer leurs propres idées."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Comparaison",
+      "accroche": "Rappel la veille ou une semaine avant : ce qui change vraiment.",
+      "deroule": "Face caméra, présentez deux personnages fictifs. Le premier reçoit son rappel la veille et n’a pas le temps de retrouver ses identifiants pour résilier. Le second le reçoit une semaine avant et décide tranquillement. Montrez le réglage correspondant dans AbosMalins et précisez que les deux histoires sont inventées.",
+      "appel_action": "Demandez en commentaire quel délai ils choisiraient."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Question de la cible",
+      "accroche": "« Faut-il noter aussi la box internet et le forfait mobile ? »",
+      "deroule": "Affichez la question à l’écran, puis répondez face caméra : oui, si l’on veut un total complet, même si ces abonnements changent rarement. Montrez un exemple fictif dans AbosMalins avec une catégorie « maison » à côté des loisirs. Expliquez que le rappel est aussi l’occasion de vérifier que le prix n’a pas changé.",
+      "appel_action": "Demandez en commentaire s’ils comptent la box et le forfait dans leurs abonnements."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Tutoriel express",
+      "accroche": "Exporter la liste de ses abonnements pour la garder de côté.",
+      "deroule": "Enregistrez l’écran sans visage : ouvrez le compte dans AbosMalins, lancez l’export, puis ouvrez le fichier dans un tableur. Montrez les colonnes nom, prix, fréquence et prochaine échéance, avec des données fictives. Expliquez que la liste reste récupérable à tout moment, même en cas de départ.",
+      "appel_action": "Invitez à poser en commentaire leurs questions sur leurs données."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Journée type",
+      "accroche": "Dimanche soir, le petit rituel pour anticiper les prélèvements de la semaine.",
+      "deroule": "Plans calmes sans visage : un plaid, une tasse, un téléphone. Montrez les échéances des sept prochains jours dans AbosMalins, un abonnement dont le prix a changé et que l’on corrige, puis le total mis à jour. Précisez à l’écran que les données sont fictives.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour essayer ce rituel dimanche prochain."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Idée reçue",
+      "accroche": "« Je n’ai que deux ou trois abonnements, pas besoin de liste. » Vous êtes sûr ?",
+      "deroule": "Face caméra, proposez de compter ensemble, catégorie par catégorie, affichées à l’écran : vidéo, musique, forfait, box, sport, stockage, jeux, presse, applis. Montrez chaque catégorie apparaître comme une case à cocher dans AbosMalins, sans aucun montant. Laissez chacun compter les siens.",
+      "appel_action": "Invitez à écrire en commentaire combien de cases ils ont cochées."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Réponse à un commentaire",
+      "accroche": "« Payer un abonnement pour gérer ses abonnements, c’est absurde. » Je réponds.",
+      "deroule": "Affichez le vrai commentaire à l’écran, sans le nom de son auteur. Face caméra, reconnaissez que l’argument se comprend et qu’une note gratuite suffit à certaines personnes. Expliquez ensuite ce qu’AbosMalins fait en plus : les rappels avant échéance et le total calculé. Laissez chacun juger.",
+      "appel_action": "Invitez à donner leur avis honnête en commentaire."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Série",
+      "accroche": "Dernier épisode : un mois à suivre mes abonnements, mon bilan sans exagérer.",
+      "deroule": "Face caméra, présentez le bilan de la série dans AbosMalins, montants floutés si vous le souhaitez. Dites quels rappels vous ont vraiment servi, ce qui a été pénible et ce que vous garderez. Ne mentionnez aucune économie que vous n’avez pas réellement constatée.",
+      "appel_action": "Demandez aux personnes qui ont suivi la série de partager leur bilan en commentaire."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Checklist",
+      "accroche": "Quatre signes qu’il est temps de refaire le point sur vos abonnements.",
+      "deroule": "Tournez sans visage : un carnet où quatre lignes apparaissent une à une. Un service pas ouvert depuis longtemps, deux abonnements qui font la même chose, un prix qui a augmenté, un essai gratuit dont vous ignorez la date de fin. Pour chaque signe, montrez la fiche correspondante dans AbosMalins avec des données fictives.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour faire le point le mois prochain."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Coulisses du prix",
+      "accroche": "Pourquoi j’ai prévu une formule annuelle à 15 € en plus du prix mensuel.",
+      "deroule": "Face caméra, expliquez votre raisonnement honnêtement : certaines personnes préfèrent payer une fois et ne plus y penser. Montrez l’écran de choix de formule dans AbosMalins. Précisez que ce choix pourra évoluer selon ce que les premiers utilisateurs choisissent vraiment.",
+      "appel_action": "Demandez en commentaire s’ils préfèrent payer au mois ou à l’année."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Problème vécu",
+      "accroche": "L’abonnement pris pour un enfant ou un proche, qu’on oublie de suivre.",
+      "deroule": "Face caméra, racontez une situation fictive : une appli de jeu ou de musique prise pour un adolescent, qui continue d’être prélevée sur votre carte. Montrez comment l’ajouter dans AbosMalins avec une note indiquant pour qui c’est. Précisez à l’écran que la situation et les montants sont inventés.",
+      "appel_action": "Demandez en commentaire s’ils paient des abonnements pour d’autres personnes."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Démonstration à l’écran",
+      "accroche": "Un compte tout neuf, et la liste complète remplie en quelques minutes.",
+      "deroule": "Enregistrez l’écran sans visage depuis la création d’un compte fictif. Montrez les exemples à cocher sur le tableau de bord vide, puis la saisie du prix et de la date pour chaque abonnement coché. Terminez sur le tableau de bord rempli, avec la mention « exemple fictif » visible.",
+      "appel_action": "Proposez de créer leur liste pendant la bêta, en écrivant en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Retour de testeur",
+      "accroche": "J’ai demandé aux testeurs quels rappels leur ont servi. Voici leurs réponses.",
+      "deroule": "Face caméra, lisez les vraies réponses reçues, sans nom et avec l’accord des personnes. Classez-les à l’écran : rappels utiles, rappels inutiles, idées d’amélioration. Expliquez ce que vous allez changer dans AbosMalins et ce qui restera hors de l’outil, comme la résiliation automatique.",
+      "appel_action": "Invitez à dire en commentaire quel rappel leur serait le plus utile."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Sondage",
+      "accroche": "Aidez-moi à choisir les exemples d’abonnements proposés à la création du compte.",
+      "deroule": "Face caméra, présentez les catégories déjà prévues, puis trois hésitations affichées à l’écran : presse en ligne, jeux vidéo, cours en ligne. Montrez le tableau de bord vide d’AbosMalins où elles apparaîtront. Promettez seulement de lire toutes les réponses, pas de toutes les ajouter.",
+      "appel_action": "Demandez de voter en commentaire pour l’exemple à ajouter."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Coulisses du projet",
+      "accroche": "Ce que j’ai appris en lançant seul un petit outil d’abonnements.",
+      "deroule": "Face caméra, partagez trois leçons réelles tirées du lancement d’AbosMalins : une sur la construction, une sur les rappels, une sur les vidéos. Illustrez chaque leçon par un écran ou une capture, sans chiffre inventé. Terminez en annonçant ce que vous allez tester ensuite.",
+      "appel_action": "Invitez à partager en commentaire leurs propres projets."
+    }
+  ],
+  "roadmap": [
+    {
+      "titre": "Vérifier que les prélèvements oubliés gênent vraiment",
+      "periode": "Mois 1",
+      "objectif": "Vérifier que des particuliers oublient vraiment des abonnements ou des fins d’essai gratuit, et qu’un rappel avant l’échéance leur serait assez utile pour payer 2 € par mois.",
+      "actions": [
+        "Mener dix conversations avec des personnes qui cumulent plusieurs abonnements, en leur faisant raconter leur dernier prélèvement oublié.",
+        "Aider cinq volontaires à lister leurs abonnements sur papier, avec les prix et les dates de prélèvement.",
+        "Envoyer vous-même un message à ces volontaires quelques jours avant chacune de leurs échéances, pendant tout le mois."
+      ],
+      "indicateur": "Au moins trois volontaires sur cinq disent qu’un de vos rappels les a aidés à prendre une décision à temps."
+    },
+    {
+      "titre": "Construire la première version d’AbosMalins",
+      "periode": "Mois 2",
+      "objectif": "Construire uniquement la liste des abonnements, le total du mois et les rappels avant échéance, dans vos {heures_par_semaine} heures par semaine.",
+      "actions": [
+        "Copier le prompt du dossier et construire écran par écran, en vérifiant chaque étape sur téléphone.",
+        "Saisir vos propres abonnements et vérifier pendant deux semaines que chaque rappel arrive au bon moment.",
+        "Faire utiliser l’outil par trois proches et corriger d’abord ce qui rend la saisie longue ou confuse."
+      ],
+      "indicateur": "Trois testeurs saisissent tous leurs abonnements seuls et reçoivent leurs rappels sans erreur de date."
+    },
+    {
+      "titre": "Ouvrir la bêta et trouver les premiers abonnés",
+      "periode": "Mois 3",
+      "objectif": "Ouvrir l’outil aux personnes qui ont demandé le lien, puis vérifier que certaines choisissent de payer 2 € par mois ou 15 € par an.",
+      "actions": [
+        "Publier la vidéo du total mensuel de vos propres abonnements et envoyer le lien aux personnes qui le demandent en commentaire.",
+        "Proposer l’accès aux volontaires du premier mois et aux proches qui ont testé la première version.",
+        "Échanger en message privé avec chaque nouvel utilisateur après son premier rappel reçu.",
+        "Noter la raison de chaque refus de payer, sans insister ni relancer plusieurs fois."
+      ],
+      "indicateur": "Au moins cinq personnes paient une formule après avoir reçu des rappels qu’elles jugent utiles."
+    },
+    {
+      "titre": "Publier des vidéos chaque semaine",
+      "periode": "Mois 4 à 5",
+      "objectif": "Faire connaître AbosMalins avec des vidéos courtes et régulières sur les abonnements du quotidien, dans vos {heures_par_semaine} heures par semaine.",
+      "actions": [
+        "Publier trois vidéos par semaine sur TikTok, Instagram Reels et YouTube Shorts, en alternant conseils, démonstrations et coulisses.",
+        "Lancer la série du tri des abonnements sur un mois et publier un épisode chaque semaine.",
+        "Répondre à chaque commentaire qui demande le lien et transformer les questions fréquentes en nouvelles vidéos.",
+        "Noter chaque semaine les vidéos qui amènent des inscriptions, pour refaire les sujets qui fonctionnent."
+      ],
+      "indicateur": "Des personnes demandent le lien en commentaire chaque semaine, et certaines créent un compte sans relance."
+    },
+    {
+      "titre": "Ajuster le prix et rendre les rappels indispensables",
+      "periode": "Mois 6 à 7",
+      "objectif": "Comprendre pourquoi certains utilisateurs arrêtent de payer une fois leur liste faite, comparer la formule mensuelle et la formule annuelle, et rendre chaque rappel plus utile.",
+      "actions": [
+        "Contacter cinq personnes qui ont arrêté pour comprendre à quel moment l’outil a cessé de leur servir.",
+        "Comparer le nombre d’abonnés à 2 € par mois et à 15 € par an, puis ajuster la présentation des deux formules.",
+        "Améliorer le texte des rappels pour qu’il reprenne la note de résiliation saisie par la personne.",
+        "Ajouter à l’aide les cinq questions les plus posées depuis le lancement."
+      ],
+      "indicateur": "Les abonnés d’un mois restent en grande partie abonnés le mois suivant, et vous savez expliquer pourquoi les autres partent."
+    },
+    {
+      "titre": "Trouver des communautés qui parlent de dépenses du quotidien",
+      "periode": "Mois 8 à 10",
+      "objectif": "Trouver un canal qui amène des utilisateurs de façon répétée, dans les communautés en ligne où l’on parle déjà de bons plans, de budget et de dépenses du quotidien.",
+      "actions": [
+        "Proposer aux responsables de groupes sur les bons plans ou le budget une liste gratuite des abonnements à vérifier, avec leur accord.",
+        "Contacter des créateurs de contenu sur les économies du quotidien pour leur proposer un essai, sans leur imposer de publication.",
+        "Préparer un modèle de liste d’abonnements utile même sans l’outil, avec un lien vers AbosMalins.",
+        "Demander à chaque nouvel utilisateur comment il a connu l’outil et noter sa réponse."
+      ],
+      "indicateur": "Une communauté ou un créateur amène de nouvelles inscriptions plusieurs mois de suite, sans nouvel effort de votre part."
+    },
+    {
+      "titre": "Automatiser et faire le bilan de l’année",
+      "periode": "Mois 11 à 12",
+      "objectif": "Réduire le temps passé sur les tâches répétitives, vérifier la fiabilité des rappels, puis comparer vos revenus réels à votre objectif de {objectif_revenu}.",
+      "actions": [
+        "Automatiser le message de bienvenue, le contrôle des rappels non envoyés et les réponses aux questions fréquentes.",
+        "Préparer le renouvellement des formules annuelles : message clair envoyé à l’avance, avec la date et le prix.",
+        "Faire le bilan de l’année : temps passé, dépenses, nombre d’abonnés par formule et revenu mensuel réel.",
+        "Décider de continuer, d’ajuster l’offre ou d’arrêter, à partir des chiffres réels de l’année."
+      ],
+      "indicateur": "Un bilan écrit compare le revenu mensuel réel à {objectif_revenu} et fixe la décision pour l’année suivante."
+    }
+  ]
+}

@@ -60,7 +60,7 @@ Navigateur intégré, à 309 pixels de large, à 375 × 812 pixels et à 1280 ×
    - trois formules, chacune avec son prix barré de référence mensuelle, son pourcentage, son prix par jour et son contenu (30 idées de vidéos pour 3 mois, 60 et le plan de A à Z pour 12 mois) ;
    - badge « Recommandé » sur 3 mois.
 7. **Dossier d’exemple (`/dossier/demo`) :**
-   - BriefChantier avec cinq onglets, dont « Vidéos marketing » (60 idées) et « Plan de A à Z » (sept phases de A à G) ;
+   - RDVFacile avec cinq onglets, dont « Vidéos marketing » (60 idées) et « Plan de A à Z » (sept phases de A à G) ;
    - prompt de 813 mots ;
    - tâche cochée conservée après rechargement ;
    - aucun texte des autres idées dans le HTML ni dans les scripts chargés.

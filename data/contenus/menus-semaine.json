@@ -1,0 +1,531 @@
+{
+  "idea_id": "menus-semaine",
+  "risque": "Beaucoup de familles remplissent un planning avec enthousiasme la première semaine, puis l’oublient dès la deuxième, faute de temps le dimanche. Avant de construire, proposez à cinq familles de préparer leurs repas sur une simple feuille partagée pendant deux semaines : notez combien la remplissent encore la deuxième semaine et s’en servent vraiment au magasin.",
+  "prompt": {
+    "produit": "MenuFacile aide un foyer à décider une fois par semaine de ses repas. La personne saisit jusqu’à vingt recettes, les place sur les sept jours, et l’outil prépare la liste de courses, ingrédients additionnés et regroupés par rayon. La liste se partage avec un proche, qui coche les produits en magasin. Le produit ne donne aucun conseil nutritionnel, n’impose aucun menu et ne passe aucune commande en ligne.",
+    "ecrans": [
+      "Semaine en cours : sept jours avec une case midi et une case soir, chacune vide ou remplie. Un repas se déplace d’un jour à l’autre. L’état vide invite à créer une première recette.",
+      "Carnet de recettes : recettes du foyer avec nom, nombre de parts et recherche. Quand le carnet contient vingt recettes, un message clair explique qu’il est plein.",
+      "Fiche recette : nom, nombre de parts, ingrédients avec quantité, unité et rayon, puis étapes facultatives. Un ingrédient sans quantité reste accepté et apparaît dans la liste sans total.",
+      "Choix d’un repas : depuis une case du planning, recherche dans le carnet et choix du nombre de parts, ou mention libre « restes » ou « pas de repas ».",
+      "Liste de courses : ingrédients de la semaine additionnés et rangés par rayon, avec une case « déjà à la maison » et une case « pris ». Ajout libre de produits hors recettes.",
+      "Foyer : nom du foyer, lien d’invitation à copier, liste des membres et retrait d’un membre par le propriétaire. Un lien expiré affiche un message et propose d’en demander un nouveau."
+    ],
+    "donnees": "Prévois un foyer (nom, propriétaire), des membres (compte, foyer), des recettes liées au foyer (nom, parts, étapes), des ingrédients liés à chaque recette (nom, quantité, unité, rayon), des repas planifiés (date, midi ou soir, recette ou mention libre, parts) et des lignes de courses (ingrédient, total, unité, rayon, état). Seuls les membres du foyer voient ses données ; seul le propriétaire invite ou retire un membre et gère l’abonnement.",
+    "criteres": [
+      "Deux recettes avec 200 g de farine donnent une seule ligne de 400 g dans la liste.",
+      "Un même ingrédient noté dans deux unités différentes reste sur deux lignes, sans total faux.",
+      "Doubler les parts d’un repas double les quantités de ses ingrédients dans la liste.",
+      "Changer un repas met la liste à jour sans décocher les produits déjà cochés.",
+      "Une vingt et unième recette est refusée avec un message clair."
+    ]
+  },
+  "construction": [
+    "Créer le carnet de recettes avec les ingrédients, leur quantité, leur unité et leur rayon, puis y saisir cinq vraies recettes de votre entourage.",
+    "Construire le planning des sept jours, midi et soir, avec le choix d’une recette et du nombre de parts dans chaque case, et le déplacement d’un repas.",
+    "Générer la liste de courses regroupée par rayon, avec les cases « déjà à la maison » et « pris », puis vérifier les totaux à la main sur une semaine complète.",
+    "Ajouter l’invitation d’un proche par lien, puis faire préparer une vraie semaine de repas et de courses à trois familles de votre entourage."
+  ],
+  "videos": [
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Problème vécu",
+      "accroche": "18 h 30, le frigo ouvert, et toujours la même question : on mange quoi ce soir ?",
+      "deroule": "Filmez un frigo qu’on ouvre, puis un placard, sans montrer de visage. En voix off, racontez ce moment que tout le monde connaît : on cherche une idée, il manque un ingrédient, on finit par des pâtes. Terminez sur un planning de la semaine rempli, avec ce texte à l’écran : « Et si la question était réglée dès le dimanche ? »",
+      "appel_action": "Demandez en commentaire à quelle heure la question « on mange quoi ? » tombe chez eux."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Démonstration à l’écran",
+      "accroche": "Je place cinq dîners dans ma semaine, et la liste de courses se fait toute seule.",
+      "deroule": "Enregistrement de l’écran du téléphone, sans visage. Glissez cinq recettes dans le planning, puis ouvrez la liste de courses : les ingrédients sont additionnés et rangés par rayon. Indiquez à l’écran que les recettes sont des exemples et que l’appli est en cours de test.",
+      "appel_action": "Invitez à rejoindre la liste d’attente de MenuFacile par le lien du profil."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Checklist",
+      "accroche": "Cinq questions à se poser avant de faire les courses de la semaine.",
+      "deroule": "Texte à l’écran sur des plans de mains qui écrivent dans un carnet. Les cinq questions : quels soirs on mange à la maison, combien de personnes sont à table, quels restes utiliser, ce qui reste dans le placard, quel soir on n’aura pas le temps de cuisiner. Terminez sur le carnet rempli, prêt à devenir une liste.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour la ressortir avant les prochaines courses."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Avant et après",
+      "accroche": "Les courses sans planning, puis les courses avec un planning : même magasin, même famille.",
+      "deroule": "Reconstitution annoncée comme telle. D’abord un chariot rempli au hasard et un retour à la maison avec un deuxième paquet de riz alors qu’il en restait un. Ensuite une liste rangée par rayon sur le téléphone, cochée au fil des allées. Aucun montant ni gain annoncé : seulement les deux façons de faire.",
+      "appel_action": "Demandez en commentaire quel produit ils rachètent toujours alors qu’ils en ont déjà."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Erreur fréquente",
+      "accroche": "L’erreur du planning parfait : prévoir sept soirs de cuisine alors qu’on n’a jamais le temps.",
+      "deroule": "Face caméra, expliquez pourquoi un planning trop ambitieux risque d’être abandonné en milieu de semaine. Proposez de prévoir des soirs « restes » et un soir où l’on improvise. Montrez ensuite ces cases dans le planning MenuFacile, sur une semaine fictive annoncée comme telle.",
+      "appel_action": "Demandez en commentaire combien de soirs par semaine ils cuisinent vraiment."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Coulisses de la construction",
+      "accroche": "Je construis une appli de menus pour les familles. Avant tout, je pose des questions aux parents autour de moi.",
+      "deroule": "Face caméra, dans votre cuisine. Expliquez ce que vous cherchez à comprendre avant de construire : comment les familles décident des repas, où elles notent la liste, ce qu’elles jettent le plus souvent. Partagez seulement ce que vous avez réellement entendu, sans nommer personne.",
+      "appel_action": "Invitez les parents à raconter en commentaire comment ils organisent leurs repas aujourd’hui."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Tutoriel express",
+      "accroche": "Ranger sa liste de courses dans l’ordre des rayons du magasin.",
+      "deroule": "Sans visage, avec des mains et une feuille de papier. Prenez une liste écrite en vrac et recopiez-la en quatre blocs : fruits et légumes, produits frais, épicerie, maison. Expliquez que l’ordre suit le parcours habituel de votre magasin. Montrez à la fin la même liste dans MenuFacile, déjà rangée.",
+      "appel_action": "Proposez d’enregistrer la vidéo et de dire en commentaire par quel rayon commence leur magasin."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Question de la cible",
+      "accroche": "« Et si mes enfants ne veulent pas manger ce qui est prévu mardi ? »",
+      "deroule": "Face caméra, lisez la question affichée en texte. Répondez que le planning n’est pas un contrat : on peut déplacer un repas d’un jour à l’autre. Montrez à l’écran un repas déplacé de mardi à jeudi, et la liste de courses qui reste identique.",
+      "appel_action": "Demandez en commentaire quel plat met tout le monde d’accord chez eux."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Idée reçue",
+      "accroche": "« Planifier ses repas, c’est pour les gens super organisés. »",
+      "deroule": "Face caméra, reconnaissez que les plannings qu’on voit en ligne ont souvent l’air parfaits et intimidants. Montrez une semaine fictive très simple : trois recettes connues, deux soirs de restes, un soir pâtes. Expliquez que l’idée est seulement d’éviter la question du soir, pas de devenir un chef.",
+      "appel_action": "Demandez en commentaire ce qui les a déjà découragés de faire un planning."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Exemple fictif commenté",
+      "accroche": "Une semaine de menus inventée pour une famille de quatre : regardez ce que devient la liste.",
+      "deroule": "Enregistrement d’écran, avec la mention « exemple fictif » affichée tout du long. Parcourez le planning, puis la liste : les oignons de trois recettes deviennent une seule ligne, la crème n’apparaît qu’une fois. Expliquez en voix off pourquoi cette addition évite d’en acheter deux fois ou d’en oublier.",
+      "appel_action": "Invitez à dire en commentaire quel ingrédient revient dans presque toutes leurs recettes."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Journée type",
+      "accroche": "Dimanche soir, sur le canapé, un couple prépare la semaine à deux.",
+      "deroule": "Reconstitution annoncée comme telle, avec des plans de mains et d’écrans. Un couple fictif remplit le planning chacun sur son téléphone : l’un ajoute une recette, l’autre coche ce qui reste dans le placard. Le lundi, en sortant du travail, la liste est prête à l’entrée du magasin.",
+      "appel_action": "Demandez en commentaire à quel moment de la semaine ils préparent leurs courses."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Comparaison",
+      "accroche": "Liste sur papier, note dans le téléphone ou liste partagée : laquelle arrive vraiment jusqu’au magasin ?",
+      "deroule": "Trois plans courts, sans visage. Le papier reste sur la table de la cuisine, la note est sur le téléphone de la personne qui n’est pas au magasin, la liste partagée apparaît chez les deux. Reconnaissez honnêtement que le papier fonctionne très bien pour certaines familles.",
+      "appel_action": "Demandez en commentaire quelle méthode ils utilisent aujourd’hui."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Transparence sur le prix",
+      "accroche": "Le prix testé de MenuFacile est de 4 € par mois. Voici ce qu’il comprend, et ce qu’il ne comprend pas.",
+      "deroule": "Face caméra, avec la liste en texte à l’écran. Ce qui est inclus : le planning de la semaine, un carnet de recettes et la liste de courses partagée. Ce qui ne l’est pas : aucun conseil nutritionnel, aucune commande en ligne, aucun menu imposé. Précisez que ce prix est à l’essai et peut évoluer avec les retours.",
+      "appel_action": "Demandez en commentaire si ce contenu leur suffirait pour organiser leur semaine."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Série",
+      "accroche": "Du plat à la liste, épisode 1 : comment écrire une recette pour que la liste de courses soit juste.",
+      "deroule": "Enregistrement d’écran, sans visage. Montrez la saisie d’une recette fictive de gratin : une quantité et une unité pour chaque ingrédient, et le bon rayon. Expliquez pourquoi « un peu de fromage » ne peut pas s’additionner, alors que « 100 g de fromage » le peut. Annoncez le sujet du prochain épisode.",
+      "appel_action": "Invitez à suivre la série et à proposer en commentaire la recette du prochain épisode."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Problème vécu",
+      "accroche": "Le troisième pot de moutarde entamé au fond du frigo. Qui se reconnaît ?",
+      "deroule": "Plans serrés sans visage : on sort du frigo trois pots identiques, puis deux paquets de riz du placard. En voix off, expliquez que cela arrive quand on fait les courses sans vérifier ce qu’on a déjà. Montrez la case « déjà à la maison » de la liste MenuFacile, cochée avant de partir.",
+      "appel_action": "Demandez en commentaire quel produit s’accumule chez eux sans qu’ils le fassent exprès."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Défi",
+      "accroche": "Défi : préparer les repas d’une seule semaine à l’avance, et raconter honnêtement ce qui a tenu.",
+      "deroule": "Face caméra, lancez le défi pour vous-même : un planning le dimanche, une liste, et un court point chaque soir. Annoncez que vous publierez le bilan réel en fin de semaine, même si le planning a craqué dès mardi. Montrez à l’écran le planning de départ.",
+      "appel_action": "Invitez ceux qui relèvent le défi à le dire en commentaire pour comparer en fin de semaine."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Erreur fréquente",
+      "accroche": "Composer sa liste de courses de mémoire, une fois arrivé devant les rayons.",
+      "deroule": "Reconstitution sans visage dans une cuisine : quelqu’un essaie de se souvenir de ce qui manque en regardant des photos du frigo. Expliquez qu’on oublie facilement l’ingrédient qui ne se voit pas, comme l’huile ou les œufs. Montrez ensuite la liste préparée à la maison, rangée par rayon, qu’il suffit de suivre.",
+      "appel_action": "Demandez en commentaire quel ingrédient ils oublient le plus souvent."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Coulisses de la construction",
+      "accroche": "Pourquoi mon appli de menus ne vous dira jamais quoi manger.",
+      "deroule": "Face caméra, expliquez ce choix : chaque famille a ses plats, ses goûts et ses contraintes, et l’appli ne donne aucun conseil nutritionnel. MenuFacile part donc des recettes de la famille, saisies à la main. Montrez le carnet de recettes vide, puis avec trois recettes fictives.",
+      "appel_action": "Demandez en commentaire les trois recettes qu’ils cuisinent le plus souvent."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Question de la cible",
+      "accroche": "« On n’est que deux : un planning, ça sert vraiment ? »",
+      "deroule": "Face caméra, prenez la question au sérieux : à deux, il arrive souvent de cuisiner trop et d’oublier les restes. Montrez une semaine fictive de couple avec un plat prévu pour deux soirs et une case « restes ». Reconnaissez que certains couples n’en ont pas besoin, et que c’est très bien ainsi.",
+      "appel_action": "Demandez aux couples en commentaire comment ils décident du repas du soir."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Démonstration à l’écran",
+      "accroche": "Une personne au magasin, l’autre à la maison : la même liste sur deux téléphones.",
+      "deroule": "Écran partagé entre deux téléphones, sans visage, avec un foyer fictif. Sur le premier, on ajoute « lait » à la liste ; sur le second, après actualisation, la ligne apparaît et se coche au rayon frais. Terminez sur la liste entièrement cochée des deux côtés.",
+      "appel_action": "Invitez à tester la liste partagée pendant la phase d’essai, en écrivant en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Sketch",
+      "accroche": "« Il reste du beurre à la maison ? » « Aucune idée, j’en reprends. »",
+      "deroule": "Sketch court, joué et présenté comme une fiction. Au téléphone, un parent au magasin et l’autre à la maison ne savent pas ce qui manque, et le frigo finit avec deux plaquettes de beurre. Coupure, puis la même scène avec la liste partagée, où le beurre est déjà coché « déjà à la maison ».",
+      "appel_action": "Demandez en commentaire le dialogue de courses qui revient le plus souvent chez eux."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Checklist",
+      "accroche": "Ce qu’il faut regarder dans la cuisine avant d’écrire la liste de courses.",
+      "deroule": "Plans sans visage, porte après porte : le frigo et ses produits entamés, le congélateur, le placard des pâtes et du riz, les conserves, les épices et l’huile, les produits ménagers. Pour chaque endroit, un mot en texte à l’écran. Terminez sur la case « déjà à la maison » de MenuFacile.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour la ressortir avant la prochaine liste."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Idée reçue",
+      "accroche": "« Un planning de repas, c’est manger la même chose toutes les semaines. »",
+      "deroule": "Face caméra, expliquez que le planning ne dit pas quoi cuisiner : il permet seulement de piocher dans ses propres recettes. Montrez à l’écran deux semaines fictives différentes, composées à partir du même carnet. Précisez que le carnet de la première version contient jusqu’à vingt recettes.",
+      "appel_action": "Demandez en commentaire combien de plats différents tournent chez eux, à peu près."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Réponse à un commentaire",
+      "accroche": "« Il existe déjà plein d’applis de recettes. » Oui, et MenuFacile n’en est pas une.",
+      "deroule": "Si ce commentaire arrive sous une vidéo, affichez-le et répondez face caméra. Expliquez la différence : pas de catalogue de recettes à parcourir, mais vos recettes à vous, un planning et une liste de courses. Reconnaissez qu’une appli de recettes convient mieux à qui cherche des idées de plats.",
+      "appel_action": "Demandez en commentaire s’ils cherchent plutôt des idées de plats ou une organisation."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Exemple fictif commenté",
+      "accroche": "Semaine fictive d’une famille recomposée : cinq à table le week-end, deux en semaine.",
+      "deroule": "Enregistrement d’écran d’un planning inventé et annoncé comme tel. Montrez les soirs à cinq et les soirs à deux, avec le nombre de parts qui change d’une case à l’autre. Ouvrez ensuite la liste : les quantités suivent les parts prévues. Expliquez que c’est justement le cas où la liste faite de tête se trompe.",
+      "appel_action": "Demandez en commentaire si le nombre de personnes à table change souvent chez eux."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Quiz",
+      "accroche": "Trois listes de courses fictives : laquelle oublie un ingrédient des recettes de la semaine ?",
+      "deroule": "Affichez un planning fictif de trois dîners, puis trois listes l’une après l’autre, sans visage. Laissez quelques secondes pour trouver l’oubli, puis révélez la réponse : la sauce tomate de la troisième recette. Terminez en montrant la liste préparée par MenuFacile à partir du même planning.",
+      "appel_action": "Invitez à donner leur réponse en commentaire avant la fin de la vidéo."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Tutoriel express",
+      "accroche": "Le plat du dimanche qui sert aussi le lundi soir : comment le noter dans le planning.",
+      "deroule": "Enregistrement d’écran, sans visage. Placez une recette fictive de poulet rôti le dimanche avec plus de parts, puis marquez le lundi soir en « restes ». Montrez que la liste ne compte les ingrédients qu’une fois. Expliquez que la case « restes » évite surtout d’acheter pour un repas déjà prêt.",
+      "appel_action": "Demandez en commentaire quel plat ils cuisinent exprès en grande quantité."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Retour de testeur",
+      "accroche": "Une famille a testé MenuFacile pendant deux semaines. Voici son avis, partagé avec son accord.",
+      "deroule": "À tourner uniquement avec un retour réel et l’accord écrit de la famille. Affichez sa phrase en texte ou filmez ses mains sur le téléphone, sans visage si elle le préfère. Montrez ensuite la modification faite dans l’appli après ce retour, et gardez aussi les critiques.",
+      "appel_action": "Invitez les familles qui veulent tester à leur tour à écrire en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Journée type",
+      "accroche": "Mercredi, 19 h, le plat prévu n’est pas décongelé : comment le planning rattrape la soirée.",
+      "deroule": "Reconstitution annoncée comme telle, avec des plans de cuisine sans visage. Le plat prévu n’est pas prêt : on ouvre MenuFacile et on déplace le repas de mercredi à jeudi. On regarde ensuite la liste : rien à racheter, tout était déjà prévu pour la semaine.",
+      "appel_action": "Demandez en commentaire ce qu’ils font quand le repas prévu tombe à l’eau."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Coulisses de la construction",
+      "accroche": "Le casse-tête que personne ne voit : additionner 200 g de farine et deux cuillères de farine.",
+      "deroule": "Face caméra, puis écran. Expliquez le choix fait dans MenuFacile : un même ingrédient noté avec deux unités différentes reste sur deux lignes, plutôt que de donner un total faux. Montrez la liste obtenue sur une recette fictive, et demandez si cette solution simple paraît claire.",
+      "appel_action": "Invitez à dire en commentaire comment ils préféreraient voir ces deux lignes."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Problème vécu",
+      "accroche": "La salade achetée lundi, retrouvée fanée vendredi, parce qu’aucun repas ne l’utilisait.",
+      "deroule": "Plans serrés sans visage sur un bac à légumes. En voix off, racontez comment un produit acheté « au cas où » finit oublié quand il n’est prévu dans aucun repas. Montrez ensuite un planning fictif où chaque produit frais de la liste vient d’une recette précise.",
+      "appel_action": "Demandez en commentaire quel produit finit le plus souvent oublié dans leur frigo."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Démonstration à l’écran",
+      "accroche": "La recette de grand-mère sur sa fiche manuscrite, puis dans le carnet de MenuFacile.",
+      "deroule": "Plan sans visage sur une vieille fiche recette écrite à la main, puis enregistrement d’écran. Saisissez les ingrédients un par un, avec quantité, unité et rayon, puis le nombre de parts. Terminez sur la fiche enregistrée dans le carnet, prête à être placée dans la semaine.",
+      "appel_action": "Demandez en commentaire quelle recette de famille ils ajouteraient en premier."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Checklist",
+      "accroche": "Quatre soirs types à prévoir pour qu’un planning tienne toute la semaine.",
+      "deroule": "Texte à l’écran, sans visage : un soir avec un plat que tout le monde connaît, un soir « restes », un soir très rapide, un soir où l’on improvise. Pour chacun, une phrase sur la situation qu’il couvre. Montrez ensuite ces quatre soirs posés dans un planning fictif.",
+      "appel_action": "Demandez en commentaire quel soir type ils ajouteraient à la liste."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Sketch",
+      "accroche": "« On mange quoi ce soir ? » « Je ne sais pas… Des pâtes ? »",
+      "deroule": "Sketch joué et présenté comme une fiction, sur plusieurs soirs d’affilée : le même dialogue revient chaque jour, les tenues changent, la réponse reste « des pâtes ». Dernière scène : la question est posée, et l’autre montre simplement le repas du jour dans le planning, sur son téléphone.",
+      "appel_action": "Demandez en commentaire quel est le plat de secours de leur famille."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Question de la cible",
+      "accroche": "« Comment faire un planning quand on ne sait jamais qui rentre dîner ? »",
+      "deroule": "Face caméra, lisez la question à l’écran. Proposez de prévoir les parts pour la situation la plus fréquente chez vous et de garder un soir « restes » en réserve. Montrez sur un planning fictif comment changer le nombre de parts d’un repas, et la liste qui s’adapte.",
+      "appel_action": "Demandez en commentaire si la tablée change souvent d’un soir à l’autre chez eux."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Avant et après",
+      "accroche": "La porte du frigo couverte de petits papiers, puis la même semaine dans une appli.",
+      "deroule": "Plans sans visage. D’abord une porte de frigo avec des notes éparpillées : un menu barré, « acheter des œufs », un numéro de téléphone. Ensuite, la même semaine reprise dans MenuFacile, avec le planning et la liste rangée. Précisez à l’écran que le contenu est inventé pour l’exemple.",
+      "appel_action": "Demandez en commentaire ce qui est aimanté en ce moment sur leur frigo."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Erreur fréquente",
+      "accroche": "Partir faire les courses en se disant « je verrai sur place ».",
+      "deroule": "Face caméra, puis plans d’un chariot vide, sans visage. Expliquez ce qui se passe souvent : on achète ce qui se voit, on oublie ce qui manque vraiment, et on revient en semaine pour un seul produit. Montrez à la place une liste préparée à partir des repas de la semaine.",
+      "appel_action": "Demandez en commentaire combien de fois par semaine ils retournent au magasin."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Coulisses de la construction",
+      "accroche": "J’ai demandé à des parents une photo de leur liste de courses. Voici ce que j’en ai retenu.",
+      "deroule": "À tourner uniquement si vous avez réellement reçu ces photos, avec l’accord de chaque personne. Floutez les noms et montrez les listes à l’écran, sans visage. Partagez seulement ce que vous avez vraiment observé, puis ce que vous en tirez pour l’appli.",
+      "appel_action": "Invitez les parents à envoyer une photo de leur liste en message privé, s’ils le souhaitent."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Tutoriel express",
+      "accroche": "Inviter la personne qui partage vos repas dans le planning, en trois étapes.",
+      "deroule": "Enregistrement d’écran, avec des comptes fictifs. Dans l’écran du foyer, copiez le lien d’invitation, envoyez-le par message, puis montrez l’autre téléphone qui rejoint le foyer. Terminez sur le même planning affiché sur les deux écrans.",
+      "appel_action": "Invitez à tester le planning à deux pendant la phase d’essai."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Idée reçue",
+      "accroche": "« Faire un planning, ça prend plus de temps que ça n’en fait gagner. »",
+      "deroule": "Face caméra, prenez l’objection au sérieux : la première semaine, il faut saisir ses recettes, et c’est plus long. Expliquez qu’ensuite, on réutilise le même carnet. Sans avancer de durée, montrez la différence entre une première semaine vide et une semaine composée à partir de recettes déjà enregistrées.",
+      "appel_action": "Demandez en commentaire ce qui leur prend le plus de temps dans l’organisation des repas."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Série",
+      "accroche": "Du plat à la liste, épisode 2 : les ingrédients qu’on oublie d’écrire dans ses recettes.",
+      "deroule": "Voix off et enregistrement d’écran, sans visage. Montrez une recette fictive où manquent le sel, l’huile et le bouillon, parce qu’on les croit toujours à la maison. Expliquez l’intérêt de les écrire quand même, puis de les cocher « déjà à la maison » dans la liste.",
+      "appel_action": "Invitez à suivre la série et à proposer en commentaire le sujet de l’épisode 3."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Comparaison",
+      "accroche": "Planifier ses repas dans un tableur ou dans une appli pensée pour ça : ce qui change.",
+      "deroule": "Écran partagé, sans citer de marque. À gauche, un tableur avec les repas et une liste de courses recopiée à la main ; à droite, MenuFacile qui additionne les ingrédients. Reconnaissez honnêtement qu’un tableur bien fait suffit à certaines familles, et dites pour qui l’appli présente un intérêt.",
+      "appel_action": "Demandez en commentaire s’ils ont déjà essayé un tableur pour leurs menus."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Journée type",
+      "accroche": "Le samedi matin d’un couple fictif : une liste, deux personnes, deux magasins.",
+      "deroule": "Reconstitution annoncée comme telle, avec des plans de mains et d’écrans. Le couple se répartit la liste : les fruits et légumes au marché pour l’un, l’épicerie au supermarché pour l’autre. Chacun coche sa partie de son côté, et la liste commune se vide sur les deux téléphones.",
+      "appel_action": "Demandez en commentaire s’ils font les courses ensemble ou chacun de son côté."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Transparence sur le prix",
+      "accroche": "Pourquoi MenuFacile est payant, alors qu’un carnet et un stylo sont gratuits.",
+      "deroule": "Face caméra, sans avancer aucune économie. Expliquez ce que paie l’abonnement de 4 € par mois : l’addition des ingrédients, la liste partagée entre deux téléphones et la mise à jour quand un repas change. Dites franchement qu’un carnet suffit à qui fait déjà ses listes sans difficulté.",
+      "appel_action": "Demandez en commentaire s’ils préfèrent le papier ou le téléphone pour leurs listes."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Problème vécu",
+      "accroche": "Rentrer des courses et découvrir qu’il manque l’ingrédient principal du dîner.",
+      "deroule": "Plans sans visage : des sacs posés sur la table, une recette ouverte, puis un placard vide à l’endroit du riz. En voix off, racontez ce retour au magasin que beaucoup de familles connaissent. Montrez ensuite une liste préparée depuis les recettes prévues, où le riz figure parce qu’il est dans la recette.",
+      "appel_action": "Demandez en commentaire quel oubli les a déjà obligés à ressortir."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Tutoriel express",
+      "accroche": "Ajouter à la liste ce qui n’est dans aucune recette : papier toilette, café, goûters.",
+      "deroule": "Enregistrement d’écran, sans visage. Montrez l’ajout libre en bas de la liste : trois produits tapés à la main, rangés dans leur rayon. Expliquez que la liste réunit ainsi les ingrédients des repas et le reste de la maison, pour une seule sortie au magasin.",
+      "appel_action": "Demandez en commentaire le produit qu’ils ajoutent à chaque liste, sans exception."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Réponse à un commentaire",
+      "accroche": "« Et si je fais mes courses en ligne ? » Voici une réponse honnête.",
+      "deroule": "Si la question arrive en commentaire, affichez-la et répondez face caméra : MenuFacile ne passe aucune commande. Montrez que la liste reste lisible sur le téléphone et qu’on peut s’en servir pour remplir soi-même son panier sur un autre site. Expliquez que ce choix garde l’appli simple.",
+      "appel_action": "Demandez en commentaire s’ils font plutôt leurs courses en magasin ou en ligne."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Exemple fictif commenté",
+      "accroche": "Semaine fictive avec deux soirs d’activités pour les enfants : les repas à prévoir la veille.",
+      "deroule": "Enregistrement d’écran d’un planning inventé, annoncé comme tel. Montrez les deux soirs chargés marqués « restes », avec le plat cuisiné la veille en plus grande quantité. Parcourez la liste pour montrer que rien n’est acheté en trop pour ces soirs-là.",
+      "appel_action": "Demandez en commentaire quel soir de la semaine est le plus chargé chez eux."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Coulisses de la construction",
+      "accroche": "Pourquoi le carnet de MenuFacile s’arrête à vingt recettes dans la première version.",
+      "deroule": "Face caméra, expliquez le choix : commencer petit pour vérifier que les familles utilisent vraiment le planning chaque semaine, avant d’ajouter de la place. Montrez le carnet et le message affiché quand il est plein. Demandez si vingt recettes suffiraient à leur famille.",
+      "appel_action": "Invitez à dire en commentaire combien de recettes différentes ils cuisinent vraiment."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Défi",
+      "accroche": "Défi du placard : une semaine de repas qui commence par ce qui est déjà à la maison.",
+      "deroule": "Face caméra, puis plans sans visage du placard ouvert. Listez à l’écran ce qui s’y trouve, choisissez des recettes qui l’utilisent, puis montrez la liste de courses avec de nombreuses lignes cochées « déjà à la maison ». Annoncez un bilan honnête en fin de semaine.",
+      "appel_action": "Invitez à relever le défi et à raconter en commentaire le repas le plus inattendu."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Question de la cible",
+      "accroche": "« Mes recettes sont dans ma tête, pas écrites. Je fais comment ? »",
+      "deroule": "Face caméra, puis écran. Proposez de commencer par trois plats qu’on cuisine sans y penser, et d’écrire seulement les ingrédients à acheter, sans les étapes. Montrez une recette fictive saisie ainsi dans MenuFacile, avec les étapes laissées vides.",
+      "appel_action": "Demandez en commentaire quel plat ils savent préparer les yeux fermés."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Checklist",
+      "accroche": "Avant de valider la semaine, relisez ces quatre points du planning.",
+      "deroule": "Enregistrement d’écran d’un planning fictif, avec un surligneur virtuel. Les quatre points : un soir sans cuisine est prévu, les parts correspondent aux personnes présentes, les restes sont utilisés, les produits qui s’abîment vite sont cuisinés en début de semaine. Terminez sur la liste prête.",
+      "appel_action": "Demandez en commentaire quel cinquième point ils ajouteraient."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Vidéo à partager au foyer",
+      "accroche": "À envoyer à la personne qui fait les courses avec vous : comment utiliser la liste partagée.",
+      "deroule": "Vidéo pensée pour être transférée à un proche. Enregistrement d’écran sans visage : ouvrir le lien d’invitation, trouver la liste, cocher « pris » en magasin et ajouter un produit oublié. Le texte à l’écran reste court et lisible pour quelqu’un qui n’a jamais utilisé l’appli.",
+      "appel_action": "Invitez à envoyer la vidéo à la personne qui partage leurs courses."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Erreur fréquente",
+      "accroche": "Recopier la même liste de courses chaque semaine, alors que les repas changent.",
+      "deroule": "Face caméra, puis plans sans visage d’une liste recopiée à la main. Expliquez qu’une liste « habituelle » oublie les ingrédients des nouveaux plats et rachète ceux des plats absents. Montrez une liste MenuFacile qui repart des repas prévus cette semaine-là.",
+      "appel_action": "Demandez en commentaire s’ils ont une liste de base qui revient chaque semaine."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Démonstration à l’écran",
+      "accroche": "Un repas change jeudi : regardez la liste de courses se mettre à jour.",
+      "deroule": "Enregistrement d’écran sur une semaine fictive. Remplacez le gratin de jeudi par une omelette, puis ouvrez la liste : le fromage diminue, les œufs augmentent, les cases déjà cochées restent cochées. Expliquez en voix off pourquoi ce détail évite de refaire la liste.",
+      "appel_action": "Invitez à rejoindre les familles testeuses en écrivant « menu » en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Retour de testeur",
+      "accroche": "Ce qu’une famille testeuse a voulu changer dans MenuFacile, et ce que j’ai modifié.",
+      "deroule": "À tourner uniquement avec un retour réel, partagé avec l’accord de la famille. Affichez sa remarque en texte, puis montrez l’appli avant et après la modification. Si vous avez décidé de ne pas suivre une demande, expliquez honnêtement pourquoi.",
+      "appel_action": "Demandez en commentaire ce qu’ils changeraient en premier dans l’appli."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Idée reçue",
+      "accroche": "« Les plannings de repas, c’est pour les familles nombreuses. »",
+      "deroule": "Face caméra, montrez trois plannings fictifs côte à côte : une personne seule avec des restes, un couple qui rentre tard, une famille de cinq. Expliquez que la question du soir se pose partout, avec des contraintes différentes. Reconnaissez que MenuFacile vise d’abord les familles et les couples.",
+      "appel_action": "Demandez en commentaire ce qui complique le plus le repas du soir chez eux."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Appel aux testeurs",
+      "accroche": "Je cherche cinq familles pour tester MenuFacile pendant deux semaines.",
+      "deroule": "Face caméra, dans votre cuisine. Expliquez simplement ce que le test demande : saisir quelques recettes, préparer deux semaines de repas et donner un avis honnête. Précisez ce que vous offrez, l’accès gratuit pendant l’essai, et ce que vous ne promettez pas. Montrez un planning fictif pour rendre l’idée concrète.",
+      "appel_action": "Invitez les familles intéressées à écrire « test » en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Quiz",
+      "accroche": "Dans quel rayon ranger les œufs, la crème fraîche et les pois chiches en boîte ? Petit quiz.",
+      "deroule": "Texte à l’écran, sans visage, un produit à la fois. Laissez quelques secondes pour répondre, puis révélez le rayon choisi dans MenuFacile. Expliquez que chaque magasin est organisé différemment et qu’on peut changer le rayon d’un ingrédient pour suivre son propre parcours.",
+      "appel_action": "Invitez à donner leurs réponses en commentaire avant la fin."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Bilan d’étape",
+      "accroche": "Premier mois de test de MenuFacile : ce qui a marché, et ce qui n’a pas marché.",
+      "deroule": "À tourner uniquement avec vos constats réels. Face caméra, partagez trois apprentissages : une fonction retirée, une étape qui bloquait, un usage imprévu. Montrez à l’écran les changements faits en conséquence. Si peu de familles ont continué, dites-le : cette franchise fait l’intérêt de la vidéo.",
+      "appel_action": "Invitez à suivre le projet et à écrire pour rejoindre le prochain groupe de familles testeuses."
+    }
+  ],
+  "roadmap": [
+    {
+      "titre": "Vérifier que les familles veulent planifier",
+      "periode": "Mois 1",
+      "objectif": "Vérifier que des familles et des couples vivent vraiment la question « on mange quoi ? » comme une corvée, et qu’ils accepteraient de préparer leurs repas une fois par semaine.",
+      "actions": [
+        "Mener dix conversations avec des parents ou des couples, en leur faisant raconter comment ils ont décidé des repas et fait les courses la semaine dernière.",
+        "Demander à cinq familles une photo de leur dernière liste de courses, avec leur accord, pour voir comment elles s’organisent.",
+        "Faire tester un planning sur une simple feuille partagée à cinq familles pendant deux semaines."
+      ],
+      "indicateur": "Au moins trois familles remplissent encore la feuille la deuxième semaine et demandent à continuer."
+    },
+    {
+      "titre": "Construire le planning et la liste de courses",
+      "periode": "Mois 2",
+      "objectif": "Construire uniquement le carnet de vingt recettes, le planning de sept jours et la liste de courses partagée, dans vos {heures_par_semaine} heures par semaine.",
+      "actions": [
+        "Copier le prompt du dossier et construire écran par écran, en vérifiant chaque étape sur votre téléphone.",
+        "Saisir vos propres recettes et préparer une vraie semaine de repas pour repérer ce qui manque ou ce qui gêne.",
+        "Vérifier à la main les totaux de la liste de courses sur trois semaines fictives différentes."
+      ],
+      "indicateur": "Trois familles testeuses préparent leur semaine et font leurs courses avec l’appli sans vous demander d’aide."
+    },
+    {
+      "titre": "Lancer et trouver les premières familles abonnées",
+      "periode": "Mois 3",
+      "objectif": "Transformer les familles testeuses en premiers clients payants, au prix testé de 4 € par mois, puis ouvrir l’appli à quelques familles de plus.",
+      "actions": [
+        "Proposer l’abonnement aux familles qui ont utilisé le planning au moins deux semaines de suite.",
+        "Brancher le paiement en mode test, vérifier un abonnement complet, puis passer en mode réel.",
+        "Partager un exemple de semaine dans deux groupes de parents, avec l’accord des administrateurs, et répondre à chaque question."
+      ],
+      "indicateur": "Une première famille paie son abonnement et prépare encore sa semaine avec l’appli le mois suivant."
+    },
+    {
+      "titre": "Publier des vidéos chaque semaine",
+      "periode": "Mois 4 à 5",
+      "objectif": "Faire connaître MenuFacile auprès des familles et des couples avec vos idées de vidéos, à un rythme que vous pouvez tenir pendant deux mois.",
+      "actions": [
+        "Tourner deux à trois vidéos par semaine, en commençant par les formats problème vécu, démonstration à l’écran et avant et après.",
+        "Répondre à chaque commentaire et proposer l’essai aux personnes qui racontent leurs difficultés avec les repas de la semaine.",
+        "Noter chaque semaine les vidéos qui amènent des messages ou des essais, puis reprendre ces sujets sous un autre angle."
+      ],
+      "indicateur": "Huit semaines de publication régulière et au moins trois sujets qui amènent des demandes d’essai."
+    },
+    {
+      "titre": "Ajuster le prix et garder les familles",
+      "periode": "Mois 6 à 7",
+      "objectif": "Comprendre pourquoi des familles gardent ou arrêtent leur abonnement, et adapter l’offre à ce qu’elles utilisent vraiment chaque semaine.",
+      "actions": [
+        "Contacter chaque famille qui a arrêté pour connaître la raison, sans insister pour la faire revenir.",
+        "Tester une formule annuelle à côté du prix mensuel, annoncée clairement aux nouvelles familles.",
+        "Ajouter seulement l’amélioration la plus demandée par les familles qui paient, si elle reste simple."
+      ],
+      "indicateur": "La plupart des familles abonnées depuis trois mois préparent encore leur semaine avec l’appli au moins une fois par mois."
+    },
+    {
+      "titre": "Trouver un canal qui se répète",
+      "periode": "Mois 8 à 10",
+      "objectif": "Obtenir de nouveaux essais chaque semaine sans dépendre d’une nouvelle idée de vidéo.",
+      "actions": [
+        "Proposer un atelier gratuit sur l’organisation des repas de la semaine à une association de parents, une crèche ou un centre social.",
+        "Demander aux familles satisfaites de présenter l’appli à des proches, avec leur accord.",
+        "Proposer à des personnes qui partagent des recettes familiales en ligne de montrer une semaine préparée dans l’appli, seulement si l’outil leur plaît.",
+        "Comparer les canaux selon les essais et les abonnements obtenus, puis arrêter ceux qui n’apportent rien."
+      ],
+      "indicateur": "Un canal apporte de nouveaux essais chaque semaine pendant un mois entier."
+    },
+    {
+      "titre": "Automatiser et faire le bilan",
+      "periode": "Mois 11 à 12",
+      "objectif": "Réduire le temps passé sur les tâches répétitives, puis comparer vos revenus réels à votre objectif de {objectif_revenu}.",
+      "actions": [
+        "Automatiser le message de bienvenue, les réponses aux questions fréquentes et le suivi des paiements.",
+        "Faire le bilan de l’année : temps passé, dépenses, nombre de familles abonnées et revenu mensuel réel.",
+        "Décider de continuer, d’ajuster l’offre ou d’arrêter, à partir des chiffres réels de l’année."
+      ],
+      "indicateur": "Un bilan écrit avec le revenu mensuel réel, le nombre de familles actives et la décision prise pour l’année suivante."
+    }
+  ]
+}

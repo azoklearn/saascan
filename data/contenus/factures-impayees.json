@@ -1,0 +1,530 @@
+{
+  "idea_id": "factures-impayees",
+  "risque": "Le principal risque : un freelance sait déjà qu’un client est en retard, mais repousse la relance par gêne, et une simple liste ne suffit pas à le faire passer à l’action. Avant de construire, proposez à cinq freelances un tableau de leurs factures en cours et trois modèles de relance, puis comptez combien de relances ils envoient vraiment en deux semaines.",
+  "prompt": {
+    "produit": "PayéÀTemps aide un freelance à suivre les factures qu’il a déjà envoyées et à savoir chaque jour qui relancer. Il saisit à la main le client, le numéro, le montant et l’échéance. Dès qu’une échéance est dépassée, la facture remonte dans la liste « À relancer » avec un texte poli prêt à copier dans son email ou son SMS. Il note ensuite la relance envoyée, puis le paiement reçu. L’outil ne crée aucune facture, n’envoie aucun message à sa place, ne calcule aucune pénalité et ne donne aucun conseil juridique.",
+    "ecrans": [
+      "Accueil « À relancer » : factures dont l’échéance est dépassée, triées par jours de retard, puis celles qui arrivent à échéance dans les sept jours. L’état vide invite à saisir une première facture.",
+      "Nouvelle facture : client choisi ou créé en deux champs, numéro, montant, date d’envoi et échéance. Une échéance antérieure à l’envoi ou un montant vide affiche un message qui explique quoi corriger.",
+      "Factures : liste filtrée par statut (en attente, en retard, payée), recherche par client ou numéro et total restant à encaisser. Un bouton marque une facture payée avec la date du paiement.",
+      "Fiche facture : détails, contact pour les paiements, date de paiement promise, notes privées et historique des relances avec leur date et le moyen utilisé (email, SMS ou appel).",
+      "Préparer une relance : choix du modèle (aimable, deuxième relance, dernier rappel), texte prérempli avec le client, le numéro, le montant et l’échéance, bouton « Copier » puis bouton « J’ai relancé ».",
+      "Modèles : trois textes de départ à adapter à sa façon d’écrire, un bouton pour revenir à la version d’origine et un encart rappelant que ces modèles ne sont pas des conseils juridiques."
+    ],
+    "donnees": "Prévois un compte freelance (email, nom affiché, signature des relances), des clients liés au compte (nom, contact pour les paiements, email, téléphone, notes), des factures liées à un client (numéro, montant, date d’envoi, échéance, statut, date promise, date de paiement, notes privées), des relances liées à une facture (modèle, moyen, date) et des modèles modifiables. Seul le titulaire du compte voit ses clients, factures, relances et modèles ; ses clients n’ont jamais accès à l’outil.",
+    "criteres": [
+      "Une facture dont l’échéance est dépassée apparaît dans « À relancer » avec le bon nombre de jours de retard.",
+      "Le texte copié ne contient aucun champ vide ni aucune information d’une autre facture.",
+      "Une facture marquée payée quitte « À relancer » et sort du total restant à encaisser.",
+      "Chaque clic sur « J’ai relancé » ajoute une ligne datée dans l’historique de la facture.",
+      "Aucun email ni SMS n’est jamais envoyé par l’outil à un client du freelance."
+    ]
+  },
+  "construction": [
+    "Créer la saisie d’une facture et la liste des factures avec les trois statuts (en attente, en retard, payée) et le total restant à encaisser.",
+    "Construire l’accueil « À relancer » qui classe les factures en retard par nombre de jours, avec un état vide qui invite à saisir une première facture.",
+    "Rédiger les trois modèles de relance, puis faire fonctionner le texte prérempli, le bouton « Copier » et l’enregistrement de la relance dans l’historique.",
+    "Faire saisir leurs factures en cours à trois freelances de votre entourage pendant une semaine, avec des initiales à la place des noms s’ils le souhaitent, puis noter ce qui les bloque."
+  ],
+  "videos": [
+    {
+      "plateforme": "TikTok",
+      "format": "Problème vécu",
+      "accroche": "Vous avez envoyé la facture il y a six semaines, et vous n’osez toujours pas relancer.",
+      "deroule": "Face caméra, assis devant un ordinateur portable fermé. Racontez la petite gêne qu’on ressent avant de relancer : peur de paraître pressant, envie de garder le client, message écrit puis effacé. Terminez en affichant à l’écran la question : « Et si la relance était déjà écrite ? »",
+      "appel_action": "Dites en commentaire depuis combien de temps vous repoussez une relance."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Démonstration à l’écran",
+      "accroche": "Voici ce que PayéÀTemps vous montre le matin : les factures à relancer aujourd’hui.",
+      "deroule": "Enregistrement d’écran d’un téléphone, sans visage, avec des factures fictives signalées comme telles. On ouvre la liste « À relancer », on touche une facture en retard, on choisit la relance aimable et on appuie sur « Copier ». Terminez sur le texte collé dans un email, prêt à partir.",
+      "appel_action": "Écrivez « test » en message privé pour essayer la version bêta."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Coulisses de la construction",
+      "accroche": "Je construis un petit outil pour les freelances qui n’osent pas relancer. Voici pourquoi il n’envoie rien à leur place.",
+      "deroule": "Face caméra, expliquez le choix : une relance part de votre adresse, avec vos mots, au moment que vous choisissez. Montrez à l’écran le bouton « Copier » puis le bouton « J’ai relancé ». Dites que l’outil sert à ne plus oublier, pas à parler à votre place.",
+      "appel_action": "Dites en commentaire si vous préférez garder la main sur vos relances ou tout confier à un outil."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Checklist",
+      "accroche": "Avant d’envoyer une relance, vérifiez ces cinq informations.",
+      "deroule": "Texte à l’écran et voix off, sans visage. Affichez les cinq points un par un : numéro de la facture, montant exact, date d’échéance, bonne personne à contacter, facture jointe au message. Pour chacun, une phrase sur le souci qu’il évite, comme un client qui répond qu’il ne retrouve pas la facture.",
+      "appel_action": "Enregistrez la vidéo pour la ressortir à votre prochaine relance."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Erreur fréquente",
+      "accroche": "L’erreur qui fait traîner les paiements : attendre d’être à découvert pour relancer.",
+      "deroule": "Face caméra, expliquez qu’une relance envoyée quand on est déjà inquiet sort souvent plus sèche que prévu. Proposez l’habitude inverse : regarder ses factures à un moment fixe, par exemple le lundi matin, et relancer calmement dès que l’échéance est passée. Affichez cette habitude en texte à la fin.",
+      "appel_action": "Dites en commentaire quel jour de la semaine vous vous occupez de vos papiers."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Question de la cible",
+      "accroche": "« Comment relancer un client sans abîmer la relation ? »",
+      "deroule": "Face caméra, lisez la question affichée à l’écran. Proposez une formulation qui laisse une porte de sortie au client : supposer un simple oubli, rappeler le numéro et le montant, demander une date de paiement. Montrez ensuite ce modèle dans PayéÀTemps, rempli avec une facture fictive.",
+      "appel_action": "Partagez en commentaire la phrase que vous utilisez pour une première relance."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Avant et après",
+      "accroche": "Les factures suivies dans un carnet, puis dans une liste qui dit qui relancer.",
+      "deroule": "Plans serrés sur les mains, sans visage. D’abord un carnet avec des montants barrés, des flèches et un « payé ? » écrit au crayon. Ensuite, le téléphone qui affiche les mêmes factures fictives, classées en attente, en retard et payées. Restez quelques secondes sur la liste « À relancer ».",
+      "appel_action": "Dites en commentaire comment vous suivez vos factures aujourd’hui."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Idée reçue",
+      "accroche": "« Relancer un client, ça fait mauvais genre. »",
+      "deroule": "Face caméra, reconnaissez que cette gêne est très répandue chez les indépendants. Expliquez qu’un retard peut venir d’un simple oubli côté client : facture égarée, mauvaise adresse, personne absente. Montrez à l’écran une relance courte et aimable qui part de cette hypothèse, sans reproche.",
+      "appel_action": "Dites en commentaire si vous avez déjà hésité des jours avant de relancer un client."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Tutoriel express",
+      "accroche": "Trois relances, trois styles : aimable, claire, puis ferme.",
+      "deroule": "Texte à l’écran sur fond uni, sans visage. Montrez les trois modèles l’un après l’autre en soulignant les mots qui changent : « petit rappel », « nous n’avons pas encore reçu », « merci de régler avant le ». Précisez que chaque texte se modifie pour ressembler à votre façon d’écrire.",
+      "appel_action": "Enregistrez la vidéo pour garder les trois modèles sous la main."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Transparence sur le prix",
+      "accroche": "PayéÀTemps coûtera 9 € par mois. Voici ce que ce prix comprend, et ce qu’il ne comprend pas.",
+      "deroule": "Face caméra, avec la liste en texte à l’écran. Inclus : la liste de vos factures, les rappels de relance dans l’outil, les modèles à copier et l’historique. Non inclus : la création de factures, la facturation électronique, l’envoi automatique et tout conseil juridique. Précisez que ce prix est encore à l’essai.",
+      "appel_action": "Dites en commentaire si ce périmètre vous suffirait."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Journée type",
+      "accroche": "Lundi matin, avant le premier rendez-vous : qui a payé, et qui relancer ?",
+      "deroule": "Reconstitution annoncée comme telle : une tasse de café, un ordinateur, puis enregistrement d’écran. On marque une facture fictive comme payée, on prépare une relance pour une autre et on note qu’un client a promis de régler vendredi. Affichez en surimpression que les factures sont inventées.",
+      "appel_action": "Dites en commentaire à quel moment de la semaine vous vérifiez vos paiements."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Exemple fictif commenté",
+      "accroche": "Cette facture est inventée. Voici les trois lignes à regarder avant de relancer.",
+      "deroule": "Enregistrement d’écran d’une fiche facture fictive. Entourez l’échéance, l’historique des relances et la note privée, en expliquant en voix off ce que chacune change : relancer ou attendre, quel modèle choisir, qui contacter. Laissez affiché pendant toute la vidéo que l’exemple est fictif.",
+      "appel_action": "Dites en commentaire quelle information vous manque le plus au moment de relancer."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Réponse à un commentaire",
+      "accroche": "« Mon logiciel de facturation relance déjà. » Alors cet outil n’est peut-être pas pour vous.",
+      "deroule": "Si ce commentaire arrive sous une vidéo, affichez-le et répondez face caméra, honnêtement : si votre outil actuel vous convient, gardez-le. Expliquez pour qui PayéÀTemps est pensé : les freelances qui font leurs factures dans un tableur ou un document, et qui veulent seulement une liste claire et des textes à copier.",
+      "appel_action": "Dites en commentaire avec quoi vous faites vos factures aujourd’hui."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Comparaison",
+      "accroche": "Relancer par email, par SMS ou par téléphone : lequel choisir ?",
+      "deroule": "Face caméra, trois courts passages avec le moyen affiché en texte. L’email garde une trace écrite, le SMS se lit vite, l’appel permet d’obtenir une date. Montrez ensuite dans PayéÀTemps que l’historique note le moyen utilisé pour chaque relance, et qu’un appel peut être suivi d’une note.",
+      "appel_action": "Dites en commentaire quel moyen fonctionne le mieux avec vos clients."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Série",
+      "accroche": "Une phrase de relance décortiquée chaque semaine. Épisode 1 : l’objet de l’email.",
+      "deroule": "Texte à l’écran et voix off, sans visage. Comparez un objet vague comme « Petit rappel » avec un objet précis qui cite le numéro de facture et la date d’échéance, sur un exemple fictif. Expliquez pourquoi un objet précis aide le client à retrouver la facture. Annoncez le sujet du prochain épisode.",
+      "appel_action": "Suivez la série et proposez en commentaire la phrase du prochain épisode."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Sketch",
+      "accroche": "« Oui oui, le virement part cette semaine. »",
+      "deroule": "Sketch court, joué et présenté comme une fiction : un freelance raccroche, rassuré, puis oublie la promesse. Des semaines plus tard, il cherche encore la date dans ses messages. Deuxième version : il note la date promise dans la fiche facture et la retrouve dans « À relancer » dès le lendemain de cette date.",
+      "appel_action": "Dites en commentaire la phrase de client que vous entendez le plus souvent."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Erreur fréquente",
+      "accroche": "Relancer la personne qui a commandé la mission, alors que c’est la comptabilité qui paie.",
+      "deroule": "Face caméra, expliquez que dans une entreprise, la personne qui commande n’est pas toujours celle qui règle les factures. Conseillez de demander dès le début de la mission qui s’occupe des paiements. Montrez à l’écran le champ « contact pour les paiements » dans la fiche d’un client fictif.",
+      "appel_action": "Dites en commentaire si vous demandez ce contact dès le début d’une mission."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Tutoriel express",
+      "accroche": "Le réflexe qui évite la réponse « Je ne retrouve pas votre facture ».",
+      "deroule": "Enregistrement d’écran, sans visage : retrouvez le fichier de la facture, joignez-le à l’email, puis collez le texte copié depuis PayéÀTemps. Expliquez que le client n’a alors rien à chercher. Précisez que l’outil ne stocke pas vos fichiers : il garde seulement le numéro, le montant et l’échéance.",
+      "appel_action": "Enregistrez la vidéo et essayez ce réflexe à votre prochaine relance."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Question de la cible",
+      "accroche": "« Et si le client ne répond à aucune relance ? »",
+      "deroule": "Face caméra, lisez la question à l’écran. Dites clairement que vous ne donnerez pas de conseil juridique : les démarches possibles et les règles sur les pénalités de retard sont expliquées sur les sites officiels, et un professionnel peut vous orienter. Montrez ensuite comment l’historique des relances garde la trace de chaque échange.",
+      "appel_action": "Dites en commentaire vers qui vous vous tournez quand un client ne répond plus."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Problème vécu",
+      "accroche": "Fin du mois, vous comptez sur un virement. Il n’arrive pas.",
+      "deroule": "Plans sans visage : une application bancaire floutée, un calendrier, une facture fictive posée sur le bureau. Voix off : on se rend compte trop tard qu’on n’a jamais relancé ce client. Terminez sur la liste « À relancer » qui aurait signalé le retard dès le lendemain de l’échéance.",
+      "appel_action": "Dites en commentaire si cette situation vous parle."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Checklist",
+      "accroche": "Cinq habitudes pour ne plus perdre le fil de ses factures.",
+      "deroule": "Face caméra, puis liste en texte à l’écran. Envoyer la facture dès la fin de la mission, noter l’échéance le jour de l’envoi, garder le contact qui s’occupe des paiements, vérifier ses encaissements à date fixe, relancer dès que l’échéance est passée. Précisez que pour les mentions obligatoires, il faut consulter les sites officiels.",
+      "appel_action": "Dites en commentaire l’habitude que vous ajouteriez à cette liste."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Démonstration à l’écran",
+      "accroche": "Saisir une facture dans PayéÀTemps, du nom du client à l’échéance.",
+      "deroule": "Enregistrement d’écran d’un téléphone, sans visage. Créez un client fictif, saisissez le numéro, le montant, la date d’envoi et l’échéance, puis enregistrez. Montrez la facture apparaître dans la liste en attente et le total restant à encaisser se mettre à jour.",
+      "appel_action": "Écrivez « test » en message privé pour saisir vos propres factures dans la version bêta."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Coulisses de la construction",
+      "accroche": "Écrire une première relance polie est plus difficile qu’il n’y paraît. Voici mes brouillons.",
+      "deroule": "Enregistrement d’écran d’un document avec vos brouillons successifs, sans visage. Montrez ce que vous avez retiré à chaque version : les excuses en trop, les reproches, les phrases trop longues. Terminez sur la version gardée dans les modèles de PayéÀTemps.",
+      "appel_action": "Dites en commentaire ce que vous changeriez dans la version finale."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Idée reçue",
+      "accroche": "« Un bon client paie toujours à l’heure. »",
+      "deroule": "Face caméra, expliquez qu’un retard ne dit pas grand-chose de la relation : validation interne, facture égarée, personne en congé. Proposez de séparer les deux sujets : on peut apprécier un client et suivre ses paiements avec rigueur. Montrez la note privée où l’on garde le contexte d’un retard, sur un exemple fictif.",
+      "appel_action": "Dites en commentaire si l’un de vos meilleurs clients a déjà payé en retard."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Transparence sur le prix",
+      "accroche": "Pour certains freelances, un outil de relance à 9 € par mois n’a aucun intérêt. Voici lesquels.",
+      "deroule": "Face caméra, sans avancer aucun gain. Expliquez que si vous envoyez une ou deux factures par mois et que vos clients paient sans retard, un carnet suffit. Dites pour qui l’outil est pensé : plusieurs factures par mois, plusieurs clients, et des relances qu’on oublie ou qu’on repousse.",
+      "appel_action": "Dites en commentaire combien de factures vous suivez en même temps."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Modèle à copier",
+      "accroche": "Le SMS à envoyer quand une facture a dépassé son échéance d’un jour.",
+      "deroule": "Texte à l’écran, sans visage, sur un écran de téléphone. Affichez un SMS court et aimable : rappel du numéro, d’un montant fictif et de l’échéance, puis question sur la date de paiement prévue. Laissez le texte affiché assez longtemps pour qu’on puisse en faire une capture.",
+      "appel_action": "Faites une capture d’écran du message pour l’adapter à vos clients."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Appel aux testeurs",
+      "accroche": "Je cherche des freelances qui envoient plusieurs factures par mois pour tester un outil de relance.",
+      "deroule": "Face caméra, expliquez ce que le test demande : saisir leurs factures en cours pendant quelques semaines, utiliser les modèles et donner un avis honnête. Précisez ce que l’outil ne fait pas, et que les noms des clients peuvent être remplacés par des initiales. Montrez l’accueil avec des factures fictives.",
+      "appel_action": "Écrivez « test » en message privé si vous voulez participer."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Question à la communauté",
+      "accroche": "Freelances : quelle a été la relance la plus difficile à envoyer de votre vie ?",
+      "deroule": "Face caméra très court, sans parler du produit au début. Racontez une situation présentée comme fictive : un client sympathique, une grosse facture et l’impression de le déranger. Posez la question et expliquez que les réponses serviront à améliorer les modèles de relance.",
+      "appel_action": "Racontez votre histoire en commentaire, sans jamais nommer le client."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Étapes à suivre",
+      "accroche": "Facture en retard : les quatre étapes, de la relance aimable au dernier rappel.",
+      "deroule": "Texte à l’écran et voix off, sans visage. Étape un : vérifier que la facture a bien été reçue. Étape deux : relance aimable. Étape trois : deuxième relance plus claire, avec une date. Étape quatre : dernier rappel, puis se renseigner sur les suites possibles auprès des sources officielles ou d’un professionnel.",
+      "appel_action": "Enregistrez la vidéo pour savoir où vous en êtes à chaque retard."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Retour de testeur",
+      "accroche": "Une personne qui a testé PayéÀTemps donne son avis, partagé avec son accord.",
+      "deroule": "À tourner uniquement avec un retour réel et l’accord écrit de la personne. Affichez sa phrase en texte ou filmez-la quelques secondes, puis montrez la modification apportée à l’outil après son retour. Si l’avis est mitigé, gardez-le : c’est ce qui rend la vidéo crédible.",
+      "appel_action": "Écrivez en message privé pour rejoindre les prochains testeurs."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Erreur fréquente",
+      "accroche": "S’excuser trois fois dans une relance, pour une facture que le client vous doit.",
+      "deroule": "Face caméra, lisez à voix haute une relance fictive pleine de « désolé de vous déranger ». Réécrivez-la à l’écran : une formule de politesse, les informations utiles, une question claire. Expliquez qu’on peut rester aimable sans s’excuser de demander à être payé.",
+      "appel_action": "Dites en commentaire la formule d’excuse que vous glissez toujours dans vos relances."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Démonstration à l’écran",
+      "accroche": "Le client a payé : un geste, et la facture sort de la liste à relancer.",
+      "deroule": "Enregistrement d’écran, sans visage. Ouvrez une facture fictive en retard, appuyez sur « Marquer payée » et choisissez la date du virement. Revenez à l’accueil pour montrer que la facture n’apparaît plus et que le total restant à encaisser a baissé.",
+      "appel_action": "Dites en commentaire si vous notez la date de chaque paiement reçu."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Conseil de freelance",
+      "accroche": "Parlez de la date de paiement dès le devis, pas au moment de relancer.",
+      "deroule": "Face caméra, puis texte à l’écran. Expliquez qu’une relance est plus simple à écrire quand la date de paiement a été discutée et notée dès le départ. Précisez que les délais de paiement et les mentions à faire figurer sont encadrés : renvoyez vers les sites officiels ou un professionnel plutôt que de donner une règle.",
+      "appel_action": "Dites en commentaire si vous abordez le paiement dès le premier échange avec un client."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Idée reçue",
+      "accroche": "« Si je relance, il ne me confiera plus de mission. »",
+      "deroule": "Face caméra, reconnaissez que cette peur est légitime et que personne ne peut rien garantir. Expliquez ce qui aide à préserver la relation : une relance courte, factuelle et polie, envoyée tôt, plutôt qu’un message tendu après des semaines de silence. Montrez un modèle de relance aimable à l’écran.",
+      "appel_action": "Dites en commentaire si une relance a déjà changé quelque chose dans une relation client, en bien ou en mal."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Série",
+      "accroche": "Épisode 2 de la série sur les relances : la première phrase.",
+      "deroule": "Voix off et texte à l’écran, sans visage. Comparez trois débuts fictifs : un reproche, une excuse, puis une phrase neutre qui rappelle la mission réalisée. Expliquez pourquoi la phrase neutre évite de mettre le client sur la défensive. Annoncez le prochain épisode : la phrase qui demande une date.",
+      "appel_action": "Suivez la série et proposez en commentaire votre propre première phrase."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Choix de conception",
+      "accroche": "Pourquoi PayéÀTemps ne crée pas vos factures.",
+      "deroule": "Face caméra, expliquez le choix : beaucoup de freelances ont déjà leur façon de faire leurs factures, et la facturation obéit à des règles qu’un petit outil ne doit pas prétendre gérer. PayéÀTemps commence après l’envoi : suivre, relancer, noter le paiement. Montrez la saisie d’une facture fictive déjà envoyée.",
+      "appel_action": "Dites en commentaire avec quel outil vous créez vos factures."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Tutoriel express",
+      "accroche": "Adapter un modèle de relance pour qu’il ressemble à votre façon d’écrire.",
+      "deroule": "Enregistrement d’écran de la page Modèles, sans visage. Remplacez la formule d’accueil par votre salutation habituelle, ajoutez votre signature et raccourcissez une phrase. Montrez ensuite une relance préparée avec ce modèle, puis le bouton qui permet de revenir au texte d’origine.",
+      "appel_action": "Dites en commentaire comment vous saluez vos clients dans un email."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Situation du quotidien",
+      "accroche": "Trois clients, cinq factures, et plus aucune idée de qui vous doit quoi.",
+      "deroule": "Plans sans visage : des emails ouverts dans tous les sens, un tableur à moitié rempli, des papillons adhésifs sur l’écran. Voix off calme : à force, on ne sait plus quelle facture a été payée. Terminez sur la liste PayéÀTemps avec des factures fictives rangées par statut.",
+      "appel_action": "Dites en commentaire combien d’endroits différents vous consultez pour suivre vos paiements."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Exemple fictif commenté",
+      "accroche": "Relance fictive pour une mission de graphisme : son rôle, ligne par ligne.",
+      "deroule": "Enregistrement d’écran d’une relance inventée, signalée comme telle. Surlignez chaque ligne en expliquant en voix off à quoi elle sert : rappel de la mission, numéro et montant, échéance, question sur la date de paiement, remerciement. Montrez enfin la même relance dans l’outil, préremplie à partir de la facture.",
+      "appel_action": "Dites en commentaire quelle ligne vous ajouteriez ou retireriez."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Comparaison",
+      "accroche": "Tableur ou outil dédié pour suivre ses factures : ce qui change vraiment.",
+      "deroule": "Face caméra, puis écran partagé sans citer de marque. À gauche, un tableur fictif avec une colonne statut à mettre à jour à la main ; à droite, l’accueil « À relancer ». Reconnaissez honnêtement qu’un tableur bien tenu suffit à beaucoup de freelances, et dites pour qui l’outil a un intérêt.",
+      "appel_action": "Dites en commentaire si vous tenez un tableur, et s’il est vraiment à jour."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Question de la cible",
+      "accroche": "« Au bout de combien de jours de retard faut-il relancer ? »",
+      "deroule": "Face caméra, lisez la question à l’écran. Répondez honnêtement qu’il n’existe pas de réponse unique et que vous ne donnerez pas de conseil juridique. Proposez une habitude simple : regarder ses factures chaque semaine et envoyer une relance aimable quand l’échéance est passée. Montrez le compteur de jours de retard dans l’outil.",
+      "appel_action": "Dites en commentaire combien de temps vous attendez avant votre première relance."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Journée type",
+      "accroche": "Fin de mois d’une graphiste freelance, reconstituée : le point sur les paiements.",
+      "deroule": "Reconstitution annoncée comme telle, avec des factures inventées : un bureau, un ordinateur, puis enregistrement d’écran. On repère deux factures en retard, on prépare une deuxième relance pour l’une et on appelle pour l’autre, avant de noter la date promise. Affichez en surimpression que la situation est fictive.",
+      "appel_action": "Dites en commentaire comment se passe votre propre fin de mois."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Checklist",
+      "accroche": "Ce qu’il faut noter après chaque appel à un client qui n’a pas encore payé.",
+      "deroule": "Texte à l’écran, sans visage, sur un carnet filmé à la main. Quatre points : la date de l’appel, la personne jointe, la raison du retard donnée, la date de paiement promise. Montrez ensuite ces informations saisies dans la fiche d’une facture fictive.",
+      "appel_action": "Enregistrez la vidéo pour la ressortir avant votre prochain appel."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Réponse à un commentaire",
+      "accroche": "« Pourquoi payer un abonnement pour copier-coller un texte ? »",
+      "deroule": "Si ce commentaire arrive, affichez-le et répondez face caméra, sans vous vexer : le texte seul ne vaut pas grand-chose. Expliquez ce que l’outil apporte autour : se souvenir de qui relancer, savoir où on en est avec chaque client, garder l’historique. Rappelez que les modèles de base sont partagés gratuitement dans vos vidéos.",
+      "appel_action": "Dites en commentaire ce qui vous déciderait à payer un outil de suivi, ou pas."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Test avec des proches",
+      "accroche": "J’ai fait saisir des factures à des proches qui détestent les papiers. Voici où ils ont hésité.",
+      "deroule": "À tourner avec les vrais résultats de vos tests. Enregistrement d’écran de l’étape qui a posé problème, puis de la version corrigée : champ renommé, exemple ajouté, bouton déplacé. Expliquez pourquoi vous testez avec des personnes qui n’aiment pas l’administratif : ce sont elles qui oublient de relancer.",
+      "appel_action": "Proposez en commentaire de tester à votre tour et de signaler ce qui bloque."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Offre de lancement",
+      "accroche": "Pour les premiers testeurs, je saisis avec vous vos factures en cours, en visio.",
+      "deroule": "Face caméra, expliquez ce que comprend cette aide : entrer les factures déjà envoyées, adapter les trois modèles à votre façon d’écrire et repérer celles à relancer. Montrez un écran fictif. Annoncez honnêtement le nombre de rendez-vous que votre temps permet, sans fausse urgence.",
+      "appel_action": "Écrivez en message privé pour convenir d’un créneau."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Erreur fréquente",
+      "accroche": "Relancer un client avec un message vocal de deux minutes.",
+      "deroule": "Face caméra, avec un humour léger. Expliquez qu’un long message vocal oblige le client à tout réécouter pour retrouver le numéro de facture et le montant. Proposez plutôt un message écrit court, éventuellement suivi d’un appel. Affichez à l’écran un exemple fictif de message écrit.",
+      "appel_action": "Dites en commentaire si vos clients préfèrent l’écrit ou l’oral."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Démonstration à l’écran",
+      "accroche": "Ce que vous pouvez noter sur une facture sans que le client le voie jamais.",
+      "deroule": "Enregistrement d’écran d’une fiche facture fictive. Ajoutez des notes privées : client en congé jusqu’à la fin du mois, comptabilité à contacter, promesse de virement. Rappelez que PayéÀTemps n’envoie rien au client : tout ce qui est noté reste dans votre compte.",
+      "appel_action": "Dites en commentaire où vous notez aujourd’hui ce que vous disent vos clients."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Question à la communauté",
+      "accroche": "Indépendants : qu’est-ce qui vous empêche de relancer un client en retard ?",
+      "deroule": "Face caméra très court. Affichez quelques freins possibles, présentés comme des hypothèses : la gêne, le manque de temps, l’oubli, la peur de perdre le client. Expliquez que les réponses serviront à décider quoi améliorer en priorité dans PayéÀTemps.",
+      "appel_action": "Répondez en commentaire avec le frein qui vous ressemble le plus."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Avant et après",
+      "accroche": "La même relance, écrite sous le coup de l’agacement, puis à tête reposée.",
+      "deroule": "Écran partagé, texte seulement, avec un exemple fictif. À gauche, un message sec avec des majuscules et des reproches ; à droite, la même demande claire et polie, avec le numéro, le montant et une question sur la date. Restez quelques secondes sur chaque version, puis montrez le modèle qui sert de point de départ.",
+      "appel_action": "Dites en commentaire laquelle vous avez déjà eu envie d’envoyer."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Série",
+      "accroche": "Épisode 3 : la phrase qui demande une date de paiement.",
+      "deroule": "Voix off et texte à l’écran, sans visage. Comparez « Merci de régler rapidement » avec une question qui appelle une réponse précise sur la date prévue. Expliquez pourquoi une date donnée par le client est plus facile à suivre, puis montrez le champ « date promise » dans une fiche facture fictive.",
+      "appel_action": "Suivez la série et dites en commentaire comment vous demandez une date aujourd’hui."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Idée reçue",
+      "accroche": "« Les grandes entreprises paient forcément à l’heure. »",
+      "deroule": "Face caméra, sans citer aucune entreprise. Expliquez qu’une facture peut passer par plusieurs personnes avant d’être réglée : validation, service comptable, jours de paiement fixés. Proposez de demander tôt comment se passe le paiement chez ce client, puis de noter la réponse dans sa fiche.",
+      "appel_action": "Dites en commentaire si vos plus gros clients sont aussi les plus ponctuels."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Question de confidentialité",
+      "accroche": "Ce que PayéÀTemps fait des informations sur vos factures.",
+      "deroule": "Face caméra, répondez simplement : seules les informations que vous saisissez sont enregistrées, vous seul y avez accès, et vous pouvez les exporter ou les supprimer. Montrez l’export puis la suppression sur un compte fictif. Conseillez de ne saisir que ce qui est utile au suivi.",
+      "appel_action": "Posez en commentaire toute autre question sur vos données."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Point de vue du client",
+      "accroche": "Côté client : ce que la personne qui paie les factures a besoin de lire dans une relance.",
+      "deroule": "Scène jouée et présentée comme fictive, tournée sans visage : une personne de la comptabilité reçoit deux relances. La première dit seulement « Vous avez oublié de me payer », la seconde donne le numéro, le montant et l’échéance. Montrez laquelle elle peut traiter sans rien demander.",
+      "appel_action": "Dites en commentaire si vous avez déjà été de l’autre côté, à régler des factures."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Défi",
+      "accroche": "Défi pour indépendants : cette semaine, listez toutes vos factures envoyées mais pas encore payées.",
+      "deroule": "Face caméra, lancez le défi : ouvrir sa boîte mail, ses documents et son relevé, puis lister chaque facture envoyée mais pas encore réglée. Affichez les colonnes à remplir : client, montant, échéance, dernière relance. Annoncez une vidéo de bilan avec vos propres constats réels, quels qu’ils soient.",
+      "appel_action": "Écrivez « fait » en commentaire quand votre liste est prête."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Appel aux partenaires",
+      "accroche": "Comptables, réseaux d’indépendants, espaces de travail partagés : vos membres parlent-ils de factures impayées ?",
+      "deroule": "Face caméra, présentez l’idée sans annoncer de partenariat : ces structures pourraient partager des modèles de relance à leurs membres. Montrez les trois modèles et l’accueil de l’outil avec des données fictives. Dites ce que vous cherchez : un échange pour savoir si cela leur rendrait service.",
+      "appel_action": "Écrivez en message privé si vous accompagnez des indépendants."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Bilan d’étape",
+      "accroche": "Premier mois de bêta de PayéÀTemps : ce qui a servi, et ce qui n’a servi à rien.",
+      "deroule": "À tourner uniquement avec vos constats réels. Face caméra, partagez trois apprentissages : une fonction peu utilisée, une étape qui bloquait, une demande inattendue. Montrez les modifications faites en conséquence. Si peu de personnes ont testé, dites-le franchement.",
+      "appel_action": "Suivez le projet et écrivez en message privé pour rejoindre la prochaine vague de testeurs."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Quiz",
+      "accroche": "Trois factures fictives : laquelle relancez-vous en premier ?",
+      "deroule": "Affichez trois fiches inventées l’une après l’autre : une petite facture très en retard, une grosse facture en retard d’un jour, une facture avec une date de paiement promise pour demain. Laissez quelques secondes pour choisir, puis donnez votre raisonnement en précisant qu’il n’y a pas de réponse unique.",
+      "appel_action": "Donnez votre réponse en commentaire avant de regarder la fin."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Conseil de saison",
+      "accroche": "Avant les congés d’été ou de fin d’année, faites le point sur vos factures en attente.",
+      "deroule": "Face caméra, puis enregistrement d’écran sur un compte fictif. Proposez trois actions : relancer les factures déjà en retard, demander aux clients qui s’absentent qui s’occupera des paiements, et noter ces contacts dans les fiches client. Terminez sur la liste « À relancer » vide après ce tri.",
+      "appel_action": "Dites en commentaire à quelle période de l’année vos paiements traînent le plus."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Tutoriel express",
+      "accroche": "Une facture sans date de paiement claire, c’est une relance qui commence mal.",
+      "deroule": "Vidéo tournée sans visage, en capture d’écran. Une facture fictive apparaît sans date de paiement attendue, puis la même facture avec cette date écrite en haut, bien visible. Dans PayéÀTemps, la date est saisie une seule fois et la facture rejoint la liste à relancer dès le lendemain de l’échéance. Un texte à l’écran invite à vérifier les mentions obligatoires sur les sites officiels.",
+      "appel_action": "Enregistrez la vidéo et vérifiez la date de paiement de votre prochaine facture."
+    }
+  ],
+  "roadmap": [
+    {
+      "titre": "Vérifier que les relances sont vraiment repoussées",
+      "periode": "Mois 1",
+      "objectif": "Vérifier que des freelances qui envoient plusieurs factures par mois oublient ou repoussent leurs relances, et qu’ils utiliseraient une liste et des modèles à copier.",
+      "actions": [
+        "Demander à trois freelances de votre entourage comment ils savent aujourd’hui qui les a payés, en regardant leur méthode avec eux.",
+        "Mener dix échanges avec des freelances et des auto-entrepreneurs en leur faisant raconter leur dernière facture payée en retard.",
+        "Donner à cinq d’entre eux un tableau simple et trois modèles de relance, puis compter les relances réellement envoyées en deux semaines."
+      ],
+      "indicateur": "Au moins cinq personnes racontent une relance repoussée et trois envoient au moins une relance à partir des modèles."
+    },
+    {
+      "titre": "Construire la liste et les modèles de relance",
+      "periode": "Mois 2",
+      "objectif": "Construire uniquement la saisie des factures, la liste « À relancer » et les modèles à copier, dans vos {heures_par_semaine} heures par semaine.",
+      "actions": [
+        "Copier le prompt du dossier et construire écran par écran, en vérifiant chaque étape sur un téléphone.",
+        "Faire saisir leurs factures en cours à trois freelances, avec des initiales à la place des noms s’ils le préfèrent.",
+        "Réécrire les modèles de relance à partir des phrases que les testeurs utilisent vraiment avec leurs clients."
+      ],
+      "indicateur": "Trois testeurs ouvrent la liste « À relancer » et copient une relance sans vous demander comment faire."
+    },
+    {
+      "titre": "Lancer et trouver les premiers abonnés",
+      "periode": "Mois 3",
+      "objectif": "Transformer les testeurs en premiers clients payants au prix testé de 9 € par mois, sans rien promettre sur les paiements récupérés.",
+      "actions": [
+        "Proposer l’abonnement aux testeurs qui ont utilisé l’outil plusieurs semaines de suite.",
+        "Brancher le paiement en mode test, vérifier un abonnement complet, puis passer en mode réel.",
+        "Partager les trois modèles de relance dans une communauté de freelances, avec l’accord des responsables, et répondre à chaque question."
+      ],
+      "indicateur": "Un premier freelance paie son abonnement et continue de noter ses relances le mois suivant."
+    },
+    {
+      "titre": "Publier des vidéos chaque semaine",
+      "periode": "Mois 4 à 5",
+      "objectif": "Faire connaître PayéÀTemps auprès des freelances sur LinkedIn, Instagram et TikTok, à un rythme que vous pouvez tenir.",
+      "actions": [
+        "Tourner deux à trois vidéos par semaine, en commençant par les modèles de relance et les erreurs fréquentes.",
+        "Répondre à chaque commentaire et proposer un essai aux personnes qui racontent une relance repoussée.",
+        "Noter chaque semaine les vidéos qui amènent des messages ou des essais, puis reprendre ces sujets sous un autre angle."
+      ],
+      "indicateur": "Huit semaines de publication régulière et au moins trois sujets qui amènent des demandes d’essai."
+    },
+    {
+      "titre": "Ajuster le prix et fidéliser",
+      "periode": "Mois 6 à 7",
+      "objectif": "Comprendre pourquoi des freelances gardent ou arrêtent leur abonnement, et adapter l’offre à leur usage réel.",
+      "actions": [
+        "Contacter chaque personne qui a arrêté pour connaître la raison, sans insister pour la faire revenir.",
+        "Tester une formule annuelle ou un prix plus bas pour les freelances qui suivent peu de factures.",
+        "Ajouter uniquement l’amélioration la plus demandée par les abonnés, par exemple un nouveau modèle de relance."
+      ],
+      "indicateur": "La majorité des abonnés du troisième mois ouvrent encore la liste « À relancer » chaque mois."
+    },
+    {
+      "titre": "Trouver un canal qui se répète",
+      "periode": "Mois 8 à 10",
+      "objectif": "Obtenir de nouveaux essais chaque semaine grâce aux personnes et aux groupes qui accompagnent déjà des freelances.",
+      "actions": [
+        "Proposer à des comptables, des réseaux d’indépendants ou des espaces de travail partagés de faire connaître vos modèles de relance à leurs membres.",
+        "Demander aux abonnés satisfaits de présenter l’outil à un autre indépendant, avec leur accord.",
+        "Comparer vos canaux selon les essais et les abonnements obtenus, puis arrêter ceux qui n’apportent rien."
+      ],
+      "indicateur": "Un canal apporte des essais chaque semaine pendant un mois entier."
+    },
+    {
+      "titre": "Automatiser et faire le bilan",
+      "periode": "Mois 11 à 12",
+      "objectif": "Réduire le temps passé à répondre aux mêmes questions, puis comparer vos revenus réels à votre objectif de {objectif_revenu}.",
+      "actions": [
+        "Préparer une page d’aide et des réponses toutes prêtes aux questions qui reviennent le plus souvent.",
+        "Faire le bilan de l’année : temps passé, dépenses, nombre d’abonnés et revenu mensuel réel.",
+        "Décider de continuer, d’ajuster l’offre ou d’arrêter, à partir des chiffres réels de l’année."
+      ],
+      "indicateur": "Un bilan écrit avec le revenu mensuel réel, le temps passé et la décision prise pour l’année suivante."
+    }
+  ]
+}

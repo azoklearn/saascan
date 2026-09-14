@@ -26,6 +26,9 @@ const preparationSteps = ["Paiement confirmé", "Sélection de vos trois idées"
 const stalledAfterMs = 245_000;
 const refundWindowMs = refundDays * 24 * 60 * 60_000;
 const isRunning = (startedAt: string | null) => !!startedAt && Date.now() - Date.parse(startedAt) <= stalledAfterMs;
+// Étiquettes internes de data/ideas.json, dites en mots simples.
+const tagLabels: Record<string, string> = { b2b: "Pour les professionnels", b2c: "Pour les particuliers", "no-code": "Sans code", ia: "Avec l’IA" };
+const readableTags = (tags: string[]) => tags.flatMap((tag) => tagLabels[tag] ?? []).join(" · ");
 
 function extrasMissing(dossier: DossierState, content: DossierContent | undefined) {
   const plan = findPlan(dossier.formule);
@@ -215,7 +218,7 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
     {error && <ErrorNotice>{error}</ErrorNotice>}
     <section id="panel-ideas" role="tabpanel" aria-labelledby="tab-ideas" hidden={tab !== "ideas"}>
       {first && <article className="ws-idea-primary ws-panel"><p className="ws-idea-rank"><span>01</span> La piste à explorer en premier</p><div className="ws-idea-header"><div><h3>{first.idea_snapshot.nom}</h3><p className="ws-idea-pitch">{first.idea_snapshot.pitch}</p></div><div className="ws-idea-symbol"><Layers3 size={28} strokeWidth={1.4} /></div></div><div className="ws-tags"><span className="ws-tag">{first.idea_snapshot.cible}</span><span className="ws-tag">Dès {first.idea_snapshot.budget_min_euros} € au départ</span><span className="ws-tag">Prix à tester : {first.idea_snapshot.prix_conseille}</span></div><IdeaDetails selection={first} /></article>}
-      <div className="ws-alternatives">{selections.slice(1).map((selection) => <article className="ws-alternative ws-panel" key={selection.id}><p className="ws-idea-rank"><span>0{selection.rang}</span> Une autre direction possible</p><h3>{selection.idea_snapshot.nom}</h3><p>{selection.idea_snapshot.pitch}</p><div className="ws-tags"><span className="ws-tag">{selection.idea_snapshot.prix_conseille}</span><span className="ws-tag">{selection.idea_snapshot.tags.slice(0, 2).join(" · ")}</span></div><details><summary>Explorer cette piste <ChevronDown size={15} /></summary><IdeaDetails selection={selection} /></details></article>)}</div>
+      <div className="ws-alternatives">{selections.slice(1).map((selection) => <article className="ws-alternative ws-panel" key={selection.id}><p className="ws-idea-rank"><span>0{selection.rang}</span> Une autre direction possible</p><h3>{selection.idea_snapshot.nom}</h3><p>{selection.idea_snapshot.pitch}</p><div className="ws-tags"><span className="ws-tag">{selection.idea_snapshot.prix_conseille}</span>{readableTags(selection.idea_snapshot.tags) && <span className="ws-tag">{readableTags(selection.idea_snapshot.tags)}</span>}</div><details><summary>Explorer cette piste <ChevronDown size={15} /></summary><IdeaDetails selection={selection} /></details></article>)}</div>
       <p className="ws-dossier-disclaimer"><ShieldCheck size={14} />Les prix sont des hypothèses à tester. Ces idées et ce plan ne garantissent ni clients ni revenus. Le premier objectif reste de vérifier le problème auprès de vraies personnes.</p>
       <button className="ws-button" style={{ marginTop: 25 }} onClick={() => { setTab("prompt"); document.getElementById("tab-prompt")?.focus(); }}>Découvrir mon prompt <ArrowRight size={14} /></button>
     </section>

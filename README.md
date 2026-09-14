@@ -71,7 +71,7 @@ Le bouton « Continuer avec Google » renvoie ensuite vers `/auth/callback`, qui
 `data/contenus/SPEC.md` décrit la structure et les règles de rédaction : vouvoiement, apostrophe typographique, aucun chiffre inventé ni promesse de résultat, longueurs de chaque partie. Après une modification :
 
 ```bash
-npx vitest run tests/contenus.test.ts -t relance-devis-artisans --silent=false --reporter=verbose
+npx vitest run tests/contenus.test.ts -t budget-mensuel --silent=false --reporter=verbose
 ```
 
 Le test vérifie chaque fichier, calcule le prompt pour 3 072 profils (700 à 900 mots exigés) et affiche la fourchette obtenue. Une nouvelle idée demande une entrée dans `data/ideas.json`, ses règles dans `idea-rules.ts`, son fichier de contenu et son import dans `src/lib/dossier/library.ts`.

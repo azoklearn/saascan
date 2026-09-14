@@ -87,8 +87,8 @@ function effectsFor(profile: UserProfile, idea: Idea): Record<string, string> {
     domaines: `Vos domaines « ${answerLabel("domaines", profile.domains)} » orientent le vocabulaire, les exemples et l’angle du produit.`,
     competences: skillEffects[profile.skills],
     temps_jour: rule.effort_mvp_heures <= profile.weeklyHours
-      ? `Le MVP demande environ ${rule.effort_mvp_heures} heures, dans vos ${profile.weeklyHours} heures par semaine ; le reste du mois sert à valider et vendre.`
-      : `Le MVP est découpé en sessions courtes pour avancer avec environ ${profile.weeklyHours} heures par semaine ; les fonctions secondaires attendent la validation.`,
+      ? `La première version demande environ ${rule.effort_mvp_heures} heures, dans vos ${profile.weeklyHours} heures par semaine ; le reste du mois sert à tester l’idée et à vendre.`
+      : `La première version est découpée en sessions courtes pour avancer avec environ ${profile.weeklyHours} heures par semaine ; le reste attend les premiers retours.`,
     zone: zoneEffects[profile.zone],
     facturation: billingEffect(idea, profile),
     concurrence: competitionEffects[profile.competition],

@@ -4,33 +4,33 @@ export type AcquisitionChannel = { id: "community" | "network" | "cold" | "face"
 /** `domains` uses the option values of the `domaines` question. */
 export type IdeaRule = { effort_mvp_heures: number; channels: AcquisitionChannel[]; domains: string[]; scope: string };
 
-const community: AcquisitionChannel = { id: "community", label: "Une ressource utile dans une communauté métier, avec l’accord des responsables ; échanges avec les personnes qui se portent volontaires." };
-const network: AcquisitionChannel = { id: "network", label: "Des conversations avec des contacts concernés par le problème, puis des présentations consenties à leurs pairs." };
-const cold: AcquisitionChannel = { id: "cold", label: "Dix prises de contact individuelles, contextualisées et espacées auprès de professionnels ciblés." };
-const face: AcquisitionChannel = { id: "face", label: "De courtes démonstrations face caméra, suivies d’échanges avec les créateurs qui demandent à tester." };
+const community: AcquisitionChannel = { id: "community", label: "Un exemple utile partagé dans une communauté en ligne où se retrouve la cible, avec l’accord des responsables ; échanges avec les personnes qui se portent volontaires." };
+const network: AcquisitionChannel = { id: "network", label: "Des conversations avec des proches concernés par le problème, puis des présentations à leur entourage, avec leur accord." };
+const cold: AcquisitionChannel = { id: "cold", label: "Dix prises de contact individuelles, en personne ou par message, auprès de professionnels ciblés." };
+const face: AcquisitionChannel = { id: "face", label: "De courtes vidéos face caméra qui montrent le problème et l’outil, suivies d’échanges avec les personnes qui demandent à tester." };
 
-// Effort for a deliberately narrow MVP: week 2 is the construction window, not the whole month.
+// Effort for a deliberately narrow first version: week 2 is the construction window, not the whole month.
 export const ideaRules: Record<string, IdeaRule> = {
-  "relance-devis-artisans": { effort_mvp_heures: 5, channels: [network, community], domains: ["vente", "productivite", "automatisation", "nocode"], scope: "un tableau privé, quatre statuts et des modèles de relance copiables ; aucun envoi automatique" },
-  "brief-chantier": { effort_mvp_heures: 4, channels: [community, network], domains: ["productivite", "vente", "nocode"], scope: "un formulaire métier et une fiche récapitulative, sans devis automatique ni gestion de chantier" },
-  "faq-coachs": { effort_mvp_heures: 4, channels: [community, network], domains: ["sante", "sport", "education", "nocode"], scope: "une page de consignes éditable et dix réponses types ; aucune réservation ni donnée de santé" },
-  "benevoles-creneaux": { effort_mvp_heures: 6, channels: [network, community], domains: ["communautes", "productivite", "sport", "nocode"], scope: "un événement, une liste de créneaux et un formulaire d’inscription ; validation manuelle des places" },
-  "suivi-partenariats-createurs": { effort_mvp_heures: 6, channels: [community, network], domains: ["contenu", "finance", "marketing"], scope: "une base de partenariats avec dates et paiements déclarés ; aucune connexion aux réseaux sociaux" },
-  "retours-formateurs": { effort_mvp_heures: 5, channels: [community, network], domains: ["education", "donnees"], scope: "un formulaire de retour et un bilan de cinq indicateurs ; pas de certification ni de conformité automatisée" },
-  "menu-mise-a-jour": { effort_mvp_heures: 8, channels: [cold], domains: ["marketing", "ecommerce", "nocode"], scope: "une page mobile de dix plats au maximum et son formulaire d’édition ; pas de commande en ligne" },
-  "preuves-avant-apres": { effort_mvp_heures: 8, channels: [cold], domains: ["marketing", "contenu", "nocode"], scope: "une galerie de dix réalisations et un formulaire photo ; pas de génération d’images" },
-  "stock-consommables-salons": { effort_mvp_heures: 8, channels: [network, community], domains: ["productivite", "sante", "finance", "donnees"], scope: "dix références saisies manuellement et une vue sous le seuil ; aucune commande fournisseur automatique" },
-  "brief-podcast": { effort_mvp_heures: 5, channels: [community, network], domains: ["contenu", "productivite"], scope: "un formulaire invité et une page privée de consignes ; aucun hébergement ni traitement audio" },
-  "demandes-clubs-sport": { effort_mvp_heures: 10, channels: [network, community], domains: ["sport", "communautes", "automatisation"], scope: "une boîte de demandes générales et cinq modèles de réponse ; aucune donnée médicale ou dossier de mineur" },
-  "retours-boutiques": { effort_mvp_heures: 12, channels: [community, network], domains: ["ecommerce", "automatisation"], scope: "un formulaire de retour et trois statuts ; aucun remboursement automatique ni connexion transporteur" },
-  "validation-contenus-agences": { effort_mvp_heures: 14, channels: [community, network], domains: ["marketing", "contenu", "productivite"], scope: "un espace privé, des commentaires et un bouton de validation horodatée ; aucune publication sociale" },
-  "alertes-catalogue": { effort_mvp_heures: 18, channels: [community], domains: ["ecommerce", "donnees", "developpement", "automatisation"], scope: "un contrôle local de trois erreurs CSV et un export ; aucune modification automatique de boutique" },
-  "resume-reunions-associations": { effort_mvp_heures: 12, channels: [network, community], domains: ["contenu_ia", "communautes", "productivite"], scope: "un champ de notes, un brouillon structuré à relire et un export ; aucun audio ni donnée sensible" },
-  "reponses-avis-locaux": { effort_mvp_heures: 12, channels: [cold], domains: ["contenu_ia", "marketing"], scope: "un avis collé, trois brouillons modifiables et une copie ; aucune publication automatique" },
-  "fiches-pedagogiques": { effort_mvp_heures: 14, channels: [community], domains: ["education", "contenu_ia"], scope: "deux modèles de fiches pour adultes, un brouillon relu et une impression ; pas de notation automatisée" },
-  "recadrage-demonstrations": { effort_mvp_heures: 8, channels: [face], domains: ["contenu", "education"], scope: "un canevas de script guidé, trois séquences et un export ; aucun montage ou hébergement vidéo" },
-  "suivi-depots-createurs": { effort_mvp_heures: 12, channels: [community, network], domains: ["finance", "ecommerce", "productivite"], scope: "cinq lieux, des mouvements manuels et un export CSV ; aucune caisse ni comptabilité intégrée" },
-  "suivi-demandes-cabinets": { effort_mvp_heures: 20, channels: [cold], domains: ["productivite", "developpement", "automatisation"], scope: "une checklist privée et des statuts de pièces ; aucun téléversement de document confidentiel" },
+  "budget-mensuel": { effort_mvp_heures: 5, channels: [face, network], domains: ["finance", "productivite", "nocode"], scope: "des catégories de dépenses, une saisie manuelle et le reste à dépenser du mois ; aucune connexion bancaire" },
+  "suivi-abonnements": { effort_mvp_heures: 4, channels: [face, community], domains: ["finance", "automatisation", "nocode"], scope: "une liste d’abonnements saisis à la main, le total du mois et un rappel avant chaque échéance ; aucune résiliation automatique" },
+  "menus-semaine": { effort_mvp_heures: 7, channels: [community, face], domains: ["sante", "productivite", "nocode"], scope: "un planning de sept jours, vingt recettes et une liste de courses regroupée ; aucun conseil nutritionnel ni commande en ligne" },
+  "suivi-habitudes": { effort_mvp_heures: 4, channels: [face, community], domains: ["sante", "productivite", "nocode"], scope: "trois habitudes, un bouton « fait » par jour, une série visible et un rappel ; aucun conseil médical" },
+  "programmes-sport-maison": { effort_mvp_heures: 8, channels: [face, community], domains: ["sport", "sante", "contenu"], scope: "un programme de huit semaines, une page par séance et le suivi des séances faites ; aucun conseil médical ni suivi de santé" },
+  "reservation-coachs": { effort_mvp_heures: 8, channels: [network, community], domains: ["sport", "sante", "vente", "productivite"], scope: "une page de créneaux, une réservation avec paiement en ligne et un rappel la veille ; aucune donnée de santé" },
+  "planning-revisions": { effort_mvp_heures: 6, channels: [community, face], domains: ["education", "productivite", "nocode"], scope: "une date d’examen, une liste de chapitres et un planning quotidien à cocher ; aucun contenu de cours" },
+  "depenses-colocation": { effort_mvp_heures: 7, channels: [network, community], domains: ["finance", "communautes", "productivite"], scope: "une colocation, des dépenses partagées, le calcul de qui doit combien et une liste de tâches ; aucun paiement entre colocataires" },
+  "organisation-mariage": { effort_mvp_heures: 8, channels: [community, network], domains: ["productivite", "finance", "communautes"], scope: "une liste de tâches mois par mois, une liste d’invités avec réponses et un budget prévu comparé au dépensé ; aucune place de marché de prestataires" },
+  "cv-lettre-motivation": { effort_mvp_heures: 8, channels: [face, network], domains: ["education", "contenu_ia", "productivite"], scope: "trois modèles de CV, un export PDF et un brouillon de lettre à relire ; aucune candidature envoyée automatiquement" },
+  "vocabulaire-langues": { effort_mvp_heures: 8, channels: [face, community], domains: ["education", "contenu"], scope: "une langue, des cartes ajoutées par la personne, une révision quotidienne et une série de jours ; aucun cours ni correction de prononciation" },
+  "carnet-animaux": { effort_mvp_heures: 5, channels: [community, face], domains: ["sante", "productivite", "nocode"], scope: "une fiche par animal, un historique de soins saisi à la main et des rappels ; aucun conseil vétérinaire" },
+  "planning-voyage": { effort_mvp_heures: 8, channels: [face, network], domains: ["productivite", "communautes", "finance"], scope: "un itinéraire jour par jour, une liste de valise partagée et un budget commun ; aucune réservation en ligne" },
+  "prise-rendez-vous": { effort_mvp_heures: 7, channels: [cold, network], domains: ["vente", "productivite", "automatisation", "nocode"], scope: "une page de prestations, des créneaux réservables et un rappel la veille ; aucun paiement ni gestion de stock" },
+  "factures-impayees": { effort_mvp_heures: 5, channels: [network, community], domains: ["finance", "vente", "automatisation", "nocode"], scope: "une liste de factures saisies à la main, des échéances et des modèles de relance à copier ; aucune facturation électronique ni envoi automatique" },
+  "carte-fidelite": { effort_mvp_heures: 9, channels: [cold, network], domains: ["marketing", "vente", "ecommerce"], scope: "un QR code en caisse, une carte à tampons sur téléphone et une récompense ; aucune application à installer ni message publicitaire" },
+  "menu-qr-restaurant": { effort_mvp_heures: 6, channels: [cold], domains: ["marketing", "ecommerce", "nocode"], scope: "une page menu mobile, un QR code fixe et un formulaire de modification ; aucune commande ni paiement en ligne" },
+  "planning-equipe": { effort_mvp_heures: 9, channels: [network, cold], domains: ["productivite", "automatisation", "nocode"], scope: "un planning de la semaine, un lien de consultation pour l’équipe et des demandes d’échange d’horaires ; aucun calcul de paie ni contrôle du droit du travail" },
+  "calendrier-publications": { effort_mvp_heures: 8, channels: [network, face], domains: ["marketing", "contenu", "contenu_ia"], scope: "un calendrier du mois, des idées par type de commerce et un brouillon de texte à relire ; aucune publication automatique" },
+  "journal-trading": { effort_mvp_heures: 8, channels: [face, community], domains: ["trading", "donnees", "finance"], scope: "une saisie manuelle des opérations, des notes par trade et des statistiques simples ; aucun conseil, signal ni connexion à un courtier" },
 };
 
 export function allowedChannels(idea: Idea): AcquisitionChannel[] {
@@ -41,8 +41,8 @@ export function acquisitionFor(idea: Idea, channelId?: AcquisitionChannel["id"])
   const channels = allowedChannels(idea);
   const channel = channelId ? channels.find((candidate) => candidate.id === channelId) : channels[0];
   if (!channel) throw new Error("Aucun canal d’acquisition compatible.");
-  if (channel.id === "community") return `Publiez une fiche exemple de ${idea.nom} dans un groupe métier lié à cette cible : ${idea.cible} Demandez l’accord des responsables, recrutez dix volontaires pour un entretien, puis proposez un pilote aux personnes intéressées.`;
-  if (channel.id === "network") return `Montrez un exemple de ${idea.nom} à trois personnes concernées par le problème. Demandez à chacune une présentation consentie à ses pairs, puis proposez dix entretiens avant un pilote payant.`;
-  if (channel.id === "cold") return `Identifiez dix professionnels correspondant à cette cible : ${idea.cible} Contactez-les individuellement avec un exemple de ${idea.nom}, une question précise et une possibilité simple de refuser.`;
-  return `Publiez trois démonstrations face caméra de ${idea.nom}, chacune centrée sur un problème concret de la cible. Proposez dix entretiens aux personnes qui demandent à tester, puis une offre pilote.`;
+  if (channel.id === "community") return `Partagez un exemple de ${idea.nom} dans une communauté en ligne où se retrouve cette cible : ${idea.cible} Demandez l’accord des responsables, trouvez dix volontaires pour en parler, puis proposez un essai aux personnes intéressées.`;
+  if (channel.id === "network") return `Montrez ${idea.nom} à trois personnes de votre entourage concernées par le problème. Demandez à chacune de le présenter à des proches, avec leur accord, puis proposez dix échanges avant un essai payant.`;
+  if (channel.id === "cold") return `Repérez dix professionnels correspondant à cette cible : ${idea.cible} Contactez-les un par un, en personne ou par message, avec un exemple de ${idea.nom}, une question précise et la possibilité de refuser simplement.`;
+  return `Publiez trois courtes vidéos face caméra sur ${idea.nom}, chacune centrée sur un problème concret de la cible. Proposez un échange aux personnes qui demandent à tester, puis un essai.`;
 }

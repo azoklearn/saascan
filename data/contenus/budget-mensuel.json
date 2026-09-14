@@ -1,0 +1,535 @@
+{
+  "idea_id": "budget-mensuel",
+  "risque": "Le principal risque est l’abandon : une personne peut commencer son budget avec motivation, puis oublier de noter ses dépenses au bout de quelques jours. Avant de construire, proposez à dix étudiants ou jeunes actifs de noter toutes leurs dépenses pendant deux semaines dans une simple note de téléphone, et comptez combien le font encore le quatorzième jour.",
+  "prompt": {
+    "produit": "BudgetClair aide une personne à suivre son argent du mois sans relier son compte bancaire. Au début du mois, elle indique ses revenus prévus et répartit un budget par catégorie : loyer, courses, transport, sorties. Chaque dépense est saisie à la main en quelques secondes, et l’appli affiche aussitôt ce qui reste à dépenser, au total et par catégorie. Elle ne se connecte à aucune banque, ne donne aucun conseil financier et ne gère ni épargne ni crédit.",
+    "ecrans": [
+      "Accueil du mois : le reste à dépenser en grand, une barre par catégorie et le bouton « Ajouter une dépense ». Sans budget créé, l’écran propose de préparer celui du mois.",
+      "Création du budget : revenus prévus, catégories proposées à renommer ou supprimer, montant prévu pour chacune. Un message signale quand le total prévu dépasse les revenus saisis.",
+      "Ajout d’une dépense : montant, catégorie, date du jour par défaut et note facultative. Un montant vide, nul ou négatif affiche une erreur claire sans effacer les autres champs.",
+      "Liste des dépenses : dépenses du mois de la plus récente à la plus ancienne, filtre par catégorie, modification et suppression. L’état vide explique comment ajouter une première dépense.",
+      "Bilan du mois : pour chaque catégorie, le prévu, le dépensé et l’écart en couleur. Les mois passés restent consultables, et un bouton prépare le mois suivant.",
+      "Compte : adresse email, jours d’essai restants, statut de l’abonnement, export des dépenses en fichier tableur et suppression du compte après confirmation."
+    ],
+    "donnees": "Prévois une personne (identifiant, email, fin d’essai, statut d’abonnement), des mois liés à la personne (mois, année, revenus prévus), des catégories liées à chaque mois (nom, montant prévu, ordre) et des dépenses liées à une catégorie (montant, date, note). Le reste à dépenser est calculé à partir de ces données, jamais saisi. Chaque personne voit uniquement ses propres mois, catégories et dépenses ; le propriétaire du service consulte seulement les statuts d’abonnement.",
+    "criteres": [
+      "Une dépense ajoutée met à jour le reste à dépenser sans recharger la page.",
+      "Une dépense se saisit depuis l’accueil en moins de quinze secondes sur téléphone.",
+      "Une catégorie dépassée s’affiche en rouge avec le montant du dépassement.",
+      "Le bouton « Préparer le mois suivant » reprend les catégories et leurs montants prévus.",
+      "Aucun écran ne demande d’identifiants bancaires ni ne propose de connecter une banque."
+    ]
+  },
+  "construction": [
+    "Créer l’écran de création du budget avec les revenus prévus, les catégories modifiables et le message qui s’affiche quand le total prévu dépasse les revenus.",
+    "Construire l’ajout d’une dépense et l’accueil du mois, puis vérifier que le reste à dépenser change aussitôt, au total et dans la bonne catégorie.",
+    "Ajouter la liste des dépenses avec filtre, modification et suppression, puis le bilan du mois avec le prévu, le dépensé et l’écart.",
+    "Faire tenir un budget fictif à trois proches pendant une semaine, puis noter avec eux à quel moment ils ont hésité ou oublié de saisir une dépense."
+  ],
+  "videos": [
+    {
+      "plateforme": "TikTok",
+      "format": "Problème vécu",
+      "accroche": "Le 20 du mois, votre compte est déjà presque vide et vous ne savez pas pourquoi ?",
+      "deroule": "Face caméra, dans votre cuisine ou votre chambre, racontez une fin de mois où l’argent semblait avoir disparu, en précisant s’il s’agit de votre histoire ou d’un exemple. Affichez ensuite à l’écran les petites dépenses qu’on oublie facilement : café, livraison, ticket de métro, appli payante. Terminez en expliquant que noter chaque dépense pendant un mois aide à voir où part l’argent.",
+      "appel_action": "Demandez en commentaire quelle petite dépense leur échappe le plus souvent."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Démonstration à l’écran",
+      "accroche": "Je remplis un budget du mois en une minute, chronomètre affiché.",
+      "deroule": "Filmez l’écran d’un téléphone, sans visage, avec un chronomètre dans un coin. Saisissez des revenus fictifs, créez quatre catégories et ajoutez trois dépenses dans BudgetClair. Terminez sur le reste à dépenser affiché en grand, avec la mention « exemple fictif » visible pendant toute la vidéo.",
+      "appel_action": "Invitez les personnes intéressées à rejoindre la liste des testeurs en message privé."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Erreur fréquente",
+      "accroche": "Une erreur fréquente dans un budget : oublier les dépenses qui ne tombent pas chaque mois.",
+      "deroule": "Face caméra, citez des dépenses qui arrivent une ou deux fois par an : assurance, cadeaux d’anniversaire, rentrée, vacances. Montrez ensuite, sur une feuille ou un tableau fictif, comment les prévoir un peu chaque mois dans une catégorie dédiée. Précisez à l’écran que les montants affichés sont inventés.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour préparer le budget du mois prochain."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Checklist",
+      "accroche": "Cinq choses à noter le premier jour du mois, avant de dépenser le moindre euro.",
+      "deroule": "Tournez sans visage : vos mains écrivent sur un carnet, un point après l’autre. Revenus prévus, loyer et factures fixes, courses, transport, sorties. Pour chaque point, affichez une courte phrase qui explique pourquoi le noter dès le début du mois aide à savoir ce qui reste.",
+      "appel_action": "Invitez à enregistrer la checklist et à la ressortir le premier jour du mois."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Avant et après",
+      "accroche": "Avant : des tickets de caisse en vrac. Après : un mois lisible en un coup d’œil.",
+      "deroule": "Premier plan sans visage : une pile de tickets de caisse et de notes griffonnées sur une table. Deuxième plan : l’écran de BudgetClair avec les mêmes dépenses rangées par catégorie et le reste à dépenser. Indiquez à l’écran que les tickets et les montants servent d’exemple fictif.",
+      "appel_action": "Demandez en commentaire s’ils gardent encore leurs tickets de caisse."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Coulisses de la construction",
+      "accroche": "Pourquoi mon appli de budget ne se connecte pas à votre banque.",
+      "deroule": "Face caméra, expliquez simplement votre choix : aucun identifiant bancaire à confier, et une saisie à la main qui oblige à regarder chaque dépense. Montrez ensuite l’écran d’ajout d’une dépense en cours de construction. Terminez en disant honnêtement ce que cela demande : quelques secondes de saisie après chaque achat.",
+      "appel_action": "Demandez en commentaire s’ils préfèrent saisir à la main ou relier leur banque, et pourquoi."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Idée reçue",
+      "accroche": "« Faire un budget, c’est pour ceux qui gagnent beaucoup. » Pas du tout.",
+      "deroule": "Face caméra, affichez l’idée reçue en gros texte. Expliquez qu’un budget sert justement quand chaque euro compte : bourse, petit job, premier salaire. Montrez un exemple de petit budget étudiant réparti en quatre catégories, en précisant à l’écran que les montants sont inventés.",
+      "appel_action": "Invitez les étudiants à partager en commentaire la catégorie la plus difficile à tenir."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Question de la cible",
+      "accroche": "Combien de catégories faut-il dans un budget ? Voici comment choisir.",
+      "deroule": "Affichez la question à l’écran, puis répondez face caméra. Conseillez de démarrer avec peu de catégories, celles où l’argent part vraiment, puis d’en ajouter si besoin. Montrez deux exemples fictifs côte à côte : un budget à quatre catégories et un autre à douze, beaucoup plus difficile à suivre au quotidien.",
+      "appel_action": "Demandez en commentaire combien de catégories ils utilisent."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Tutoriel express",
+      "accroche": "Noter une dépense en quelques secondes, juste après avoir payé.",
+      "deroule": "Tournez sans visage à la sortie d’une boulangerie ou d’un supermarché : on voit la main sortir le téléphone. Ouvrez BudgetClair, tapez le montant, choisissez la catégorie et validez. Affichez le reste à dépenser mis à jour, avec la mention « exemple fictif » à l’écran.",
+      "appel_action": "Proposez de tester l’appli pendant le mois d’essai gratuit, en écrivant en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Journée type",
+      "accroche": "Une journée de dépenses d’une étudiante fictive, notées une par une.",
+      "deroule": "Montez une suite de courts plans sans visage : café le matin, ticket de bus, déjeuner, courses du soir. Après chaque plan, montrez l’ajout de la dépense dans BudgetClair et la barre de la catégorie qui avance. Précisez dès le début que le personnage et les montants sont fictifs.",
+      "appel_action": "Demandez en commentaire à quel moment de la journée ils dépensent le plus."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Transparence sur le prix",
+      "accroche": "Pourquoi mon appli de budget coûte 3 € par mois, et ce qui est inclus.",
+      "deroule": "Face caméra, expliquez le prix : un mois d’essai gratuit, puis 3 € par mois. Listez à l’écran ce qui est inclus et ce qui ne l’est pas : pas de connexion bancaire, pas de conseil financier. Dites clairement comment arrêter l’abonnement, exporter ses dépenses et supprimer son compte, selon ce que prévoient réellement vos conditions.",
+      "appel_action": "Invitez à poser leurs questions sur le prix en commentaire."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Exemple fictif commenté",
+      "accroche": "Je commente le budget d’un jeune actif fictif : où part son argent ?",
+      "deroule": "Écran seul, sans visage : affichez le bilan du mois d’un personnage inventé dans BudgetClair, avec le prévu et le dépensé par catégorie. Commentez en voix off les catégories dépassées et celles qui restent sous le budget, sans jugement. Rappelez à l’écran que le profil et les montants sont fictifs.",
+      "appel_action": "Demandez en commentaire quelle catégorie ils dépassent le plus souvent."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Comparaison",
+      "accroche": "Tableur, carnet ou appli : quel outil pour suivre ses dépenses du mois ?",
+      "deroule": "Face caméra, présentez les trois options en trois plans : un tableur ouvert, un carnet, l’écran de BudgetClair. Pour chacune, citez honnêtement un avantage et une limite, par exemple le tableur gratuit mais peu pratique sur téléphone. Concluez que le meilleur outil est celui que l’on utilise vraiment chaque jour.",
+      "appel_action": "Demandez en commentaire quel outil ils utilisent aujourd’hui."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Série",
+      "accroche": "Épisode 1 : je note chaque dépense pendant un mois, sans rien changer à mes habitudes.",
+      "deroule": "Face caméra, annoncez le principe de la série : noter chaque dépense dans BudgetClair pendant un mois et faire un point chaque semaine. Montrez l’écran de création du budget, en floutant les montants personnels si vous préférez les garder pour vous. Annoncez le jour de publication du prochain épisode.",
+      "appel_action": "Invitez à suivre le compte pour la série et à relever le défi en même temps."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Problème vécu",
+      "accroche": "Premier salaire reçu, et trois semaines plus tard, plus rien. Ça vous parle ?",
+      "deroule": "Face caméra, racontez la situation d’un premier salaire vite dépensé entre loyer, sorties et achats plaisir, en précisant s’il s’agit de votre histoire ou d’un exemple. Affichez ensuite les catégories qui auraient aidé à y voir clair. Terminez sur l’idée de fixer un montant pour les sorties dès le début du mois.",
+      "appel_action": "Demandez en commentaire ce qu’ils ont fait de leur premier salaire."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Démonstration à l’écran",
+      "accroche": "Le dernier jour du mois, voici l’écran qui dit si le budget a tenu.",
+      "deroule": "Enregistrez l’écran sans visage : ouvrez le bilan du mois dans BudgetClair avec des données fictives. Faites défiler chaque catégorie en montrant le prévu, le dépensé et l’écart en couleur. Terminez par le bouton qui prépare le mois suivant en reprenant les mêmes catégories, avec la mention « exemple fictif » à l’écran.",
+      "appel_action": "Proposez de rejoindre la bêta en message privé pour tester le bilan sur leur propre mois."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Erreur fréquente",
+      "accroche": "Vous faites un budget le 1er et vous l’oubliez le 5 ? Trois raisons possibles.",
+      "deroule": "Face caméra, citez trois raisons d’abandon : trop de catégories, saisie repoussée au soir, budget trop serré dès le départ. Pour chacune, montrez à l’écran une solution concrète, comme noter la dépense juste après avoir payé. Terminez en proposant d’essayer une seule semaine plutôt qu’un mois entier.",
+      "appel_action": "Invitez à essayer une semaine et à raconter en commentaire comment ça s’est passé."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Checklist",
+      "accroche": "La checklist du dernier dimanche du mois pour préparer le budget suivant.",
+      "deroule": "Tournez sans visage : un carnet et un stylo, chaque ligne apparaît à l’écran. Relire les catégories dépassées, noter les dépenses prévues le mois suivant, ajuster les montants, supprimer une catégorie inutile. Terminez par un plan sur l’écran de BudgetClair où ces ajustements se font en quelques gestes.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour la retrouver à la fin du mois."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Coulisses de la construction",
+      "accroche": "J’ai fait tester mon appli de budget à trois proches. Voici ce qui les a bloqués.",
+      "deroule": "Face caméra, racontez les vrais blocages observés pendant les tests, sans nommer personne et avec leur accord. Montrez l’écran avant et après la correction, par exemple un bouton mal placé ou une catégorie mal comprise. Ne tournez cette vidéo qu’après de vrais tests.",
+      "appel_action": "Invitez à devenir testeur à leur tour en écrivant en message privé."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Tutoriel express",
+      "accroche": "Créer ses catégories de budget en trois questions simples.",
+      "deroule": "Face caméra ou voix off sur un carnet, posez trois questions : où part l’argent sans que je choisisse, où je dépense par plaisir, qu’est-ce qui revient chaque mois. Montrez comment chaque réponse devient une catégorie dans BudgetClair, avec des exemples fictifs comme courses, sorties et transport.",
+      "appel_action": "Demandez en commentaire la catégorie qu’ils ajouteraient en premier."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Idée reçue",
+      "accroche": "« Mon appli bancaire suffit pour gérer mon budget. » Vraiment ?",
+      "deroule": "Face caméra, expliquez sans dénigrer que l’appli bancaire liste bien les opérations passées. Montrez ensuite ce qu’elle ne fait pas toujours : fixer un montant par catégorie à l’avance et afficher ce qui reste à dépenser. Illustrez avec un écran de BudgetClair, en précisant qu’il s’agit d’un exemple fictif.",
+      "appel_action": "Demandez en commentaire s’ils utilisent déjà une fonction budget dans leur banque."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Question de la cible",
+      "accroche": "« Mes revenus changent chaque mois, un budget, c’est possible ? »",
+      "deroule": "Affichez la question en gros à l’écran, puis répondez face caméra. Proposez de construire le budget du mois à partir du plus petit revenu probable, et de noter le surplus à part quand il arrive. Montrez un exemple dans BudgetClair avec des revenus prévus prudents, et la mention « exemple fictif » à l’écran.",
+      "appel_action": "Invitez les personnes aux revenus irréguliers à partager leur méthode en commentaire."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Journée type",
+      "accroche": "Un samedi de sorties, suivi en direct dans le budget d’un personnage fictif.",
+      "deroule": "Montez des plans sans visage : terrasse, cinéma, taxi du retour. Entre chaque plan, un écran montre la catégorie sorties qui se remplit dans BudgetClair, jusqu’à afficher ce qui reste pour la fin du mois. Indiquez clairement que le personnage et les montants sont inventés.",
+      "appel_action": "Demandez en commentaire quel type de sortie pèse le plus dans leur budget."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Comparaison",
+      "accroche": "Budget par catégorie ou simple total du mois : lequel est le plus facile à suivre ?",
+      "deroule": "Face caméra, montrez deux écrans fictifs côte à côte : un seul montant pour tout le mois, puis le même mois découpé en catégories. Expliquez ce que chaque méthode permet de voir, par exemple repérer que les courses dépassent alors que le total paraît correct. Rappelez que les chiffres affichés sont des exemples.",
+      "appel_action": "Proposez de voter en commentaire pour la méthode qu’ils préfèrent."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Appel à testeurs",
+      "accroche": "Je cherche des testeurs pour mon appli de budget, et voici ce que ça demande.",
+      "deroule": "Face caméra, expliquez ce que vous attendez des testeurs : saisir leurs dépenses pendant deux semaines et répondre à trois questions. Précisez ce qu’ils reçoivent : l’accès pendant le test, sans carte bancaire demandée. Montrez rapidement l’accueil de BudgetClair avec des données fictives.",
+      "appel_action": "Invitez à écrire « budget » en message privé pour rejoindre les testeurs."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Réponse à un commentaire",
+      "accroche": "Saisir ses dépenses à la main, ce n’est pas trop long ? Je réponds à votre question.",
+      "deroule": "Affichez à l’écran un vrai commentaire reçu, sans le nom de son auteur. Répondez face caméra, puis chronométrez en direct l’ajout de trois dépenses dans BudgetClair avec des montants fictifs. Reconnaissez honnêtement que la saisie demande une petite habitude à prendre.",
+      "appel_action": "Invitez à laisser d’autres questions en commentaire pour les prochaines réponses."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Série",
+      "accroche": "Épisode 2 : première semaine de dépenses notées, ce que j’ai découvert.",
+      "deroule": "Face caméra, faites le point sur la première semaine du défi : catégories déjà entamées, dépenses oubliées puis rattrapées, moments où la saisie a été pénible. Montrez l’écran de BudgetClair en floutant les montants si vous préférez. Parlez uniquement de ce que vous avez réellement vécu cette semaine.",
+      "appel_action": "Demandez aux personnes qui suivent le défi de raconter leur semaine en commentaire."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Exemple fictif commenté",
+      "accroche": "Budget fictif d’une étudiante avec un petit job : on le construit ensemble.",
+      "deroule": "Écran seul avec voix off. Partez de revenus inventés, bourse et petit job, puis répartissez-les dans BudgetClair : loyer, courses, transport, sorties, imprévus. Expliquez chaque choix en une phrase et affichez « exemple fictif » pendant toute la vidéo. Terminez sur le reste à dépenser de départ.",
+      "appel_action": "Demandez en commentaire quelle catégorie ils ajouteraient à ce budget."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Défi",
+      "accroche": "Défi : notez chaque dépense pendant sept jours, même le plus petit café.",
+      "deroule": "Face caméra, présentez les règles du défi en trois points affichés à l’écran : tout noter, juste après avoir payé, sans se juger. Montrez que cela fonctionne avec un carnet, un tableur ou BudgetClair. Donnez rendez-vous dans une semaine pour une vidéo de bilan.",
+      "appel_action": "Invitez à écrire « je relève le défi » en commentaire."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Coulisses de la construction",
+      "accroche": "Pourquoi le reste à dépenser est le plus gros chiffre de mon appli.",
+      "deroule": "Face caméra, puis écran de BudgetClair en cours de construction. Expliquez que l’information la plus utile au quotidien est ce qu’on peut encore dépenser, pas la liste des achats passés. Montrez deux versions de l’accueil que vous avez essayées et celle que vous avez gardée, avec des données fictives.",
+      "appel_action": "Demandez en commentaire quelle version de l’accueil ils trouvent la plus claire."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Erreur fréquente",
+      "accroche": "Payer en liquide et ne jamais le noter : le trou invisible du budget.",
+      "deroule": "Tournez sans visage : des pièces et un billet posés sur une table, puis une main qui paie au marché. Expliquez qu’un retrait d’espèces apparaît en une seule ligne sur le relevé, sans aucun détail. Montrez comment noter ces achats dans BudgetClair au fil de la semaine, avec des montants fictifs.",
+      "appel_action": "Demandez en commentaire s’ils paient encore souvent en liquide."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Tutoriel express",
+      "accroche": "Budget courses : comment le découper simplement semaine par semaine.",
+      "deroule": "Face caméra dans une cuisine, expliquez l’idée de diviser le budget courses du mois en semaines. Montrez à l’écran un calcul fictif simple, puis la catégorie courses dans BudgetClair qui avance au fil des passages en caisse. Rappelez que chacun fixe son propre montant selon sa situation.",
+      "appel_action": "Invitez à enregistrer la vidéo avant les prochaines courses."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Problème vécu",
+      "accroche": "Les petits achats en ligne à quelques euros, on les oublie vite. Jusqu’au relevé.",
+      "deroule": "Face caméra, racontez une situation fictive ou vécue en le précisant : une appli à quelques euros, une livraison, un petit accessoire commandé tard le soir. Affichez-les à l’écran les uns après les autres, puis leur total fictif. Montrez qu’une catégorie « achats en ligne » dans BudgetClair rend ces dépenses visibles au moment où elles arrivent.",
+      "appel_action": "Demandez en commentaire le dernier petit achat en ligne qu’ils avaient oublié."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Question de la cible",
+      "accroche": "« Je vis encore chez mes parents, j’ai vraiment besoin d’un budget ? »",
+      "deroule": "Affichez la question à l’écran, puis répondez face caméra. Expliquez que même sans loyer, l’argent de poche, la bourse ou un petit job peuvent partir vite en sorties et en achats. Montrez un budget très simple à trois catégories dans BudgetClair, avec la mention « exemple fictif ».",
+      "appel_action": "Invitez les personnes qui vivent chez leurs parents à dire en commentaire où part leur argent."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Coulisses de la construction",
+      "accroche": "J’ai retiré une fonction de mon appli avant même de la lancer. Voici pourquoi.",
+      "deroule": "Face caméra, présentez une fonction que vous aviez imaginée puis retirée pour garder l’appli simple, par exemple des graphiques compliqués. Montrez l’ancien croquis puis l’écran actuel de BudgetClair. Racontez uniquement une décision réellement prise pendant la construction.",
+      "appel_action": "Demandez en commentaire quelle fonction ils trouvent inutile dans les applis de budget."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Démonstration à l’écran",
+      "accroche": "Une catégorie dépasse son budget : voici ce que l’appli affiche.",
+      "deroule": "Enregistrez l’écran d’un téléphone, sans visage. Ajoutez une dépense fictive qui fait dépasser la catégorie sorties dans BudgetClair. Montrez la barre qui passe en rouge et le montant du dépassement, puis l’accueil où le reste à dépenser total a baissé. Laissez la mention « exemple fictif » visible.",
+      "appel_action": "Proposez d’essayer l’appli pendant le mois d’essai gratuit, en écrivant en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Idée reçue",
+      "accroche": "« Un budget, c’est se priver de tout. » Et si c’était l’inverse ?",
+      "deroule": "Face caméra, affichez l’idée reçue. Expliquez qu’un budget peut prévoir une catégorie plaisir choisie à l’avance, que l’on dépense sans se sentir coupable. Montrez un exemple fictif dans BudgetClair avec une catégorie « plaisirs » bien identifiée, et précisez que chacun choisit ses propres montants.",
+      "appel_action": "Demandez en commentaire quel plaisir ils garderaient dans leur budget."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Checklist",
+      "accroche": "Premier appartement : les dépenses à prévoir dans le budget avant d’emménager.",
+      "deroule": "Tournez sans visage dans un appartement vide ou au milieu de cartons. Affichez une par une les lignes à ne pas oublier : loyer, charges, électricité, assurance habitation, internet, premières courses. Terminez en montrant ces catégories créées dans BudgetClair, sans montant ou avec des montants fictifs.",
+      "appel_action": "Invitez à enregistrer la liste avant de signer un bail."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Série",
+      "accroche": "Épisode 3 : milieu du défi, les catégories qui dérapent déjà.",
+      "deroule": "Face caméra, montrez le bilan à mi-mois dans BudgetClair, montants floutés si vous le souhaitez. Commentez les catégories qui avancent plus vite que prévu et ce que vous décidez d’ajuster pour la seconde moitié du mois. Restez sur ce qui s’est vraiment passé, sans exagérer.",
+      "appel_action": "Demandez aux personnes qui suivent le défi où elles en sont, en commentaire."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Transparence sur le prix",
+      "accroche": "Un mois gratuit, puis 3 € par mois : voici ce qui se passe à la fin de l’essai.",
+      "deroule": "Enregistrez l’écran du compte dans BudgetClair : jours d’essai restants, statut, bouton pour s’abonner. Expliquez face caméra ce qui se passe si l’on ne paie pas à la fin de l’essai, selon ce que vous avez réellement prévu. Montrez aussi où exporter ses dépenses et supprimer son compte.",
+      "appel_action": "Invitez à poser en commentaire toute question sur l’essai gratuit."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Exemple fictif commenté",
+      "accroche": "Le mois fictif de Léa, jeune active : trois dépassements et une bonne surprise.",
+      "deroule": "Écran seul avec voix off : présentez le bilan inventé de Léa dans BudgetClair. Commentez les trois catégories dépassées, puis celle restée sous le montant prévu. Proposez une piste d’ajustement simple pour le mois suivant. Affichez dès la première seconde que Léa et ses chiffres sont fictifs.",
+      "appel_action": "Demandez en commentaire quel ajustement ils proposeraient à Léa."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Tutoriel express",
+      "accroche": "Reprendre son budget après une semaine sans rien noter.",
+      "deroule": "Face caméra, dédramatisez l’oubli. Montrez comment retrouver les dépenses récentes sur son relevé ou dans ses tickets, puis les ajouter dans BudgetClair avec la bonne date. Précisez que les dépenses affichées sont fictives et qu’un budget à peu près juste reste utile.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour le jour où l’oubli arrivera."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Coulisses en accéléré",
+      "accroche": "Une session de construction de mon appli de budget, en accéléré.",
+      "deroule": "Filmez votre écran d’ordinateur en accéléré pendant une session de travail sur BudgetClair, sans visage. Ajoutez des sous-titres courts sur ce que vous faites : écran d’ajout, calcul du reste, test sur téléphone. Terminez face caméra sur ce qui reste à faire avant les premiers testeurs.",
+      "appel_action": "Invitez à suivre le compte pour voir la suite de la construction."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Erreur fréquente",
+      "accroche": "Fixer un budget impossible à tenir dès le premier mois.",
+      "deroule": "Face caméra, montrez un exemple fictif de budget beaucoup trop serré sur les courses et les sorties. Expliquez qu’un budget trop strict risque d’être vite abandonné, et qu’il est plus simple de partir des dépenses réelles du mois précédent. Montrez comment ajuster les montants dans BudgetClair.",
+      "appel_action": "Demandez en commentaire s’ils ont déjà abandonné un budget trop strict."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Problème vécu",
+      "accroche": "Rentrée, anniversaires, fêtes : les mois où le budget déraille à chaque fois.",
+      "deroule": "Face caméra, citez les périodes chargées en dépenses exceptionnelles, sans donner de chiffres. Montrez un calendrier sur lequel vous entourez ces moments, puis une catégorie « dépenses prévues » dans BudgetClair préparée à l’avance avec un montant fictif. Terminez sur l’idée de regarder le mois suivant avant qu’il commence.",
+      "appel_action": "Demandez en commentaire quel mois de l’année est le plus difficile pour eux."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Retour de testeur",
+      "accroche": "Ce qu’un testeur m’a fait changer dans mon appli de budget.",
+      "deroule": "Face caméra, citez un vrai retour reçu pendant les tests, avec l’accord de la personne et sans son nom si elle préfère. Montrez l’écran avant le retour, puis la version corrigée de BudgetClair. Ne tournez cette vidéo qu’à partir d’un retour réellement reçu.",
+      "appel_action": "Invitez à rejoindre les testeurs pour proposer leurs propres améliorations."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Comparaison",
+      "accroche": "Noter ses dépenses le soir ou juste après avoir payé : ce qui change.",
+      "deroule": "Face caméra, présentez deux manières de faire avec deux personnages fictifs. Le premier note tout le soir et oublie des achats, le second note juste après avoir payé dans BudgetClair. Montrez leurs deux bilans fictifs côte à côte et laissez chacun choisir sa méthode.",
+      "appel_action": "Demandez en commentaire à quel moment de la journée ils notent leurs dépenses."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Question de la cible",
+      "accroche": "« Faut-il compter le loyer dans le budget du mois ? »",
+      "deroule": "Affichez la question à l’écran, puis répondez face caméra. Expliquez l’intérêt d’inclure les dépenses fixes, loyer, forfait et transport, pour voir l’argent réellement disponible ensuite. Montrez dans BudgetClair un exemple fictif où les dépenses fixes sont saisies dès le premier jour du mois.",
+      "appel_action": "Demandez en commentaire s’ils incluent leurs dépenses fixes dans leur budget."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Tutoriel express",
+      "accroche": "Exporter ses dépenses du mois dans un tableur, en quelques gestes.",
+      "deroule": "Enregistrez l’écran sans visage : ouvrez le compte dans BudgetClair, choisissez le mois, lancez l’export. Ouvrez ensuite le fichier dans un tableur pour montrer les colonnes montant, catégorie, date et note, avec des données fictives. Expliquez que les données restent récupérables à tout moment.",
+      "appel_action": "Proposez de poser en commentaire leurs questions sur leurs données."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Journée type",
+      "accroche": "Dimanche soir, quelques minutes pour faire le point sur la semaine de dépenses.",
+      "deroule": "Plans calmes sans visage : un thé, un téléphone posé sur la table. Montrez l’ouverture de BudgetClair, la liste des dépenses de la semaine, une dépense corrigée et le reste à dépenser par catégorie, avec des données fictives précisées à l’écran. Terminez sur une note manuscrite avec un seul objectif pour la semaine suivante.",
+      "appel_action": "Invitez à enregistrer la vidéo pour essayer ce petit rendez-vous du dimanche."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Idée reçue",
+      "accroche": "« Je n’ai pas le temps de faire un budget. » Combien de temps ça prend vraiment ?",
+      "deroule": "Face caméra, affichez l’idée reçue, puis chronométrez honnêtement les étapes dans BudgetClair : créer le budget du mois, ajouter une dépense, relire le bilan. Montrez le chronomètre à l’écran pour chaque étape, avec des données fictives. Ne donnez que les durées réellement mesurées pendant le tournage.",
+      "appel_action": "Demandez en commentaire combien de temps ils seraient prêts à y consacrer par semaine."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Réponse à un commentaire",
+      "accroche": "« Pourquoi payer une appli alors qu’un tableur est gratuit ? » Je réponds franchement.",
+      "deroule": "Affichez le vrai commentaire à l’écran, sans le nom de son auteur. Face caméra, reconnaissez que le tableur fonctionne très bien pour certaines personnes. Expliquez ensuite ce que BudgetClair apporte en plus : saisie rapide sur téléphone et reste à dépenser toujours visible. Laissez chacun choisir.",
+      "appel_action": "Invitez à dire en commentaire s’ils sont plutôt tableur ou appli."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Série",
+      "accroche": "Dernier épisode : un mois de dépenses notées, mon bilan honnête.",
+      "deroule": "Face caméra, présentez le bilan du mois dans BudgetClair, montants floutés si vous le souhaitez. Dites ce que la saisie vous a appris, ce qui a été pénible et ce que vous garderez le mois prochain. Ne mentionnez aucune économie que vous n’avez pas réellement constatée.",
+      "appel_action": "Demandez aux personnes qui ont suivi le défi de partager leur propre bilan en commentaire."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Checklist",
+      "accroche": "Quatre signes que votre budget a besoin d’être revu.",
+      "deroule": "Tournez sans visage : un carnet où apparaissent quatre lignes, une par une. Une catégorie dépassée chaque mois, une autre jamais utilisée, des dépenses rangées dans « divers », un reste à dépenser vide avant la fin du mois. Pour chaque signe, montrez un ajustement possible dans BudgetClair, avec des données fictives.",
+      "appel_action": "Proposez d’enregistrer la vidéo pour la relire à la fin du mois."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Coulisses du prix",
+      "accroche": "Pourquoi j’ai choisi un mois d’essai gratuit plutôt qu’une semaine.",
+      "deroule": "Face caméra, expliquez votre raisonnement : un budget se juge sur un mois entier, du jour de paie au dernier jour. Montrez l’écran de création du compte et le compteur de jours d’essai dans BudgetClair. Précisez que ce choix peut évoluer selon les retours des premiers utilisateurs.",
+      "appel_action": "Demandez en commentaire quelle durée d’essai leur semble juste."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Problème vécu",
+      "accroche": "Rembourser un ami, avancer un restaurant : les dépenses qui brouillent le budget.",
+      "deroule": "Face caméra, racontez une situation fictive : vous payez l’addition pour tout le groupe et vos amis vous remboursent plus tard. Montrez comment noter la dépense dans BudgetClair avec une note « à rembourser », puis la corriger une fois l’argent revenu. Précisez à l’écran que la scène et les montants sont inventés.",
+      "appel_action": "Demandez en commentaire comment ils gèrent les dépenses avancées pour les autres."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Démonstration à l’écran",
+      "accroche": "Nouveau mois : reprendre ses catégories en un seul geste.",
+      "deroule": "Enregistrez l’écran sans visage le premier jour d’un mois fictif. Ouvrez BudgetClair, touchez « Préparer le mois suivant », modifiez un seul montant et validez. Montrez le nouvel accueil prêt à l’emploi, avec la mention « exemple fictif » visible.",
+      "appel_action": "Proposez de tester l’appli dès le début du mois prochain, en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Retour de testeur",
+      "accroche": "J’ai demandé à des testeurs ce qui leur manquait. Voici leurs réponses.",
+      "deroule": "Face caméra, lisez les vraies réponses reçues à cette question, sans nom et avec l’accord des personnes. Classez-les à l’écran en deux colonnes : ce qui entrera dans BudgetClair, ce qui restera dehors, comme la connexion bancaire. Expliquez simplement pourquoi.",
+      "appel_action": "Invitez à ajouter en commentaire ce qui leur manquerait à eux."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Sondage",
+      "accroche": "Aidez-moi à choisir : quelles catégories proposer par défaut dans l’appli ?",
+      "deroule": "Face caméra, présentez quatre catégories déjà prévues, puis trois hésitations affichées à l’écran : animaux, cadeaux, santé. Montrez l’écran de création du budget de BudgetClair où elles apparaîtront. Promettez seulement de lire toutes les réponses, pas de toutes les ajouter.",
+      "appel_action": "Demandez de voter en commentaire pour la catégorie à ajouter."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Coulisses du projet",
+      "accroche": "Ce que j’ai appris en lançant une petite appli de budget, sans publicité payante.",
+      "deroule": "Face caméra, partagez trois leçons réelles tirées du lancement de BudgetClair : une sur la construction, une sur les testeurs, une sur les vidéos. Illustrez chaque leçon par un écran ou une capture, sans chiffre inventé. Terminez en disant ce que vous allez essayer ensuite.",
+      "appel_action": "Invitez à partager en commentaire leurs propres projets en cours."
+    }
+  ],
+  "roadmap": [
+    {
+      "titre": "Vérifier que le suivi du budget manque vraiment",
+      "periode": "Mois 1",
+      "objectif": "Vérifier que des étudiants et jeunes actifs peinent vraiment à savoir où part leur argent, et qu’ils acceptent de noter leurs dépenses à la main chaque jour.",
+      "actions": [
+        "Mener dix conversations avec des étudiants et jeunes actifs de votre entourage sur leur dernière fin de mois difficile, sans présenter l’appli.",
+        "Demander à chacun comment il suit ses dépenses aujourd’hui : appli bancaire, tableur, carnet ou rien du tout.",
+        "Proposer à cinq volontaires de noter toutes leurs dépenses pendant une semaine dans une note de téléphone ou un carnet."
+      ],
+      "indicateur": "Au moins trois volontaires sur cinq notent encore leurs dépenses à la fin de la semaine et disent y voir plus clair."
+    },
+    {
+      "titre": "Construire la première version de BudgetClair",
+      "periode": "Mois 2",
+      "objectif": "Construire uniquement le budget par catégorie, l’ajout d’une dépense, le reste à dépenser et le bilan du mois, dans vos {heures_par_semaine} heures par semaine.",
+      "actions": [
+        "Copier le prompt du dossier et construire écran par écran, en vérifiant chaque étape sur téléphone.",
+        "Utiliser vous-même l’appli pendant deux semaines en notant chacune de vos vraies dépenses.",
+        "Faire utiliser l’appli par trois proches et corriger d’abord ce qui ralentit l’ajout d’une dépense."
+      ],
+      "indicateur": "Trois testeurs ajoutent une dépense seuls, sans aide, et retrouvent leur reste à dépenser du premier coup."
+    },
+    {
+      "titre": "Lancer l’essai gratuit et trouver les premiers abonnés",
+      "periode": "Mois 3",
+      "objectif": "Ouvrir l’essai gratuit d’un mois, puis vérifier que des personnes choisissent de payer 3 € par mois une fois leur essai terminé.",
+      "actions": [
+        "Inviter les testeurs et les volontaires du premier mois à commencer leur mois d’essai gratuit.",
+        "Publier les premières vidéos montrant un budget fictif rempli en une minute.",
+        "Échanger en message privé avec chaque personne une semaine avant la fin de son essai pour savoir ce qui l’aiderait à continuer.",
+        "Noter la raison donnée par chaque personne qui ne poursuit pas, sans insister ni relancer plusieurs fois."
+      ],
+      "indicateur": "Au moins cinq personnes paient l’abonnement après leur mois d’essai et ajoutent encore des dépenses le mois suivant."
+    },
+    {
+      "titre": "Publier des vidéos chaque semaine",
+      "periode": "Mois 4 à 5",
+      "objectif": "Faire connaître BudgetClair auprès des étudiants et jeunes actifs avec des vidéos courtes et régulières, dans vos {heures_par_semaine} heures par semaine.",
+      "actions": [
+        "Publier trois vidéos par semaine sur TikTok, Instagram Reels et YouTube Shorts, en alternant conseils, démonstrations et coulisses.",
+        "Lancer la série du mois de dépenses notées et publier un épisode chaque semaine.",
+        "Répondre à chaque commentaire et transformer les questions reçues en nouvelles vidéos.",
+        "Noter chaque semaine les vidéos qui amènent des demandes d’essai, pour refaire les sujets qui fonctionnent."
+      ],
+      "indicateur": "Des demandes d’essai arrivent chaque semaine grâce aux vidéos, sans relance de votre part."
+    },
+    {
+      "titre": "Ajuster le prix et donner envie de rester",
+      "periode": "Mois 6 à 7",
+      "objectif": "Comprendre pourquoi certaines personnes arrêtent de saisir leurs dépenses, rendre le bilan du mois plus utile et tester une formule annuelle si les abonnés la demandent.",
+      "actions": [
+        "Contacter cinq personnes qui ont arrêté pour comprendre à quel moment elles ont décroché.",
+        "Améliorer le bilan de fin de mois pour qu’il donne envie de préparer le mois suivant.",
+        "Proposer une formule annuelle aux abonnés réguliers et comparer leurs réponses au prix mensuel.",
+        "Ajouter à l’aide les cinq questions les plus posées depuis le lancement."
+      ],
+      "indicateur": "Les abonnés d’un mois restent en grande partie abonnés le mois suivant, et vous savez expliquer pourquoi les autres partent."
+    },
+    {
+      "titre": "Trouver des partenaires proches des étudiants",
+      "periode": "Mois 8 à 10",
+      "objectif": "Trouver un canal qui amène des abonnés de façon répétée, auprès des personnes et des groupes qui parlent déjà d’argent aux étudiants et aux jeunes actifs.",
+      "actions": [
+        "Proposer aux associations étudiantes de votre ville un atelier gratuit sur le budget du mois, avec BudgetClair en exemple.",
+        "Contacter des créateurs de contenu sur les petits budgets pour leur proposer un essai, sans leur imposer de publication.",
+        "Préparer un modèle de budget étudiant à partager, utile même sans l’appli, avec un lien vers l’essai gratuit.",
+        "Demander à chaque nouvel abonné comment il a connu l’appli et noter sa réponse."
+      ],
+      "indicateur": "Un partenaire ou une communauté amène de nouveaux essais plusieurs mois de suite, sans nouvel effort de votre part."
+    },
+    {
+      "titre": "Automatiser et faire le bilan de l’année",
+      "periode": "Mois 11 à 12",
+      "objectif": "Réduire le temps passé sur les tâches répétitives, préparer la rentrée suivante, puis comparer vos revenus réels à votre objectif de {objectif_revenu}.",
+      "actions": [
+        "Automatiser le message de bienvenue, le rappel de fin d’essai et les réponses aux questions fréquentes.",
+        "Préparer à l’avance les vidéos et le modèle de budget de la rentrée, période où les étudiants organisent leur nouvelle année.",
+        "Faire le bilan de l’année : temps passé, dépenses, nombre d’abonnés et revenu mensuel réel.",
+        "Décider de continuer, d’ajuster l’offre ou d’arrêter, à partir des chiffres réels de l’année."
+      ],
+      "indicateur": "Un bilan écrit compare le revenu mensuel réel à {objectif_revenu} et fixe la décision pour l’année suivante."
+    }
+  ]
+}

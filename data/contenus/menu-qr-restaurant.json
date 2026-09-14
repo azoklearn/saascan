@@ -1,0 +1,532 @@
+{
+  "idea_id": "menu-qr-restaurant",
+  "risque": "Beaucoup de restaurateurs changent leur carte moins souvent qu’ils ne le pensent, ou se contentent très bien d’une ardoise : ils ne verraient alors pas l’intérêt de payer chaque mois. Avant de construire, demandez à cinq restaurants, snacks ou food trucks de noter pendant deux semaines chaque plat ajouté, retiré ou épuisé et chaque prix modifié, puis comptez combien en ont réellement fait plusieurs.",
+  "prompt": {
+    "produit": "MenuQR permet à un restaurant, un snack ou un food truck de mettre sa carte en ligne et de la modifier depuis son téléphone. Le gérant saisit ses rubriques, ses plats, ses prix et ses allergènes, puis imprime un QR code qui ne change jamais. Le client scanne le code et lit le menu à jour, sans rien installer. MenuQR ne prend aucune commande, n’encaisse aucun paiement et ne vérifie pas les allergènes, qui restent sous la responsabilité du restaurant.",
+    "ecrans": [
+      "Menu public : nom du restaurant, horaires, plat du jour en haut, puis rubriques avec plats, prix, description et allergènes. Un plat épuisé apparaît barré. Menu en pause : message simple à la place de la carte.",
+      "Tableau du gérant : rubriques et plats, bouton « épuisé » sur chaque plat, accès au plat du jour et aperçu du menu public. État vide : bouton pour créer une première rubrique.",
+      "Formulaire de plat : nom, description, prix, rubrique, allergènes à cocher et photo facultative. Un prix vide ou mal écrit est signalé avant l’enregistrement, avec un exemple de saisie correcte.",
+      "Plat du jour : texte court, prix et date d’affichage, modifiables en quelques gestes depuis le téléphone. Le lendemain, le bloc disparaît du menu public s’il n’a pas été renouvelé.",
+      "QR code : aperçu, téléchargement d’une image nette à imprimer pour les tables, la vitrine ou le camion, et rappel que le code ne change jamais.",
+      "Réglages : nom, logo, horaires, emplacement du jour pour les food trucks, mention sur les allergènes affichée en bas du menu, et bouton pour mettre le menu en pause ou le remettre en ligne."
+    ],
+    "donnees": "Prévois un restaurant (email du gérant, nom, logo, horaires, emplacement, mention sur les allergènes, statut, adresse fixe du menu), des rubriques liées au restaurant (nom, ordre), des plats liés à une rubrique (nom, description, prix, allergènes, photo, disponible ou épuisé, ordre) et des plats du jour (texte, prix, date). Le client n’a aucun compte et ne voit que le menu en ligne. Seul le gérant modifie sa carte.",
+    "criteres": [
+      "Un prix modifié depuis le téléphone du gérant apparaît sur le menu public au rechargement suivant.",
+      "Le QR code déjà imprimé ouvre toujours le même menu, même après un changement complet de carte.",
+      "Un plat marqué épuisé reste visible et barré, sans être supprimé de la carte.",
+      "Le plat du jour de la veille n’apparaît plus sur le menu public.",
+      "Le menu public n’affiche aucun bouton de commande ni de paiement."
+    ]
+  },
+  "construction": [
+    "Créer la page menu publique avec les rubriques, les plats, les prix, les allergènes et le bloc du plat du jour, puis l’ouvrir sur un vrai téléphone.",
+    "Construire le tableau du gérant et le formulaire de plat, avec le bouton « épuisé » et un message clair quand un prix est mal saisi.",
+    "Générer le QR code fixe, l’imprimer sur une feuille, puis vérifier qu’il ouvre toujours le bon menu après plusieurs modifications de plats.",
+    "Faire saisir une vraie carte à un ou deux restaurateurs volontaires, puis faire scanner le menu par trois personnes et noter ce qui les gêne."
+  ],
+  "videos": [
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Problème vécu",
+      "accroche": "Le prix du plat a augmenté, mais le menu imprimé affiche toujours l’ancien prix.",
+      "deroule": "Plan serré sans visage sur un menu plastifié posé sur une table, puis un stylo qui corrige un prix à la main. Voix off : le client remarque la rature et pose la question au moment de payer. Terminez sur un téléphone qui affiche un menu en ligne où le prix se change en quelques gestes, en précisant à l’écran que le restaurant est fictif.",
+      "appel_action": "Demandez en commentaire à quelle fréquence leur carte change vraiment."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Démonstration à l’écran",
+      "accroche": "Regardez comment on change le plat du jour depuis son téléphone, sans couper la vidéo.",
+      "deroule": "Enregistrement de l’écran d’un téléphone, sans visage. Ouvrez le tableau du gérant d’un restaurant fictif, remplacez le plat du jour, enregistrez, puis scannez le QR code avec un second téléphone pour montrer le menu à jour. Ne coupez rien, pour que chacun voie le temps que cela prend réellement.",
+      "appel_action": "Proposez aux restaurateurs de tester MenuQR sur leur prochaine carte, en message privé."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Checklist",
+      "accroche": "Les cinq informations que vos clients cherchent sur un menu avant de choisir.",
+      "deroule": "Texte à l’écran et voix off, sur des plans de mains qui tiennent une carte. Affichez les cinq points un par un : le prix, ce que contient le plat, les allergènes, ce qui est végétarien, ce qui est disponible aujourd’hui. Pour chacun, une phrase sur la question que le client pose au serveur quand l’information manque.",
+      "appel_action": "Invitez à enregistrer la vidéo pour relire leur carte avec cette liste."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Avant et après",
+      "accroche": "La même carte : l’ardoise à moitié effacée, puis le menu lisible sur un téléphone.",
+      "deroule": "Plan d’une ardoise de food truck à moitié effacée, avec des prix difficiles à lire. Coupure, puis un téléphone qui scanne un QR code collé sur le camion et affiche le menu complet, rubrique par rubrique. Indiquez à l’écran que le camion et la carte sont des exemples, ou tournez chez un gérant qui a donné son accord.",
+      "appel_action": "Demandez en commentaire s’ils utilisent une ardoise, un menu papier ou les deux."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Erreur fréquente",
+      "accroche": "Plastifier un menu dont les prix risquent de changer dans les prochains mois.",
+      "deroule": "Face caméra, expliquez ce qui se passe quand un menu plastifié devient faux : autocollants par-dessus les prix, rature au stylo ou réimpression complète. Montrez ensuite une autre façon de faire : garder un support imprimé pour le QR code seulement, et la carte à jour en ligne. Précisez que le papier reste pratique pour certains clients.",
+      "appel_action": "Demandez en commentaire combien de fois ils ont réimprimé leur carte cette année."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Question de la cible",
+      "accroche": "« Et les clients âgés, ils vont savoir scanner un QR code ? »",
+      "deroule": "Face caméra, lisez la question affichée en texte. Répondez honnêtement : certains clients préfèrent le papier, et c’est normal. Proposez de garder quelques cartes papier pour ceux qui le demandent, puis montrez que le code s’ouvre avec l’appareil photo du téléphone, sans application à installer.",
+      "appel_action": "Demandez en commentaire comment leurs clients réagissent aux menus en QR code."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Coulisses de la construction",
+      "accroche": "Je construis un menu en ligne pour les snacks et les petits restaurants. Voici pourquoi il ne prend aucune commande.",
+      "deroule": "Face caméra, expliquez ce choix : un restaurant a souvent déjà une caisse pour encaisser, et un outil de commande en plus demande du temps pour le surveiller pendant le service. MenuQR se concentre sur une seule chose, afficher une carte juste. Montrez à l’écran le menu d’un snack fictif.",
+      "appel_action": "Demandez en commentaire ce qu’ils attendent d’abord d’un menu en ligne."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Tutoriel express",
+      "accroche": "Où poser le QR code du menu pour que les clients le remarquent vraiment ?",
+      "deroule": "Sans visage, dans un établissement filmé avec l’accord du gérant ou chez vous avec une table dressée. Montrez trois emplacements : un chevalet debout sur la table, la vitrine à hauteur des yeux, le comptoir près de la caisse. Pour chacun, scannez le code avec un téléphone pour vérifier qu’il se lit sans reflet ni ombre.",
+      "appel_action": "Invitez à enregistrer la vidéo avant d’imprimer leurs QR codes."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Exemple fictif commenté",
+      "accroche": "Ce menu de snack est inventé. Voici les trois détails qui évitent des questions au comptoir.",
+      "deroule": "Enregistrement d’écran du menu d’un snack fictif, avec la mention « exemple » visible tout du long. Entourez les allergènes affichés sous chaque plat, la mention « épuisé » sur un dessert, puis la ligne qui précise ce que contient la formule. Expliquez en voix off la question que chaque détail évite.",
+      "appel_action": "Demandez en commentaire la question qu’on leur pose le plus souvent au comptoir."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Idée reçue",
+      "accroche": "« Un menu en QR code, c’est froid, ça remplace le serveur. »",
+      "deroule": "Face caméra, reconnaissez ce qui rend cette crainte légitime : un client seul avec son téléphone, sans personne pour le conseiller. Expliquez que MenuQR ne prend aucune commande : le serveur garde son rôle et le menu sert seulement à lire une carte juste. Montrez un plat du jour affiché, que le serveur peut ensuite présenter de vive voix.",
+      "appel_action": "Demandez en commentaire s’ils préfèrent un menu papier, un QR code, ou les deux."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Journée type",
+      "accroche": "Food truck : le matin, on met à jour l’emplacement et le plat du jour avant d’ouvrir.",
+      "deroule": "Reconstitution annoncée comme telle, tournée sans visage : des mains ouvrent le volet du camion, puis enregistrement de l’écran. On change l’emplacement du jour dans les réglages et le plat du jour, puis on montre le même QR code collé sur le comptoir. Affichez en surimpression que le camion et le menu sont fictifs.",
+      "appel_action": "Demandez aux gérants de food truck comment ils annoncent aujourd’hui leur emplacement."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Transparence sur le prix",
+      "accroche": "MenuQR coûte 12 € par mois. Voici ce qui est inclus, et ce qui ne l’est pas.",
+      "deroule": "Face caméra, avec la liste en texte à l’écran. Inclus : la page menu, le QR code qui ne change pas et les modifications depuis le téléphone. Non inclus : la commande, le paiement en ligne, la livraison et le site du restaurant. Expliquez que ce prix est encore à l’essai et que les retours des premiers restaurants peuvent le faire évoluer.",
+      "appel_action": "Invitez les restaurateurs à dire en commentaire si ce périmètre leur suffirait."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Comparaison",
+      "accroche": "Réimprimer la carte ou la modifier en ligne : deux façons de changer un prix.",
+      "deroule": "Écran partagé, sans citer de marque ni de montant. À gauche, les étapes pour réimprimer : refaire le fichier, passer chez l’imprimeur, attendre, remplacer chaque exemplaire. À droite, les étapes sur MenuQR : ouvrir le plat, changer le prix, enregistrer. Reconnaissez qu’une belle carte imprimée garde son charme pour certains restaurants.",
+      "appel_action": "Demandez en commentaire ce qui les retient de modifier leur carte plus souvent."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Erreur fréquente",
+      "accroche": "Laisser sur la carte un plat que la cuisine n’a plus depuis midi.",
+      "deroule": "Scène jouée et présentée comme fictive : un client choisit un plat, le serveur revient s’excuser car il n’y en a plus. Coupure, puis enregistrement d’écran : le gérant marque ce plat comme épuisé depuis la cuisine, et il apparaît barré sur le téléphone du client suivant.",
+      "appel_action": "Demandez en commentaire comment ils préviennent la salle quand un plat vient à manquer."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Série",
+      "accroche": "Une question sur les menus chaque semaine. Épisode 1 : faut-il mettre des photos des plats ?",
+      "deroule": "Voix off et texte à l’écran, sans visage. Présentez les deux côtés : une photo aide à choisir, mais une photo ratée ou trop différente de l’assiette servie déçoit. Montrez un menu fictif avec une seule photo par rubrique, et rappelez que la photo reste facultative dans MenuQR. Annoncez le sujet du prochain épisode.",
+      "appel_action": "Invitez à suivre la série et à proposer en commentaire la question du prochain épisode."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Démonstration à l’écran",
+      "accroche": "Un plat est épuisé ? Un seul bouton pour le barrer sur le menu de vos clients.",
+      "deroule": "Enregistrement d’écran sur deux téléphones côte à côte, sans visage : à gauche le tableau du gérant, à droite le menu client. Appuyez sur « épuisé » pour un plat fictif, rechargez le menu client et montrez le plat barré. Remettez-le disponible et montrez qu’il revient normalement.",
+      "appel_action": "Proposez de tester MenuQR avec leur propre carte, en message privé."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Tutoriel express",
+      "accroche": "Allergènes : comment les afficher clairement sur un menu en ligne.",
+      "deroule": "Texte à l’écran et voix off, sur un menu fictif. Montrez des pictogrammes simples sous chaque plat et une mention en bas du menu qui invite les clients à demander conseil au personnel. Rappelez que la liste des allergènes est remplie par le restaurant, qui en reste responsable, qu’elle se met à jour à chaque changement de recette, et qu’il faut se renseigner sur les règles qui s’appliquent à son établissement.",
+      "appel_action": "Invitez à enregistrer la vidéo pour vérifier les allergènes de leur carte."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Coulisses de la construction",
+      "accroche": "Premier test de mon QR code en terrasse, à la tombée de la nuit : ce qui ne marchait pas.",
+      "deroule": "À tourner avec les vrais résultats de vos essais. Filmez le scan d’un QR code imprimé sous un éclairage faible, puis montrez ce que vous avez changé : taille du code, contraste, papier mat plutôt que brillant, texte plus gros sur le menu. Si tout a fonctionné du premier coup, dites-le simplement.",
+      "appel_action": "Demandez en commentaire dans quelles conditions leurs clients consultent la carte."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Question de la cible",
+      "accroche": "« Je peux changer le menu pendant le service, sans quitter la cuisine ? »",
+      "deroule": "Face caméra, lisez la question à l’écran. Montrez ensuite, en enregistrement d’écran, le formulaire de plat ouvert sur un téléphone : changer un prix ou marquer un plat épuisé se fait sans ordinateur. Précisez qu’il faut une connexion internet et que seul le gérant peut modifier la carte.",
+      "appel_action": "Invitez à poser en commentaire toute autre question pratique sur le fonctionnement."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Problème vécu",
+      "accroche": "Les passants ne savent jamais quel est le plat du jour avant d’entrer.",
+      "deroule": "Plans sans visage devant une vitrine, filmés avec l’accord du gérant ou reconstitués : une ardoise posée à l’intérieur, illisible depuis le trottoir. Voix off : on hésite, on continue son chemin. Terminez sur un QR code collé en vitrine qui affiche le plat du jour, en précisant que la scène est une reconstitution.",
+      "appel_action": "Demandez en commentaire comment ils annoncent leur plat du jour aujourd’hui."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Checklist",
+      "accroche": "Avant d’imprimer votre QR code, vérifiez ces quatre points.",
+      "deroule": "Sans visage, mains et feuille imprimée à l’écran. Taille suffisante pour être scanné sans se pencher, contraste net entre le code et le fond, une phrase simple à côté comme « Notre carte du jour », et un test de scan avec deux téléphones différents. Terminez sur le code posé sur une table.",
+      "appel_action": "Invitez à enregistrer la vidéo pour la ressortir le jour de l’impression."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Réponse à un commentaire",
+      "accroche": "« Moi je fais tout sur l’ardoise, pourquoi j’aurais besoin d’un QR code ? »",
+      "deroule": "Si ce commentaire apparaît sous une de vos vidéos, affichez-le et répondez face caméra. Dites que l’ardoise fonctionne très bien pour de nombreux établissements et qu’elle peut rester. Montrez un usage complémentaire : le QR code en vitrine pour ceux qui passent devant, ou pour lire toute la carte sans se lever.",
+      "appel_action": "Demandez en commentaire ce qu’ils écrivent sur leur ardoise chaque jour."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Tutoriel express",
+      "accroche": "Prix sur la carte : écrivez-les tous de la même façon.",
+      "deroule": "Texte à l’écran sur un menu fictif, sans visage. Montrez une carte où les prix sont écrits de trois façons, avec ou sans centimes, avec ou sans le signe euro. Puis la même carte harmonisée, avec les prix alignés à droite. Expliquez que MenuQR affiche tous les prix de la même manière et signale un prix mal saisi.",
+      "appel_action": "Invitez à enregistrer la vidéo avant de relire leur propre carte."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Coulisses de la construction",
+      "accroche": "J’ai montré mon menu exemple à un restaurateur après son service. Voici ce qu’il m’a répondu.",
+      "deroule": "À tourner uniquement après une vraie visite, et avec l’accord du restaurateur pour raconter l’échange. Face caméra, résumez ses remarques sans le nommer s’il le préfère, puis montrez à l’écran ce que vous avez modifié dans le menu après cette discussion. Gardez aussi ses critiques.",
+      "appel_action": "Invitez les restaurateurs qui veulent donner leur avis à vous écrire en message privé."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Idée reçue",
+      "accroche": "« Pour avoir un menu en ligne, il faut refaire tout son site internet. »",
+      "deroule": "Face caméra, puis enregistrement d’écran. Expliquez qu’un menu peut vivre sur une simple page, à part du site du restaurant, et qu’il suffit d’ajouter son lien sur le site, la page de réseau social ou la fiche de l’établissement en ligne. Montrez le lien copié depuis les réglages d’un menu fictif.",
+      "appel_action": "Demandez en commentaire où leurs clients trouvent leur carte aujourd’hui."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Avant et après",
+      "accroche": "Carte d’hiver, carte d’été : toute la carte change, le QR code sur les tables reste le même.",
+      "deroule": "Enregistrement d’écran d’un menu fictif de brasserie. Montrez la rubrique « Plats chauds » avec ses soupes, puis remplacez-la en accéléré par des salades et changez les prix. Scannez ensuite le même QR code imprimé pour montrer la nouvelle carte, en rappelant qu’aucun support n’a été réimprimé.",
+      "appel_action": "Demandez en commentaire combien de fois par an leur carte change vraiment."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Exemple fictif commenté",
+      "accroche": "Menu de food truck inventé : pourquoi il tient en quatre rubriques seulement.",
+      "deroule": "Enregistrement d’écran du menu d’un camion fictif, avec la mention « exemple » visible. Parcourez les rubriques : formules, sandwichs, boissons, desserts. Expliquez en voix off pourquoi une carte courte se lit mieux debout dans une file d’attente, et comment le plat du jour s’affiche en haut sans alourdir le reste.",
+      "appel_action": "Invitez les gérants de food truck à dire en commentaire combien de rubriques compte leur carte."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Journée type",
+      "accroche": "Une journée fictive dans un snack : les trois moments où la carte bouge.",
+      "deroule": "Reconstitution présentée comme fictive, avec des plans de mains et des enregistrements d’écran. Le matin, on ajoute le plat du jour ; à midi, un dessert est marqué épuisé ; le soir, on retire le plat du jour et on change le prix de la formule. Chaque changement est montré sur le menu côté client.",
+      "appel_action": "Demandez en commentaire à quel moment de la journée leur carte change le plus."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Question de la cible",
+      "accroche": "« Et si un client a ouvert le menu hier, il voit encore l’ancien prix ? »",
+      "deroule": "Face caméra, lisez la question. Montrez en enregistrement d’écran un prix modifié, puis le menu rechargé sur un autre téléphone qui affiche le nouveau prix. Expliquez simplement qu’un menu déjà ouvert se met à jour quand on recharge la page, et qu’un nouveau scan affiche toujours la dernière version.",
+      "appel_action": "Invitez à poser leurs questions pratiques en commentaire."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Appel aux testeurs",
+      "accroche": "Je cherche cinq restaurants, snacks ou food trucks pour tester un menu en ligne.",
+      "deroule": "Face caméra, expliquez ce que le test demande : mettre leur carte en ligne avec votre aide, poser le QR code quelques semaines et donner un avis honnête. Précisez ce que vous ne promettez pas : ni plus de clients, ni commandes en ligne. Montrez le menu d’un restaurant fictif pour rendre l’idée concrète.",
+      "appel_action": "Invitez les restaurateurs intéressés à écrire « menu » en message privé."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Appel aux partenaires",
+      "accroche": "Grossistes, brasseurs, fournisseurs de restaurants : vos clients parlent-ils de cartes à réimprimer ?",
+      "deroule": "Face caméra, présentez l’idée sans annoncer de partenariat : les fournisseurs qui passent chaque semaine chez des restaurateurs entendent parler de leurs soucis du quotidien. Montrez un menu fictif sur téléphone et dites ce que vous cherchez : un échange pour savoir si un tel outil rendrait service à leurs clients.",
+      "appel_action": "Invitez les fournisseurs intéressés à vous écrire en message privé pour un premier échange."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Erreur fréquente",
+      "accroche": "Glisser le QR code sous la vitre de la table, là où il brille sous la lumière.",
+      "deroule": "Sans visage, sur une table filmée avec l’accord du gérant ou chez vous. Montrez un téléphone qui n’arrive pas à lire le code à cause du reflet, puis le même code sur un chevalet posé debout, qui se lit du premier coup. Expliquez qu’un code se teste toujours sur place, à l’endroit exact où le client le scannera.",
+      "appel_action": "Demandez en commentaire où est placé leur QR code aujourd’hui."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Tutoriel express",
+      "accroche": "Mettre sa carte en ligne pour la première fois : les trois étapes.",
+      "deroule": "Enregistrement d’écran d’un compte fictif, sans visage. Créez deux rubriques, ajoutez trois plats avec leurs prix et leurs allergènes, puis téléchargez le QR code. Montrez enfin le menu obtenu sur un second téléphone, avec la mention que le restaurant est inventé.",
+      "appel_action": "Proposez de mettre leur carte en ligne ensemble, en message privé."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Problème vécu",
+      "accroche": "« Il y a quoi dans la formule ? » : la question que vous entendez toute la journée.",
+      "deroule": "Scène jouée et présentée comme fictive, tournée derrière un comptoir sans montrer de vrai client : le gérant répète la composition de la formule à plusieurs personnes à la suite. Coupure, puis enregistrement d’écran : la formule détaillée sur le menu en ligne, avec l’entrée, le plat, la boisson et le prix.",
+      "appel_action": "Demandez en commentaire quelle question revient le plus souvent à leur comptoir."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Comparaison",
+      "accroche": "Menu en PDF ou menu en page mobile : ce que voit vraiment le client sur son téléphone.",
+      "deroule": "Écran partagé sur deux téléphones, sans citer de marque. À gauche, un menu PDF fictif qu’il faut agrandir avec les doigts et faire glisser dans tous les sens. À droite, le même menu sur une page mobile, avec des rubriques qui s’ouvrent d’un geste. Reconnaissez qu’un PDF peut suffire à une carte qui ne change presque jamais.",
+      "appel_action": "Demandez en commentaire s’ils utilisent déjà un PDF pour leur menu."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Série",
+      "accroche": "Épisode 2 de la série sur les menus : combien de plats mettre sur sa carte ?",
+      "deroule": "Voix off et texte à l’écran, sans visage. Présentez les deux côtés sans avancer de chiffre magique : une carte longue rassure sur le choix mais se lit mal sur un téléphone, une carte courte est plus simple à tenir à jour. Montrez un menu fictif avec des rubriques repliées pour garder une page lisible.",
+      "appel_action": "Invitez à dire en commentaire combien de plats compte leur carte aujourd’hui."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Démonstration à l’écran",
+      "accroche": "Le même QR code, trois versions de la carte dans la même semaine.",
+      "deroule": "Plan fixe sur un QR code imprimé et enregistrements d’écran, sans visage. Lundi, le menu du midi ; mercredi, un plat ajouté ; vendredi, le prix d’un dessert changé. À chaque fois, scannez le même code pour montrer la nouvelle version. Affichez que le restaurant est fictif.",
+      "appel_action": "Proposez aux restaurateurs de tester MenuQR sur leur carte de la semaine prochaine."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Conseil métier",
+      "accroche": "Nommer les rubriques de sa carte pour qu’un client comprenne tout de suite.",
+      "deroule": "Texte à l’écran sur un menu fictif. Montrez des intitulés flous comme « Nos envies » ou « Le coin du chef », puis leur version claire : « Entrées », « Burgers », « Desserts maison ». Expliquez qu’un nom original peut rester, à condition d’ajouter une ligne qui dit ce qu’on y trouve.",
+      "appel_action": "Invitez à partager en commentaire le nom de rubrique le plus original de leur carte."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Réponse à une objection",
+      "accroche": "« Dans ma salle, les clients captent mal le réseau. »",
+      "deroule": "Si la remarque vous est faite, affichez-la et répondez face caméra. Reconnaissez que le menu en ligne a besoin d’une connexion et qu’il ne faut pas le cacher. Proposez des solutions simples : le code du Wi-Fi affiché à côté du QR code, et quelques cartes papier à jour pour dépanner. Montrez un chevalet fictif avec les deux informations.",
+      "appel_action": "Demandez en commentaire si le réseau passe bien dans leur salle."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Quiz",
+      "accroche": "Trois menus inventés : lequel se lit le mieux sur un téléphone ?",
+      "deroule": "Affichez trois captures de menus fictifs l’une après l’autre : un texte serré sans rubriques, un menu rempli de grandes photos, un menu en rubriques courtes. Laissez quelques secondes pour choisir, puis donnez votre avis en expliquant pourquoi. Précisez qu’il n’y a pas de bonne réponse valable pour tous les restaurants.",
+      "appel_action": "Invitez à voter en commentaire pour le menu un, deux ou trois avant la fin de la vidéo."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Offre de lancement",
+      "accroche": "Pour les premiers restaurants testeurs, je saisis la carte avec vous, sur place.",
+      "deroule": "Face caméra, expliquez ce que comprend cette aide : passer après le service, recopier la carte avec le gérant, vérifier avec lui les prix et les allergènes, puis poser les premiers QR codes. Montrez un menu fictif en exemple. Annoncez honnêtement le nombre de visites que votre temps permet chaque semaine, sans fausse urgence.",
+      "appel_action": "Invitez à écrire en message privé pour convenir d’un passage après le service."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Erreur fréquente",
+      "accroche": "Afficher un prix sans dire ce qui est compris dans l’assiette.",
+      "deroule": "Texte à l’écran sur un menu fictif : un burger affiché avec son prix, sans préciser si les frites sont comprises. Voix off : le client découvre la différence à l’addition, et c’est l’équipe en salle qui doit s’expliquer. Montrez la ligne corrigée : « servi avec frites maison » ou « accompagnement en supplément ».",
+      "appel_action": "Demandez en commentaire quelle précision ils ont déjà dû ajouter sur leur carte."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Coulisses de la construction",
+      "accroche": "Pourquoi le QR code de MenuQR ne change jamais, même si vous refaites toute la carte.",
+      "deroule": "Face caméra, puis schéma dessiné à la main : un code imprimé mène toujours à la même adresse, et c’est la page derrière qui change. Expliquez que ce choix évite de réimprimer les chevalets et les autocollants. Montrez un code imprimé scanné avant et après une modification de carte fictive.",
+      "appel_action": "Demandez en commentaire sur combien de supports figure leur QR code aujourd’hui."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Retour de testeur",
+      "accroche": "Ce qu’un vrai gérant de snack pense de MenuQR après quelques semaines, raconté avec son accord.",
+      "deroule": "Uniquement avec un retour réel et l’accord écrit du gérant. Montrez sa carte en ligne sur un téléphone, puis sa phrase en texte ou quelques secondes de lui derrière son comptoir, s’il accepte d’être filmé. Terminez sur la modification faite grâce à sa remarque, et gardez ses réserves s’il en a.",
+      "appel_action": "Invitez les restaurateurs qui veulent essayer à leur tour à vous écrire en message privé."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Tutoriel express",
+      "accroche": "Plat du jour : comment l’écrire pour qu’il donne envie en une seule phrase.",
+      "deroule": "Texte à l’écran et voix off, sur un menu fictif. Montrez « Plat du jour : poulet », puis une version plus parlante : « Poulet rôti au thym, pommes grenaille ». Donnez la règle : le produit, la façon de le cuisiner, l’accompagnement. Terminez sur trois exemples inventés, affichés dans le bloc du plat du jour.",
+      "appel_action": "Invitez à écrire en commentaire leur plat du jour, pour le reformuler ensemble."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Point de vue du client",
+      "accroche": "Côté client : choisir son repas depuis la file d’attente d’un food truck.",
+      "deroule": "Scène jouée, présentée comme fictive et tournée sans visage : dans une file, une main scanne le QR code collé sur le côté du camion. Enregistrement d’écran : le client lit les formules, voit qu’un dessert est épuisé et fait son choix avant d’arriver au comptoir. Terminez sur le camion, filmé avec l’accord du gérant ou reconstitué.",
+      "appel_action": "Demandez aux gérants de food truck si leurs clients hésitent longtemps devant le comptoir."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Conseil de saison",
+      "accroche": "La terrasse rouvre et la carte d’été arrive : ce qu’il faut préparer avant le grand jour.",
+      "deroule": "Face caméra, puis enregistrement d’écran sur un menu fictif. Proposez trois actions : préparer sur papier la liste des nouveaux plats avec leurs prix et leurs allergènes, la saisir le jour du changement, puis tester les QR codes des tables de terrasse en plein soleil.",
+      "appel_action": "Demandez en commentaire à quel moment de l’année arrive leur carte d’été."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Question de la cible",
+      "accroche": "« Je peux mettre une photo de chaque plat ? Le menu ne va pas devenir lent ? »",
+      "deroule": "Face caméra, lisez la question. Répondez que la photo est facultative et qu’un menu chargé de grandes photos met plus de temps à s’afficher quand le réseau est faible. Montrez en enregistrement d’écran un menu fictif avec quelques photos bien choisies, et conseillez de photographier les plats à la lumière du jour.",
+      "appel_action": "Invitez à poser en commentaire leurs questions sur les photos de plats."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Sketch",
+      "accroche": "« Il reste des lasagnes ? » « Ah non, désolé, plus depuis ce matin. »",
+      "deroule": "Sketch court, joué et présenté comme une fiction : trois clients à la suite demandent le même plat qui n’est plus disponible. Le gérant finit par coller un papier sur chaque menu. Coupure, puis la même histoire où il marque le plat épuisé sur son téléphone, et où le menu en ligne l’affiche barré.",
+      "appel_action": "Demandez en commentaire le plat qu’on leur réclame encore alors qu’il a quitté la carte."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Défi",
+      "accroche": "Défi pour restaurateurs : notez chaque changement de carte pendant deux semaines.",
+      "deroule": "Face caméra, lancez le défi : garder un carnet près de la caisse et noter chaque plat ajouté, retiré ou épuisé, et chaque prix modifié. Affichez une page de carnet vierge à reproduire. Annoncez une vidéo de bilan avec les carnets que des restaurateurs auront accepté de partager, sans rien arrondir.",
+      "appel_action": "Invitez ceux qui relèvent le défi à envoyer une photo de leur carnet en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Choix de conception",
+      "accroche": "Pourquoi vos clients n’ont aucune application à installer pour lire votre carte.",
+      "deroule": "Face caméra, expliquez le choix : un client assis à table ne veut rien télécharger pour choisir un plat. Montrez le scan avec l’appareil photo du téléphone et l’ouverture directe du menu fictif. Précisez que MenuQR ne demande aucun compte au client et ne recueille pas ses coordonnées.",
+      "appel_action": "Demandez en commentaire s’ils ont déjà renoncé eux-mêmes à un menu qui demandait une application."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Coulisses de la construction",
+      "accroche": "J’ai recopié la carte d’un vrai snack avec son gérant. Voici ce qui a demandé le plus d’attention.",
+      "deroule": "À tourner avec l’accord du gérant et vos vrais constats. Sans visage, montrez la carte papier posée à côté du téléphone, puis les passages délicats : les formules, les suppléments, les allergènes vérifiés avec lui. Terminez sur ce que vous avez simplifié ensuite dans le formulaire de plat.",
+      "appel_action": "Demandez en commentaire quelle partie de leur carte est la plus compliquée à expliquer."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Cas d’usage",
+      "accroche": "Soirée à thème ou menu de fête : afficher une carte spéciale le temps d’un soir.",
+      "deroule": "Enregistrement d’écran d’un restaurant fictif. Montrez l’ajout d’une rubrique « Menu du réveillon » avec ses plats et son prix, puis son retrait le lendemain. Rappelez que MenuQR affiche la carte mais ne prend pas les réservations : elles se font comme d’habitude, par téléphone ou sur place.",
+      "appel_action": "Demandez en commentaire quelles soirées spéciales ils organisent dans l’année."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Test utilisateur",
+      "accroche": "J’ai fait lire un menu en ligne à des proches qui ne scannent jamais de QR code.",
+      "deroule": "À tourner avec les vrais résultats de vos tests, et l’accord des personnes filmées ou en montrant seulement leurs mains. Montrez où elles ont hésité : trouver l’appareil photo, ouvrir une rubrique, comprendre un pictogramme. Terminez sur la correction apportée, par exemple une phrase d’aide sous le QR code.",
+      "appel_action": "Proposez de scanner le menu de démonstration et de dire en commentaire ce qui bloque."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Transparence sur le prix",
+      "accroche": "12 € par mois pour un menu en ligne : pour quel restaurant cela a-t-il du sens ?",
+      "deroule": "Face caméra avec texte à l’écran, sans avancer aucun gain. Proposez deux questions à se poser : combien de fois la carte a changé ces derniers mois, et ce qu’a coûté la dernière réimpression. Dites franchement qu’un restaurant dont la carte ne bouge presque jamais n’en a sans doute pas besoin.",
+      "appel_action": "Invitez les restaurateurs et ceux qui les accompagnent à en parler en message privé."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Conseil métier",
+      "accroche": "Food truck : les informations à placer à côté du QR code sur le camion.",
+      "deroule": "Sans visage, plans du flanc d’un camion filmé avec l’accord du gérant, ou d’une maquette imprimée. Montrez un autocollant simple : le QR code, « Scannez pour voir la carte du jour », les horaires et le nom du compte du camion sur les réseaux. Expliquez pourquoi peu d’informations se lisent mieux de loin.",
+      "appel_action": "Demandez en commentaire ce qui est écrit aujourd’hui sur le flanc de leur camion."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Réponse à un commentaire",
+      "accroche": "« Et si je me trompe de prix, tout le monde le voit tout de suite ? »",
+      "deroule": "Si cette question vous est posée, affichez-la et répondez face caméra : une erreur se voit vite, mais elle se corrige aussi vite, sans rien réimprimer. Montrez l’aperçu du menu dans le tableau du gérant, à vérifier avant de ranger son téléphone, puis la correction d’un prix fictif.",
+      "appel_action": "Demandez en commentaire comment ils relisent aujourd’hui leur carte avant de l’imprimer."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Question à la communauté",
+      "accroche": "Restaurateurs : quelle est la plus grosse erreur que vous ayez vue sur une carte ?",
+      "deroule": "Face caméra, très court, sans parler du produit au départ. Racontez une erreur de carte présentée comme inventée, par exemple un plat annoncé végétarien avec des lardons dans la description. Posez la question et expliquez que les réponses serviront à améliorer les conseils du formulaire. Épinglez les réponses les plus parlantes, avec l’accord de leurs auteurs.",
+      "appel_action": "Invitez à raconter leur anecdote en commentaire, sans nommer d’établissement."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Bilan d’étape",
+      "accroche": "Premier mois de test de MenuQR dans de vrais restaurants : ce qui a marché, et ce qui a coincé.",
+      "deroule": "À tourner uniquement avec vos constats réels. Face caméra, partagez trois apprentissages : une étape du formulaire simplifiée, un emplacement de QR code qui ne fonctionnait pas, une demande de restaurateur refusée parce qu’elle sortait du périmètre, comme la commande en ligne. Si peu de restaurants ont testé, dites-le clairement.",
+      "appel_action": "Invitez à suivre le projet et à écrire pour rejoindre les prochains restaurants testeurs."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Vidéo à partager aux clients",
+      "accroche": "Vous êtes à table et vous voyez un QR code ? Voici comment ouvrir la carte.",
+      "deroule": "Vidéo pensée pour que les restaurateurs la partagent à leurs clients sur leurs réseaux. Plans de mains et enregistrement d’écran : ouvrir l’appareil photo, viser le code, toucher le lien qui apparaît, puis parcourir les rubriques d’un menu fictif. Terminez en rappelant qu’on peut toujours demander une carte papier ou un conseil au personnel.",
+      "appel_action": "Invitez les restaurateurs à enregistrer la vidéo pour la repartager à leurs clients."
+    }
+  ],
+  "roadmap": [
+    {
+      "titre": "Vérifier que les cartes changent vraiment",
+      "periode": "Mois 1",
+      "objectif": "Vérifier que des restaurants, snacks et food trucks de votre secteur changent leur carte assez souvent pour payer un menu en ligne chaque mois.",
+      "actions": [
+        "Passer après le service dans dix établissements de votre secteur et demander comment leur carte a changé ces derniers mois.",
+        "Montrer sur votre téléphone un menu exemple, clairement présenté comme fictif, et noter les réactions et les questions.",
+        "Demander à cinq gérants de noter pendant deux semaines chaque plat ajouté, retiré ou épuisé et chaque prix modifié."
+      ],
+      "indicateur": "Au moins cinq établissements montrent des changements réels de carte et acceptent de tester un menu en ligne."
+    },
+    {
+      "titre": "Construire le menu, le QR code et le formulaire",
+      "periode": "Mois 2",
+      "objectif": "Construire uniquement la page menu, le QR code fixe et le formulaire de modification, dans vos {heures_par_semaine} heures par semaine, sans commande ni paiement en ligne.",
+      "actions": [
+        "Copier le prompt du dossier et construire écran par écran, en vérifiant chaque étape sur un vrai téléphone.",
+        "Saisir la vraie carte de deux restaurateurs volontaires, à leurs côtés, en vérifiant avec eux les prix et les allergènes.",
+        "Imprimer les QR codes et les tester sur place, en salle, en vitrine ou sur le camion, à différents moments de la journée."
+      ],
+      "indicateur": "Deux gérants modifient seuls un plat ou un prix depuis leur téléphone, sans vous appeler pour savoir comment faire."
+    },
+    {
+      "titre": "Trouver les premiers restaurants payants",
+      "periode": "Mois 3",
+      "objectif": "Transformer les restaurants testeurs en premiers clients payants, au prix testé de 12 € par mois.",
+      "actions": [
+        "Proposer l’abonnement aux établissements qui ont modifié leur carte plusieurs fois pendant l’essai.",
+        "Mettre en place le paiement en mode test, vérifier un abonnement du début à la fin, puis passer en mode réel.",
+        "Aller voir en personne cinq nouveaux établissements du quartier avec le menu d’un testeur, montré avec son accord."
+      ],
+      "indicateur": "Un premier restaurant paie son abonnement et continue de mettre sa carte à jour le mois suivant."
+    },
+    {
+      "titre": "Montrer MenuQR en vidéo chaque semaine",
+      "periode": "Mois 4 à 5",
+      "objectif": "Faire connaître MenuQR auprès des restaurateurs sur Instagram et TikTok, à un rythme que vous pouvez tenir à côté des visites en personne.",
+      "actions": [
+        "Tourner deux à trois vidéos par semaine, en commençant par les démonstrations à l’écran et les erreurs fréquentes sur les cartes.",
+        "Répondre à chaque commentaire de restaurateur et proposer de passer après le service à ceux qui décrivent le problème.",
+        "Noter chaque semaine les vidéos qui amènent des messages privés, et reprendre ces sujets sous un autre angle.",
+        "Filmer un établissement réel seulement avec l’accord écrit du gérant, et présenter tout autre exemple comme fictif."
+      ],
+      "indicateur": "Huit semaines de publication régulière et au moins trois vidéos qui ont amené des demandes de restaurateurs."
+    },
+    {
+      "titre": "Ajuster le prix et garder ses clients",
+      "periode": "Mois 6 à 7",
+      "objectif": "Comprendre pourquoi des restaurants gardent ou arrêtent MenuQR, et adapter l’offre à la façon dont ils l’utilisent vraiment.",
+      "actions": [
+        "Appeler ou revoir chaque restaurant qui a arrêté pour connaître la raison, sans insister pour le retenir.",
+        "Tester une formule annuelle, ou une formule pour les établissements qui ont deux cartes, par exemple le midi et le soir.",
+        "Ajouter seulement l’amélioration la plus demandée par les restaurants qui paient, toujours sans commande ni paiement en ligne."
+      ],
+      "indicateur": "La plupart des restaurants abonnés depuis trois mois modifient encore leur carte au moins une fois par mois."
+    },
+    {
+      "titre": "Trouver un canal qui revient chaque semaine",
+      "periode": "Mois 8 à 10",
+      "objectif": "Obtenir de nouveaux essais chaque semaine grâce aux personnes qui côtoient déjà les restaurateurs de votre région.",
+      "actions": [
+        "Proposer un échange à des fournisseurs, grossistes ou imprimeurs locaux qui passent régulièrement chez des restaurateurs.",
+        "Demander aux restaurateurs satisfaits de présenter MenuQR à un confrère, avec leur accord.",
+        "Présenter MenuQR dans une association de commerçants ou un rassemblement de food trucks, après accord des organisateurs.",
+        "Comparer vos canaux selon les essais et les abonnements obtenus, puis arrêter ceux qui n’apportent rien."
+      ],
+      "indicateur": "Un même canal apporte de nouveaux essais chaque semaine pendant un mois entier."
+    },
+    {
+      "titre": "Simplifier le quotidien et faire le bilan",
+      "periode": "Mois 11 à 12",
+      "objectif": "Réduire le temps passé sur les tâches qui se répètent, puis comparer vos revenus réels à votre objectif de {objectif_revenu}.",
+      "actions": [
+        "Préparer un guide de mise en route et des réponses toutes prêtes aux questions que posent le plus souvent les restaurateurs.",
+        "Faire le bilan de l’année : temps passé, dépenses, nombre de restaurants abonnés et revenu mensuel réel.",
+        "Décider de continuer, d’ajuster l’offre ou d’arrêter, à partir de ces chiffres réels."
+      ],
+      "indicateur": "Un bilan écrit avec le revenu mensuel réel, le temps passé par restaurant et la décision prise pour l’année suivante."
+    }
+  ]
+}

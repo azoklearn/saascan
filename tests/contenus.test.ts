@@ -38,6 +38,9 @@ function style(label: string, text: string, { allowPlaceholders = false, allowPe
   if (/(^|[^\p{L}’])(tu|ton|ta|tes|toi|te)(?![\p{L}’])/iu.test(text) || /(^|[^\p{L}])t’/iu.test(text)) issues.push(`${label} : tutoiement, vouvoyez`);
   if ((text.match(/\{[^}]*\}/g) ?? []).some((tag) => !allowPlaceholders || !placeholders.includes(tag))) issues.push(`${label} : balise non autorisée`);
   if (/[<>]|TODO|lorem|\.\.\./i.test(text)) issues.push(`${label} : texte provisoire ou caractère interdit`);
+  // Contenus pour le grand public : aucun jargon de startup.
+  const jargon = text.match(/\b(MVP|churn|onboarding|B2B|B2C|KPI|funnel|growth|leads?|SaaS)\b/i);
+  if (jargon) issues.push(`${label} : jargon « ${jargon[0]} », dites-le avec des mots simples`);
   if (!allowPercent && text.includes("%")) issues.push(`${label} : pourcentage, n’inventez aucun chiffre`);
   return issues;
 }

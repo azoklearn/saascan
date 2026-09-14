@@ -1,0 +1,532 @@
+{
+  "idea_id": "carte-fidelite",
+  "risque": "Le principal risque est que les clients ne prennent pas le temps de créer une carte au moment de payer, surtout quand la file s’allonge. Avant de construire, posez pendant deux semaines un QR code vers un simple formulaire dans deux commerces qui acceptent le test, puis comptez avec eux combien de clients s’inscrivent et combien reviennent présenter leur carte.",
+  "prompt": {
+    "produit": "FidèleClient remplace la carte de fidélité en carton d’un petit commerce par une carte à tampons qui s’ouvre sur le téléphone du client, sans application à installer. Le client scanne le QR code posé en caisse, crée sa carte, puis montre son code à chaque passage. Le commerçant ajoute le tampon depuis son téléphone, remet la récompense et voit qui revient. Le produit n’envoie aucun message publicitaire et ne gère ni caisse ni paiement.",
+    "ecrans": [
+      "Page du commerce, ouverte par le QR code en caisse : nom du commerce, récompense proposée et bouton « Créer ma carte ». Un téléphone qui a déjà une carte l’ouvre directement. Programme en pause : message clair.",
+      "Création de la carte : prénom, téléphone ou e-mail, case d’accord expliquant que ces coordonnées servent seulement à la carte. Un numéro déjà inscrit ne crée aucun doublon et invite à demander sa carte en caisse.",
+      "Carte du client : tampons obtenus et restants, récompense visée, code personnel en grand à montrer en caisse. Carte pleine : « Récompense à demander en caisse ».",
+      "Caisse du commerçant : saisie ou scan du code, recherche par numéro ou e-mail, prénom affiché, boutons « Ajouter un tampon » et « Remettre la récompense ». Code inconnu : erreur claire.",
+      "Clients fidèles : cartes avec prénom, tampons en cours, dernier passage et récompenses reçues, triées par dernier passage. L’état vide rappelle d’imprimer le QR code et de le poser en caisse.",
+      "Réglages : nom du commerce, nombre de tampons requis, texte de la récompense, délai entre deux tampons, QR code à imprimer, pause du programme et suppression d’une carte à la demande du client."
+    ],
+    "donnees": "Prévois un commerce (e-mail du commerçant, nom, tampons requis, récompense, délai entre deux tampons, statut), des cartes liées au commerce (prénom, téléphone ou e-mail, date de l’accord, code personnel, tampons en cours, création, dernier passage) et un historique des tampons et des récompenses remises. Le client ouvre sa seule carte par un lien unique, sans mot de passe. Seul le commerçant voit ses clients. Les coordonnées ne servent qu’à la carte, jamais à de la publicité.",
+    "criteres": [
+      "Un client crée sa carte depuis le QR code en caisse sans rien installer.",
+      "Un second tampon sur la même carte est refusé tant que le délai réglé n’est pas écoulé.",
+      "Au dernier tampon, la carte affiche la récompense et la caisse propose de la remettre.",
+      "Une récompense remise remet la carte à zéro et reste inscrite dans l’historique.",
+      "Un téléphone ou un e-mail déjà inscrit dans ce commerce ne crée jamais de seconde carte."
+    ]
+  },
+  "construction": [
+    "Créer la page du commerce ouverte par le QR code et la création de carte, avec la case d’accord et la vérification des numéros ou e-mails déjà inscrits.",
+    "Construire la carte du client avec les cases de tampons, le code personnel et le message de récompense, puis vérifier son affichage sur plusieurs téléphones.",
+    "Construire l’écran de caisse pour ajouter un tampon, remettre la récompense et rouvrir une carte sur un nouveau téléphone, avec le délai minimum entre deux tampons.",
+    "Imprimer le QR code et faire créer une carte à cinq proches, puis faire tester l’écran de caisse pendant une matinée par un commerçant de votre entourage, avec son accord."
+  ],
+  "videos": [
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Problème vécu",
+      "accroche": "Votre client a encore oublié sa carte en carton. Vous tamponnez un bout de ticket ?",
+      "deroule": "Reconstitution annoncée comme telle, tournée dans un café avec l’accord du gérant ou chez vous avec un comptoir improvisé. Plan serré sur des mains qui fouillent un portefeuille, un tampon encreur à côté de la caisse, puis un ticket tamponné à la va-vite. Terminez sur la question affichée à l’écran : que faites-vous quand la carte est restée à la maison ?",
+      "appel_action": "Demandez en commentaire ce qu’ils font quand un client a oublié sa carte."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Démonstration à l’écran",
+      "accroche": "Voici ce que voit un client qui scanne le QR code posé à côté de votre caisse.",
+      "deroule": "Enregistrez l’écran d’un téléphone pour une boulangerie fictive : scan du QR code, saisie du prénom et du numéro, case d’accord, puis la carte qui s’affiche avec ses cases vides. Montrez ensuite l’écran de caisse où le commerçant ajoute le premier tampon. Indiquez à l’écran que la boulangerie et le client sont inventés.",
+      "appel_action": "Proposez de tester la carte dans leur commerce pendant un mois, en message privé."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Checklist",
+      "accroche": "Les quatre questions à vous poser avant de choisir la récompense de votre carte de fidélité.",
+      "deroule": "Texte à l’écran, une question par plan, sans visage, sur des images de vitrine et de comptoir : la récompense coûte-t-elle peu à offrir, donne-t-elle envie, se comprend-elle en quelques mots, fait-elle découvrir un autre produit ? Pour chaque question, un exemple fictif pour un café ou une boulangerie.",
+      "appel_action": "Invitez à écrire en commentaire la récompense qu’ils proposent aujourd’hui."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Erreur fréquente",
+      "accroche": "L’erreur qui décourage : demander beaucoup de passages pour une toute petite récompense.",
+      "deroule": "Face caméra, expliquez qu’un client compare vite l’effort demandé et ce qu’il obtient. Affichez deux cartes fictives côte à côte, l’une très longue pour un petit cadeau, l’autre plus courte et plus claire. Précisez qu’il n’existe pas de bon nombre universel et que chaque commerce doit tester le sien.",
+      "appel_action": "Demandez en commentaire combien de tampons ils demandent sur leur carte actuelle."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Tutoriel express",
+      "accroche": "Où poser votre QR code pour qu’il se voie au moment de payer.",
+      "deroule": "Plans sans visage sur un comptoir d’exemple : QR code à côté du terminal de paiement, en chevalet près de la caisse, sur la vitrine réfrigérée, puis près de la corbeille à pain. Scannez chaque emplacement avec un téléphone pour montrer lequel se lit facilement de là où se tient le client. Rappelez de demander l’avis de l’équipe avant de choisir.",
+      "appel_action": "Demandez en commentaire où ils placeraient le QR code dans leur commerce."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Avant et après",
+      "accroche": "La même habituée : une carte en carton froissée, puis une carte sur son téléphone.",
+      "deroule": "Plans serrés sur les mains, sans visage. D’abord une carte en carton cornée, aux tampons à moitié effacés, sortie d’un porte-monnaie plein. Ensuite, la carte FidèleClient qui s’ouvre depuis l’écran d’accueil d’un téléphone, avec les cases remplies et la récompense affichée. Précisez à l’écran que la cliente et la carte sont des exemples.",
+      "appel_action": "Demandez s’ils préfèrent garder le carton, passer au téléphone ou proposer les deux."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Coulisses de la construction",
+      "accroche": "Avant de construire une carte de fidélité, je suis allé demander aux boulangers ce qu’ils pensaient des leurs.",
+      "deroule": "Face caméra, racontez vos passages dans les commerces de votre quartier, aux heures calmes. Partagez les remarques qui sont vraiment revenues, sans nommer personne, et ce que vous avez décidé de ne pas faire, comme une application à télécharger ou des messages publicitaires.",
+      "appel_action": "Invitez les commerçants de votre réseau à rejoindre les premiers testeurs."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Question de la cible",
+      "accroche": "« Mes clients ne vont jamais donner leur numéro de téléphone. »",
+      "deroule": "Face caméra, lisez la remarque affichée en texte. Reconnaissez que la méfiance est normale, puis montrez la case d’accord qui explique à quoi sert le numéro : retrouver sa carte, rien d’autre. Précisez que le client peut choisir l’e-mail à la place, et que le commerçant supprime une carte dès qu’on le lui demande.",
+      "appel_action": "Demandez en commentaire ce qui rassurerait leurs clients avant de laisser un numéro."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Journée type",
+      "accroche": "Une matinée derrière le comptoir d’une boulangerie, racontée par l’écran de caisse.",
+      "deroule": "Reconstitution annoncée comme telle, tournée avec l’accord d’un boulanger ou chez vous avec un décor simple. Alternez des plans de mains qui emballent une baguette et des plans de l’écran de caisse fictif : un tampon ajouté, un code inconnu, une récompense remise. Terminez sur la liste des passages de la matinée, avec des prénoms inventés.",
+      "appel_action": "Demandez à quelle heure leur commerce est le plus chargé."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Idée reçue",
+      "accroche": "« Une carte de fidélité sur téléphone, c’est pour les grandes enseignes. »",
+      "deroule": "Face caméra, reconnaissez d’où vient cette idée : les grandes enseignes ont souvent leur propre application et une équipe pour la faire vivre. Montrez ensuite la carte d’un café fictif, ouverte depuis un simple QR code, sans rien à télécharger. Dites franchement que le test sert à vérifier si cela convient à un commerce de quartier.",
+      "appel_action": "Proposez aux commerçants de juger sur pièce en testant la carte, en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Exemple fictif commenté",
+      "accroche": "Ce café est inventé. Voici ce que sa liste de clients fidèles lui apprend d’un coup d’œil.",
+      "deroule": "Enregistrement d’écran de la liste des cartes d’un café fictif. Entourez un client qui passe chaque matin, une carte créée mais jamais revenue, puis une récompense remise la veille. En voix off, expliquez ce qu’un commerçant peut en tirer : reconnaître ses habitués, et se demander pourquoi certains ne reviennent pas.",
+      "appel_action": "Demandez en commentaire s’ils savent aujourd’hui qui sont leurs clients les plus réguliers."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Transparence sur le prix",
+      "accroche": "FidèleClient est testé à 19 € par mois. Voici ce que ce prix comprend, et ce qu’il ne comprend pas.",
+      "deroule": "Face caméra, avec la liste en texte à l’écran. Ce qui est compris : le QR code à imprimer, la carte sur téléphone, l’écran de caisse et la liste des clients fidèles. Ce qui ne l’est pas : aucune application, aucun envoi de publicité, aucune caisse ni paiement. Expliquez que ce prix peut évoluer avec les retours des premiers commerces.",
+      "appel_action": "Invitez à dire en commentaire si ce périmètre suffirait pour leur commerce."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Réponse à un commentaire",
+      "accroche": "« Et si un client se met des tampons tout seul ? »",
+      "deroule": "Si cette question apparaît sous une de vos vidéos, affichez le commentaire à l’écran et répondez face caméra. Expliquez que le client ne peut rien tamponner lui-même : c’est le commerçant qui ajoute le tampon depuis son écran de caisse. Montrez ensuite le délai minimum entre deux tampons qui bloque un doublon, sur un exemple fictif.",
+      "appel_action": "Demandez en commentaire quelle triche ils ont déjà vue avec les cartes en carton."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Comparaison",
+      "accroche": "Carte en carton, application de grande enseigne ou carte sur téléphone : trois façons de remercier ses habitués.",
+      "deroule": "Écran partagé en trois colonnes, sans citer de marque. Pour chaque solution, affichez ce qu’elle fait bien et ce qui lui manque : le carton est simple mais se perd, une application demande un téléchargement, la carte sur téléphone demande un QR code et un peu de réglage. Reconnaissez que le carton convient très bien à certains commerces.",
+      "appel_action": "Demandez en commentaire laquelle des trois solutions ils utilisent aujourd’hui."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Série",
+      "accroche": "Une question de fidélité par semaine. Épisode 1 : combien de tampons pour une récompense ?",
+      "deroule": "Voix off et texte à l’écran, sans visage. Expliquez que le bon nombre dépend du rythme de passage : un café du matin et une boutique de cadeaux ne voient pas leurs clients aussi souvent. Montrez où régler ce nombre dans FidèleClient, et invitez à le changer après quelques semaines d’observation plutôt qu’au hasard. Annoncez la question du prochain épisode.",
+      "appel_action": "Invitez à suivre la série et à proposer en commentaire la prochaine question."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Tutoriel express",
+      "accroche": "Imprimer votre QR code et le poser en caisse, étape par étape.",
+      "deroule": "Enregistrement d’écran puis plans de mains, sans visage : récupérez le QR code dans les réglages, imprimez-le sur une feuille avec une phrase courte comme « Votre carte de fidélité, sans application », glissez-le dans un chevalet. Scannez-le depuis un autre téléphone pour vérifier qu’il ouvre bien la page du commerce.",
+      "appel_action": "Invitez à enregistrer la vidéo pour la refaire au calme, après la fermeture."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Démonstration en caisse",
+      "accroche": "Un tampon ajouté pendant qu’on rend la monnaie : voici le geste en caisse.",
+      "deroule": "À tourner dans un commerce avec l’accord du gérant, ou chez vous avec un comptoir d’exemple. Le client fictif montre le code de sa carte, le commerçant le saisit ou le scanne sur sa tablette et appuie sur « Ajouter un tampon ». Filmez les deux écrans côte à côte pour montrer la case qui se remplit sur le téléphone du client.",
+      "appel_action": "Demandez en commentaire si ce geste trouverait sa place au moment le plus chargé de leur journée."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Erreur fréquente",
+      "accroche": "Choisir une récompense que vous regrettez de donner.",
+      "deroule": "Face caméra, puis texte à l’écran. Expliquez qu’une récompense trop coûteuse finit par être remise à contrecœur, ou retirée, ce qui déçoit les habitués. Proposez de choisir un produit qui coûte peu au commerce et fait plaisir, comme une boisson ou une viennoiserie, et de l’écrire clairement sur la carte.",
+      "appel_action": "Demandez en commentaire quelle récompense leur semble juste pour leur commerce."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Checklist",
+      "accroche": "Avant de lancer votre carte de fidélité, vérifiez ces quatre réglages.",
+      "deroule": "Enregistrement d’écran des réglages d’un commerce fictif, avec un surligneur virtuel : nombre de tampons, texte de la récompense, délai minimum entre deux tampons, QR code imprimé et testé. Pour chaque point, expliquez en une phrase la mauvaise surprise qu’il évite, comme deux tampons ajoutés par erreur pour un seul achat.",
+      "appel_action": "Demandez en commentaire quel cinquième réglage ils vérifieraient."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Question de la cible",
+      "accroche": "« Et si mon client change de téléphone, il perd tous ses tampons ? »",
+      "deroule": "Face caméra, lisez la question à l’écran. Montrez ensuite, sur un exemple fictif, le commerçant qui retrouve la carte en caisse grâce au numéro ou à l’e-mail du client, puis affiche un QR code que le client scanne avec son nouveau téléphone. Les tampons sont toujours là. Précisez que c’est la seule utilisation de ces coordonnées.",
+      "appel_action": "Demandez en commentaire quelle autre situation les inquiète avec une carte sur téléphone."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Choix de conception",
+      "accroche": "Pourquoi la carte de fidélité que je construis n’envoie aucun message publicitaire.",
+      "deroule": "Face caméra, expliquez ce choix : un client qui donne son numéro pour une carte ne veut pas recevoir de promotions en retour, et la confiance se perd vite. Montrez la case d’accord et le texte qui explique l’usage des coordonnées. Terminez sur ce que ce choix permet : un outil simple, respectueux et rapide à tester avec de vrais commerces.",
+      "appel_action": "Demandez en commentaire si ce choix les rassure ou leur semble trop limité."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Sketch",
+      "accroche": "« Attendez, je l’ai quelque part… non, elle doit être dans mon autre manteau. »",
+      "deroule": "Sketch court, joué et présenté comme une fiction : un client vide ses poches devant la caisse pendant que la file s’allonge et que la boulangère sourit, un peu crispée. Coupure, puis la même scène où le client montre son téléphone, le tampon est ajouté et la file avance.",
+      "appel_action": "Demandez en commentaire la meilleure excuse entendue pour une carte oubliée."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Tutoriel express",
+      "accroche": "Mettre votre programme de fidélité en pause pendant les congés.",
+      "deroule": "Enregistrement d’écran : activez la pause dans les réglages, puis ouvrez la page du commerce depuis un autre téléphone pour montrer le message affiché aux clients. Montrez que les cartes et les tampons déjà gagnés restent intacts. Tournez le dernier plan sans visage, sur une affichette « Fermé pour congés ».",
+      "appel_action": "Demandez en commentaire à quelle période de l’année leur commerce ferme."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Retour de testeur",
+      "accroche": "Une boulangère a testé FidèleClient dans sa boutique. Voici son avis, partagé avec son accord.",
+      "deroule": "À tourner uniquement avec un retour réel et l’accord écrit de la commerçante. Filmez-la quelques secondes derrière son comptoir ou affichez sa phrase en texte, puis montrez le changement apporté à l’outil après son retour. Si son avis est partagé, montrez-le aussi : un avis nuancé inspire davantage confiance.",
+      "appel_action": "Invitez les commerçants qui veulent essayer à leur tour à vous écrire en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Point de vue du client",
+      "accroche": "Côté client : scanner un QR code en attendant son café, et repartir avec une carte.",
+      "deroule": "Scène jouée et présentée comme fictive, tournée sans visage : une main tient un téléphone près d’un comptoir, scanne le chevalet, tape un prénom et coche la case d’accord. Coupure sur le premier tampon ajouté quand le café arrive. Terminez sur la carte ajoutée à l’écran d’accueil du téléphone.",
+      "appel_action": "Demandez en commentaire si leurs clients scannent déjà des QR codes, par exemple pour un menu."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Conseil de commerçant",
+      "accroche": "Trois phrases pour proposer la carte de fidélité sans ralentir la file.",
+      "deroule": "Face caméra, dans un décor simple. Proposez trois formulations courtes à dire en rendant la monnaie : montrer le QR code du doigt, annoncer la récompense en quelques mots, proposer de créer la carte pendant la préparation de la commande. Affichez chaque phrase en texte, et précisez que chacun l’adapte à sa façon de parler.",
+      "appel_action": "Invitez à enregistrer la vidéo et à essayer une des phrases avec leurs prochains clients."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Démonstration à l’écran",
+      "accroche": "Carte pleine : voici comment remettre la récompense et repartir à zéro.",
+      "deroule": "Enregistrement d’écran sur un exemple fictif : le dernier tampon s’ajoute, la carte du client affiche « Récompense à demander en caisse », et l’écran de caisse propose « Remettre la récompense ». Validez, puis montrez la carte revenue à zéro et la récompense inscrite dans l’historique du commerce.",
+      "appel_action": "Demandez en commentaire quelle récompense ferait le plus plaisir à leurs habitués."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Appel aux testeurs",
+      "accroche": "Je cherche cinq cafés, boulangeries ou snacks pour tester une carte de fidélité sur téléphone pendant un mois.",
+      "deroule": "Face caméra, expliquez ce que le test demande : poser un QR code en caisse, proposer la carte aux clients et donner un avis honnête à la fin du mois. Précisez ce que vous faites pour eux, les réglages et l’impression du QR code, et ce que vous ne promettez pas. Montrez la carte d’un café fictif pour rendre l’idée concrète.",
+      "appel_action": "Invitez les commerçants intéressés à écrire « carte » en message privé."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Quiz",
+      "accroche": "Trois cartes de fidélité fictives : laquelle donne le plus envie de revenir ?",
+      "deroule": "Affichez trois cartes inventées l’une après l’autre : une avec une récompense floue, une qui demande beaucoup de passages, une courte avec une récompense claire. Laissez quelques secondes pour choisir, puis donnez votre avis en expliquant le raisonnement. Précisez que seuls les clients d’un vrai commerce peuvent trancher.",
+      "appel_action": "Invitez à donner leur réponse en commentaire avant de regarder la fin."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Erreur fréquente",
+      "accroche": "Lancer une carte de fidélité sans en parler à la personne qui tient la caisse.",
+      "deroule": "Face caméra, expliquez qu’un QR code posé sans explication risque de passer inaperçu si la personne en caisse ne sait pas quoi en dire. Proposez de prévoir un court moment avant l’ouverture pour montrer l’écran de caisse, le geste du tampon et la réponse aux questions sur le numéro. Montrez l’écran de caisse d’un commerce fictif.",
+      "appel_action": "Demandez en commentaire qui tient la caisse chez eux aux heures chargées."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Série",
+      "accroche": "Épisode 2 : quelle récompense choisir pour un snack ?",
+      "deroule": "Voix off et texte à l’écran, sans visage. Comparez trois récompenses fictives pour un snack : une boisson, un dessert, une portion de frites. Pour chacune, posez les bonnes questions : coût pour le commerce, envie pour le client, facilité à préparer au moment du coup de feu. Annoncez le sujet du prochain épisode : le délai entre deux tampons.",
+      "appel_action": "Invitez les gérants de snack à proposer en commentaire la récompense qu’ils choisiraient."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Problème vécu",
+      "accroche": "La même cliente passe chaque matin, et vous ne connaissez même pas son prénom.",
+      "deroule": "Face caméra, tournée chez vous ou dans votre voiture. Racontez une situation présentée comme fictive : une habituée qui ne vient plus, sans que personne ne s’en rende compte pendant des semaines. Montrez ensuite à l’écran la liste des clients fidèles d’un commerce fictif, triée par dernier passage, avec un prénom qui n’est pas revenu depuis longtemps.",
+      "appel_action": "Demandez en commentaire s’ils remarquent quand un habitué arrête de venir."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Checklist",
+      "accroche": "Données des clients : trois règles à respecter avec une carte de fidélité.",
+      "deroule": "Texte à l’écran, sans visage, sur des plans de comptoir. Première règle : demander seulement ce qui sert à la carte, un prénom et un numéro ou un e-mail. Deuxième : expliquer à quoi servent ces coordonnées et obtenir l’accord du client. Troisième : supprimer une carte dès que le client le demande. Précisez que ces règles valent aussi pour une carte papier avec un nom et un numéro.",
+      "appel_action": "Demandez en commentaire quelle question leurs clients posent sur leurs données."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Démonstration à l’écran",
+      "accroche": "Un client vous demande de supprimer sa carte : voici comment faire.",
+      "deroule": "Enregistrement d’écran sur un commerce fictif : ouvrez la liste des clients fidèles, retrouvez la carte, puis supprimez-la depuis les réglages après confirmation. Ouvrez ensuite l’ancien lien de la carte sur le téléphone du client pour montrer le message indiquant qu’elle n’existe plus.",
+      "appel_action": "Demandez en commentaire si un client leur a déjà demandé de retirer ses coordonnées."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Idée reçue",
+      "accroche": "« Mes clients viennent pour le pain, pas pour une carte de fidélité. »",
+      "deroule": "Face caméra, reconnaissez ce qui est vrai : personne ne choisit une boulangerie pour sa carte. Expliquez qu’une carte ne crée pas l’envie de venir, elle aide surtout à reconnaître et à remercier ceux qui reviennent déjà. Montrez une récompense affichée sur la carte d’une boulangerie fictive.",
+      "appel_action": "Demandez en commentaire comment ils remercient aujourd’hui leurs clients les plus fidèles."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Coulisses de la construction",
+      "accroche": "J’ai essayé de tricher avec ma propre carte de fidélité, sur deux téléphones.",
+      "deroule": "Filmez vos mains et deux téléphones, sans visage. Tentez d’ajouter deux tampons de suite sur la même carte fictive, puis de créer une seconde carte avec le même numéro. Montrez les messages affichés à chaque essai et expliquez en voix off pourquoi ces tests comptent avant de confier l’outil à un vrai commerce.",
+      "appel_action": "Proposez de tester la carte de démonstration et de signaler en commentaire toute faille repérée."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Appel aux partenaires",
+      "accroche": "Associations de commerçants : vos adhérents cherchent-ils à mieux reconnaître leurs habitués ?",
+      "deroule": "Face caméra, présentez l’idée sans annoncer de partenariat : une association de commerçants pourrait faire découvrir une carte de fidélité simple à ses adhérents. Montrez la carte d’un commerce fictif et dites clairement ce que vous cherchez : un échange pour savoir si cela rendrait service aux commerces de la rue.",
+      "appel_action": "Invitez les responsables d’association à vous écrire en message privé pour un premier échange."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Tutoriel express",
+      "accroche": "Rédiger le texte de votre récompense pour qu’il se comprenne d’un coup d’œil.",
+      "deroule": "Enregistrement d’écran, sans visage. Comparez un texte flou comme « un cadeau surprise » à un texte clair comme « un café offert après dix passages », en précisant que l’exemple est fictif. Réécrivez trois récompenses de commerces inventés en direct, puis montrez-les sur la carte du client.",
+      "appel_action": "Invitez à partager en commentaire le texte de leur récompense actuelle."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Tournée du quartier",
+      "accroche": "Je suis passé dans cinq commerces de ma rue avec une carte de démonstration.",
+      "deroule": "À tourner après ces visites, en racontant uniquement ce qui s’est vraiment dit, sans filmer les commerçants sans leur accord. Filmez-vous dans la rue entre deux boutiques, montrez la carte de démonstration sur votre téléphone et résumez les réactions entendues, positives comme négatives. Terminez sur ce que vous allez modifier.",
+      "appel_action": "Demandez en commentaire quel commerce de leur quartier ils verraient bien avec une carte sur téléphone."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Question de la cible",
+      "accroche": "« Mes clients vont recevoir des SMS de promotion ? »",
+      "deroule": "Face caméra, répondez clairement : non, FidèleClient n’envoie aucun message publicitaire, ni par SMS ni par e-mail. Montrez la case d’accord qui explique que le numéro ou l’e-mail sert uniquement à retrouver la carte. Précisez que ce choix fait partie du produit dès le départ.",
+      "appel_action": "Demandez en commentaire s’ils ont déjà été agacés par des promotions après avoir donné leur numéro."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Erreur fréquente",
+      "accroche": "Oublier de tester le QR code après l’avoir imprimé.",
+      "deroule": "Plans sans visage : un QR code imprimé trop petit, un autre plastifié qui brille sous la lumière, un troisième derrière une vitrine. Scannez chacun avec un téléphone et montrez ceux qui ne s’ouvrent pas du premier coup. Terminez sur la bonne version : assez grand, sans reflet et testé depuis la place du client.",
+      "appel_action": "Invitez à enregistrer la vidéo pour vérifier leur QR code avant de le poser."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Exemple fictif commenté",
+      "accroche": "Liste de clients fictive d’un fleuriste : ce qu’on peut en apprendre, et ce qu’on ne peut pas.",
+      "deroule": "Enregistrement d’écran d’une liste inventée. Entourez ce qu’elle montre : des clients qui reviennent à chaque fête, des cartes jamais complétées, la date du dernier passage. Précisez ensuite ce qu’elle ne dit pas : ce que chaque client a acheté ou pourquoi il ne revient pas. Indiquez à l’écran que le fleuriste et les clients sont inventés.",
+      "appel_action": "Invitez les commerçants à dire en commentaire ce qu’ils aimeraient savoir sur leurs habitués."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Choix de conception",
+      "accroche": "Pourquoi FidèleClient ne demande aucune application à installer.",
+      "deroule": "Face caméra, expliquez le choix : devant une caisse, un client n’a ni l’envie ni le temps de télécharger une application pour un seul commerce. Montrez la carte qui s’ouvre depuis le QR code, puis l’ajout de la page à l’écran d’accueil. Reconnaissez la limite : sans application, le client doit penser à ouvrir sa carte.",
+      "appel_action": "Demandez en commentaire s’ils installeraient, eux, une application pour la carte d’un café."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Défi",
+      "accroche": "Défi commerçant : pendant une semaine, faites un trait à chaque carte en carton oubliée ou perdue.",
+      "deroule": "Face caméra, lancez le défi : une feuille près de la caisse, et un trait à chaque carte oubliée, perdue ou tamponnée sur un ticket. Montrez la feuille vierge préparée pour l’exemple. Annoncez une vidéo de bilan avec les feuilles que des commerçants accepteront de partager, quels que soient les résultats.",
+      "appel_action": "Invitez ceux qui relèvent le défi à envoyer une photo de leur feuille en message privé."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Offre de lancement",
+      "accroche": "Pour les premiers commerces testeurs, je règle votre carte et j’imprime votre QR code avec vous.",
+      "deroule": "Face caméra, expliquez ce que comprend cette aide : choisir le nombre de tampons et la récompense, poser le QR code au bon endroit, montrer l’écran de caisse à l’équipe. Montrez des réglages fictifs. Annoncez honnêtement combien de commerces votre temps permet d’accompagner, sans compte à rebours ni fausse urgence.",
+      "appel_action": "Invitez à écrire en message privé pour convenir d’un passage à une heure calme."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Comparaison",
+      "accroche": "Tampon encreur ou tampon sur téléphone : ce qui change pour le commerçant.",
+      "deroule": "Deux scènes courtes, présentées comme fictives et tournées sans visage. Dans la première, le commerçant cherche le tampon encreur, tamponne une carte humide et ne garde aucune trace du passage. Dans la seconde, il ajoute le tampon depuis son écran et le prénom apparaît dans la liste des clients fidèles. Ne promettez aucun effet sur les ventes.",
+      "appel_action": "Demandez en commentaire s’ils tiennent à leur tampon encreur."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Série",
+      "accroche": "Épisode 3 : le délai entre deux tampons, et pourquoi il existe.",
+      "deroule": "Voix off et enregistrement d’écran. Expliquez qu’un délai minimum évite deux tampons par erreur pour le même achat, par exemple quand deux personnes de l’équipe servent le même client. Montrez où le régler, puis le message affiché en caisse quand on essaie trop tôt. Annoncez le dernier épisode sur les cartes restées sans passage.",
+      "appel_action": "Invitez à dire en commentaire quel délai leur semblerait logique pour leur commerce."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Conseil de saison",
+      "accroche": "Rentrée, fêtes de fin d’année, beaux jours : trois moments pour présenter votre carte.",
+      "deroule": "Face caméra, puis plans de vitrine sans visage. Expliquez pourquoi certaines périodes amènent de nouveaux visages dans un commerce de quartier : retour des habitants, fêtes, nouveaux voisins. Proposez une petite affichette avec le QR code et la récompense, et rappelez de ne jamais annoncer ce que la carte n’offre pas.",
+      "appel_action": "Demandez en commentaire quelle période amène le plus de nouveaux clients chez eux."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Réponse à une objection",
+      "accroche": "« 19 € par mois pour remplacer des cartes en carton ? »",
+      "deroule": "Si cette remarque vous est faite, affichez-la et répondez face caméra, sans chercher à convaincre à tout prix. Rappelez ce que le carton ne donne pas : savoir qui revient et à quel rythme. Proposez deux questions à se poser : combien de clients passent plusieurs fois par semaine, et est-il utile de les connaître. Dites honnêtement que le carton suffit à certains commerces.",
+      "appel_action": "Invitez à en parler en message privé s’ils hésitent entre les deux."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Interview de commerçant",
+      "accroche": "Trois questions à un gérant de café sur sa façon de reconnaître ses habitués.",
+      "deroule": "À tourner avec un gérant réel qui a donné son accord, derrière son comptoir à une heure calme ou en appel vidéo. Posez trois questions : comment il reconnaît ses habitués, ce qu’il pense de sa carte actuelle, ce qui le ferait essayer une carte sur téléphone. Gardez ses réponses même si elles sont réservées sur l’outil.",
+      "appel_action": "Invitez d’autres commerçants à proposer leur témoignage en message privé."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Erreur fréquente",
+      "accroche": "Changer la récompense en cours de route sans prévenir les clients.",
+      "deroule": "Texte à l’écran sur des plans de comptoir, sans visage. Expliquez qu’un client qui a presque rempli sa carte se sent floué si la récompense change sans explication. Montrez comment modifier le texte dans les réglages, poser une affichette en caisse pour annoncer le changement et honorer l’ancienne récompense pour les cartes presque pleines.",
+      "appel_action": "Demandez en commentaire s’ils ont déjà modifié leur récompense."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Bilan d’étape",
+      "accroche": "Un mois de test de FidèleClient dans des commerces du quartier : ce que j’en retiens.",
+      "deroule": "À tourner uniquement avec vos constats réels. Face caméra, racontez trois choses apprises : un endroit où le QR code passait inaperçu, une question qui revenait en caisse, un usage que vous n’aviez pas prévu. Montrez les modifications faites en conséquence. Si peu de commerces ont testé, dites-le franchement.",
+      "appel_action": "Invitez à suivre le projet et à écrire pour faire partie des prochains commerces testeurs."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Vidéo à partager aux clients",
+      "accroche": "Votre boulangerie a maintenant une carte de fidélité sur téléphone ? Voici comment l’obtenir.",
+      "deroule": "Vidéo pensée pour que les commerçants la partagent à leurs clients. Enregistrement d’écran d’un téléphone qui parcourt chaque étape sur un commerce fictif : scanner le QR code, donner son prénom, choisir numéro ou e-mail, cocher l’accord, ajouter la carte à l’écran d’accueil. Terminez sur le code à montrer en caisse.",
+      "appel_action": "Invitez les commerçants à enregistrer la vidéo pour la partager en story."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Coulisses de la construction",
+      "accroche": "Ce que les commerçants de mon quartier m’ont appris sur la fidélité, avant que je construise quoi que ce soit.",
+      "deroule": "À tourner après vos entretiens, avec ce que vous avez vraiment entendu. Face caméra, présentez une idée de départ que vous avez écartée et une remarque qui a changé votre projet. Montrez la liste des questions posées pendant ces échanges, pour aider ceux qui veulent créer un outil pour les commerces de quartier.",
+      "appel_action": "Demandez en commentaire quelle question ils auraient posée à ces commerçants."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Tutoriel express",
+      "accroche": "Ajouter la carte de fidélité à l’écran d’accueil du téléphone, pour la retrouver comme une application.",
+      "deroule": "Enregistrement d’écran, sans visage, sur deux téléphones de marques différentes : ouvrez la carte d’un commerce fictif, puis suivez les étapes pour l’ajouter à l’écran d’accueil. Montrez l’icône obtenue et la carte qui s’ouvre d’un simple appui. Rappelez que rien n’est installé depuis un magasin d’applications.",
+      "appel_action": "Invitez à enregistrer la vidéo pour la montrer aux clients qui demandent comment faire."
+    },
+    {
+      "plateforme": "YouTube Shorts",
+      "format": "Idée reçue",
+      "accroche": "« Une carte de fidélité, ça ne sert qu’à faire des cadeaux. »",
+      "deroule": "Face caméra, reconnaissez que la récompense est ce qui motive le client. Expliquez que pour le commerçant, la carte sert aussi à voir qui revient, à quel rythme, et quels habitués ne passent plus. Montrez la liste des clients fidèles d’un commerce fictif, sans aucun chiffre réel.",
+      "appel_action": "Demandez en commentaire s’ils suivent déjà ce genre d’information, même dans un carnet."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Démonstration à l’écran",
+      "accroche": "Le client a oublié son téléphone : comment ajouter quand même le tampon.",
+      "deroule": "Enregistrement d’écran de la caisse d’un commerce fictif : recherchez le client par son numéro ou son e-mail, vérifiez le prénom avec lui, puis ajoutez le tampon. Montrez ensuite sa carte mise à jour la prochaine fois qu’il l’ouvre. Précisez que seul le commerçant peut faire cette recherche.",
+      "appel_action": "Demandez en commentaire comment ils gèrent aujourd’hui un client venu sans sa carte."
+    },
+    {
+      "plateforme": "TikTok",
+      "format": "Question à la communauté",
+      "accroche": "Cafés, boulangeries, snacks : quelle est la récompense la plus originale que vous ayez vue ?",
+      "deroule": "Face caméra très court, sans parler de l’outil au départ. Racontez une récompense présentée comme fictive, puis posez la question et expliquez que les réponses vous aident à préparer des idées pour les commerces testeurs. Épinglez ensuite les réponses les plus parlantes, avec l’accord de leurs auteurs.",
+      "appel_action": "Invitez à raconter leur idée en commentaire, qu’elle vienne de leur commerce ou d’ailleurs."
+    },
+    {
+      "plateforme": "Instagram Reels",
+      "format": "Série",
+      "accroche": "Épisode 4 : que faire des cartes restées sans passage depuis longtemps ?",
+      "deroule": "Voix off et enregistrement d’écran. Triez la liste d’un commerce fictif par dernier passage et montrez les cartes inactives. Proposez des idées sans aucun message publicitaire : saluer la personne si elle repasse, ou supprimer les cartes très anciennes après l’avoir annoncé par une affichette en caisse. Terminez la série en demandant quel sujet mériterait un épisode bonus.",
+      "appel_action": "Invitez à proposer en commentaire le sujet d’un épisode bonus."
+    },
+    {
+      "plateforme": "LinkedIn",
+      "format": "Transparence sur le prix",
+      "accroche": "Pourquoi FidèleClient coûte le même prix, qu’un commerce ait peu ou beaucoup de clients.",
+      "deroule": "Face caméra, avec le prix en texte à l’écran. Expliquez le choix d’un prix unique de 19 € par mois pendant le test : facile à comprendre, sans supplément par carte créée. Dites que ce choix sera revu avec les retours des premiers commerces abonnés, et que vous partagerez la décision prise.",
+      "appel_action": "Demandez en commentaire s’ils préfèrent un prix fixe ou un prix selon le nombre de cartes."
+    }
+  ],
+  "roadmap": [
+    {
+      "titre": "Vérifier le besoin avec dix commerces du quartier",
+      "periode": "Mois 1",
+      "objectif": "Vérifier que les cafés, boulangeries et snacks veulent vraiment savoir qui revient chez eux, et que leurs clients accepteraient de créer une carte en scannant un QR code.",
+      "actions": [
+        "Passer à une heure calme dans dix commerces de votre quartier et demander comment fonctionne leur carte de fidélité actuelle, s’ils en ont une.",
+        "Montrer une carte exemple sur votre téléphone et noter ce qui plaît ou inquiète, en particulier la question du numéro de téléphone.",
+        "Poser pendant deux semaines, dans deux commerces qui acceptent, un QR code vers un simple formulaire, et compter avec eux les inscriptions et les retours."
+      ],
+      "indicateur": "Au moins cinq commerçants disent vouloir mieux connaître leurs habitués, et deux acceptent de tester une carte avec leurs vrais clients."
+    },
+    {
+      "titre": "Construire la carte, la caisse et la récompense",
+      "periode": "Mois 2",
+      "objectif": "Construire uniquement la page du QR code, la carte à tampons, l’écran de caisse et la récompense, dans vos {heures_par_semaine} heures par semaine.",
+      "actions": [
+        "Copier le prompt du dossier et construire écran par écran, en testant chaque étape sur plusieurs téléphones.",
+        "Tester l’écran de caisse pendant un moment chargé chez un commerçant testeur, avec son accord, pour voir si le geste reste assez rapide.",
+        "Écarter toute demande d’envoi de promotions ou d’application à installer, qui sort du périmètre, même si elle revient souvent."
+      ],
+      "indicateur": "Deux commerces testeurs ajoutent des tampons à de vrais clients sans vous appeler pour demander comment faire."
+    },
+    {
+      "titre": "Lancer et trouver les premiers commerces payants",
+      "periode": "Mois 3",
+      "objectif": "Transformer les commerces testeurs en premiers clients payants au prix testé de 19 € par mois, en restant disponible pour les aider en caisse.",
+      "actions": [
+        "Proposer l’abonnement aux commerces dont les clients ont créé des cartes et sont revenus pendant le mois d’essai.",
+        "Brancher le paiement de l’abonnement en mode test, vérifier un abonnement complet, puis passer en mode réel.",
+        "Faire le tour d’une autre rue commerçante avec une carte de démonstration et proposer un mois d’essai gratuit avec un QR code en caisse."
+      ],
+      "indicateur": "Un premier commerce paie son abonnement et garde son QR code en caisse le mois suivant."
+    },
+    {
+      "titre": "Publier des vidéos chaque semaine",
+      "periode": "Mois 4 à 5",
+      "objectif": "Faire connaître FidèleClient auprès des cafés, boulangeries et snacks sur Instagram et TikTok, à un rythme que vous pouvez tenir.",
+      "actions": [
+        "Tourner deux à trois vidéos par semaine, en commençant par les cartes en carton oubliées et les démonstrations en caisse.",
+        "Répondre à chaque commentaire de commerçant et proposer un essai à ceux qui veulent mieux connaître leurs habitués.",
+        "Noter chaque semaine les vidéos qui amènent des messages privés, et reprendre ces sujets sous un autre angle."
+      ],
+      "indicateur": "Huit semaines de publication régulière et au moins trois sujets qui amènent des demandes d’essai."
+    },
+    {
+      "titre": "Ajuster le prix et garder les commerces",
+      "periode": "Mois 6 à 7",
+      "objectif": "Comprendre pourquoi les commerces gardent ou arrêtent FidèleClient, et adapter l’offre à ce qu’ils utilisent vraiment en caisse.",
+      "actions": [
+        "Passer voir chaque commerce qui a arrêté pour comprendre la raison de son départ, sans chercher à le retenir à tout prix.",
+        "Tester une formule pour les commerçants qui ont deux boutiques, avec un prix annoncé clairement.",
+        "Ajouter le réglage le plus demandé par les commerces abonnés, s’il reste dans le périmètre, et rien d’autre."
+      ],
+      "indicateur": "La plupart des commerces abonnés depuis trois mois ajoutent encore des tampons chaque semaine."
+    },
+    {
+      "titre": "Trouver un canal qui revient chaque semaine",
+      "periode": "Mois 8 à 10",
+      "objectif": "Obtenir de nouveaux essais chaque semaine grâce à des relais proches des commerçants, sans dépendre d’une nouvelle vidéo.",
+      "actions": [
+        "Proposer une présentation à une association de commerçants ou à une union commerciale de votre ville.",
+        "Rencontrer un fournisseur de café, de farine ou d’emballages et lui demander s’il accepterait de parler de FidèleClient à ses clients.",
+        "Demander aux commerçants satisfaits de présenter la carte à un voisin de rue, avec leur accord.",
+        "Comparer vos canaux selon les essais et les abonnements obtenus, puis arrêter ceux qui n’apportent rien."
+      ],
+      "indicateur": "Un même canal apporte des essais chaque semaine pendant un mois entier."
+    },
+    {
+      "titre": "Automatiser et faire le bilan",
+      "periode": "Mois 11 à 12",
+      "objectif": "Réduire le temps passé à installer chaque commerce, puis comparer vos revenus réels à votre objectif de {objectif_revenu}.",
+      "actions": [
+        "Préparer des modèles de récompenses et une affichette QR code prête à imprimer pour qu’un commerce démarre seul.",
+        "Écrire une page d’aide avec les réponses aux questions qui reviennent en caisse, notamment sur les données des clients.",
+        "Faire le bilan de l’année : temps passé, dépenses, nombre de commerces abonnés et revenu mensuel réel.",
+        "Décider de continuer, d’ajuster l’offre ou d’arrêter, à partir de ces chiffres réels."
+      ],
+      "indicateur": "Un bilan écrit avec le revenu mensuel réel, le nombre de commerces actifs et la décision prise pour l’année suivante."
+    }
+  ]
+}
