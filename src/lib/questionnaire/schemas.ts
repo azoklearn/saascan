@@ -26,3 +26,10 @@ export function validateAnswers(input: unknown): Answers {
 export function isComplete(answers: Answers): boolean {
   return questions.every((question) => validateAnswer(question.id, answers[question.id]));
 }
+
+/** Dossiers payés avec l’ancien questionnaire en neuf questions : les réponses encore posées sont reprises, les nouvelles prennent une valeur neutre. */
+export function upgradeLegacyAnswers(input: unknown): unknown {
+  if (!input || typeof input !== "object" || Array.isArray(input) || !("competences" in input)) return input;
+  const legacy = input as Answers;
+  return { objectif_revenu: legacy.objectif_revenu, tranche_age: legacy.tranche_age, delai_premier_euro: "trois_mois", temps_jour: legacy.temps_jour, niveau_video: "a_apprendre" };
+}

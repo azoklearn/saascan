@@ -5,7 +5,18 @@ export const formatEuros = (amount: number) => `${euros.format(amount)} €`;
 
 const revenueSteps = [300, 500, 1000, 1500, 2000, 3000, 5000, 7500, 10000, 15000, 20000, 30000, 50000];
 
+// Les identifiants reprennent des questions déjà autorisées par la base (contrainte responses_question_id_check).
 export const questions: Question[] = [
+  {
+    id: "objectif_revenu", type: "range",
+    label: "Combien aimeriez-vous gagner chaque mois ?",
+    description: "Faites glisser le curseur jusqu’au revenu mensuel que vous visez.",
+    defaultValue: "2000",
+    options: revenueSteps.map((amount, index) => {
+      const last = index === revenueSteps.length - 1;
+      return { value: String(amount), label: `${formatEuros(amount)} par mois${last ? " ou plus" : ""}`, short: `${formatEuros(amount)}/mois${last ? " et +" : ""}` };
+    }),
+  },
   {
     id: "tranche_age", type: "single",
     label: "Quelle est votre tranche d’âge ?",
@@ -19,46 +30,13 @@ export const questions: Question[] = [
     ],
   },
   {
-    id: "cible_client", type: "single",
-    label: "À qui préférez-vous vendre ?",
-    description: "Ce choix oriente tout le reste — laissez SaaScan décider si vous hésitez.",
+    id: "delai_premier_euro", type: "single",
+    label: "Quand voulez-vous faire votre première vente ?",
     options: [
-      { value: "b2b", label: "B2B — vendre aux entreprises", short: "B2B", detail: "Vos clients sont des sociétés ou des indépendants. Peu de clients, abonnements élevés, décision plus lente." },
-      { value: "b2c", label: "B2C — vendre aux particuliers", short: "B2C", detail: "Vos clients sont des gens, pour leur usage personnel. Beaucoup de clients, petits montants, achat immédiat." },
-      { value: "decide", label: "SaaScan décide", detail: "On tranche selon le problème trouvé : c’est lui qui désigne l’acheteur." },
-    ],
-  },
-  {
-    id: "domaines", type: "multiple", maxChoices: 3,
-    label: "Sur quels domaines faut-il vous écouter en priorité ?",
-    description: "Un à trois choix.",
-    options: [
-      { value: "productivite", label: "Productivité & organisation" },
-      { value: "marketing", label: "Marketing & acquisition" },
-      { value: "vente", label: "Vente & CRM" },
-      { value: "finance", label: "Finance & compta" },
-      { value: "developpement", label: "Développement & outils" },
-      { value: "donnees", label: "Données & analyse" },
-      { value: "contenu", label: "Création de contenu & médias" },
-      { value: "ecommerce", label: "Commerce en ligne" },
-      { value: "education", label: "Éducation & formation" },
-      { value: "sante", label: "Santé & bien-être" },
-      { value: "communautes", label: "Communautés & réseaux" },
-      { value: "automatisation", label: "Automatisation & sans-code" },
-      { value: "contenu_ia", label: "Création de contenu IA" },
-      { value: "nocode", label: "No-code & vibecoding" },
-      { value: "sport", label: "Sport & compétitions" },
-      { value: "trading", label: "Trading & marchés" },
-    ],
-  },
-  {
-    id: "competences", type: "single",
-    label: "Que pouvez-vous faire seul ?",
-    options: [
-      { value: "application", label: "Une application complète, interface et serveur", short: "Application complète" },
-      { value: "interface", label: "L’interface, ou du sans-code avancé", short: "Interface" },
-      { value: "sans_code", label: "Du sans-code et des automatisations", short: "Sans-code" },
-      { value: "aucune", label: "Rien de technique — je m’associe pour le code", short: "Non technique" },
+      { value: "deux_semaines", label: "Le plus vite possible, sous deux semaines", short: "Sous deux semaines" },
+      { value: "un_mois", label: "D’ici un mois" },
+      { value: "trois_mois", label: "D’ici trois mois" },
+      { value: "sans_urgence", label: "Rien ne presse, j’avance à mon rythme", short: "Sans urgence" },
     ],
   },
   {
@@ -72,43 +50,14 @@ export const questions: Question[] = [
     ],
   },
   {
-    id: "zone", type: "single",
-    label: "Quelle zone géographique visez-vous d’abord ?",
+    id: "niveau_video", type: "single",
+    label: "Savez-vous créer du contenu, comme des vidéos courtes ?",
     options: [
-      { value: "francophone", label: "Francophone" },
-      { value: "anglophone", label: "Anglophone" },
-      { value: "europe", label: "Europe, plusieurs langues", short: "Europe" },
-      { value: "mondial", label: "Mondial, indifférent à la langue", short: "Mondial" },
+      { value: "face_camera", label: "Oui, et je suis à l’aise face caméra", short: "À l’aise face caméra" },
+      { value: "sans_visage", label: "Oui, mais sans montrer mon visage", short: "Contenu sans visage" },
+      { value: "a_apprendre", label: "Pas encore, mais je veux apprendre", short: "Contenu à apprendre" },
+      { value: "non", label: "Non, je préfère éviter", short: "Sans contenu" },
     ],
-  },
-  {
-    id: "facturation", type: "single",
-    label: "Quel modèle de facturation vous conviendrait le mieux ?",
-    options: [
-      { value: "abonnement", label: "Abonnement récurrent — par siège ou par société", short: "Abonnement" },
-      { value: "usage", label: "À l’usage — volume, API, transactions", short: "À l’usage" },
-      { value: "licence", label: "Licence annuelle" },
-      { value: "indifferent", label: "Indifférent", short: "Facturation indifférente" },
-    ],
-  },
-  {
-    id: "concurrence", type: "single",
-    label: "Face à la concurrence, vous vous situez plutôt où ?",
-    options: [
-      { value: "nouveau", label: "Un besoin que personne n’adresse vraiment, quitte à l’expliquer", short: "Besoin inexploré" },
-      { value: "differencier", label: "Un marché encombré, mais où je peux me différencier", short: "Se différencier" },
-      { value: "depend", label: "Ça dépend du problème", short: "Selon le problème" },
-    ],
-  },
-  {
-    id: "objectif_revenu", type: "range",
-    label: "Combien aimeriez-vous gagner chaque mois ?",
-    description: "Faites glisser le curseur jusqu’au revenu mensuel que vous visez.",
-    defaultValue: "2000",
-    options: revenueSteps.map((amount, index) => {
-      const last = index === revenueSteps.length - 1;
-      return { value: String(amount), label: `${formatEuros(amount)} par mois${last ? " ou plus" : ""}`, short: `${formatEuros(amount)}/mois${last ? " et +" : ""}` };
-    }),
   },
 ];
 

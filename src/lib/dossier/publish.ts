@@ -1,5 +1,5 @@
 import "server-only";
-import { validateAnswers } from "@/lib/questionnaire/schemas";
+import { upgradeLegacyAnswers, validateAnswers } from "@/lib/questionnaire/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ApiError } from "@/lib/security/config";
 import { databaseError } from "@/lib/security/http";
@@ -13,7 +13,7 @@ export async function publishDossier(dossierId: string): Promise<void> {
   databaseError(reserved.error);
   const attempt = reserved.data.attempt as number;
   try {
-    const content = buildDossierContent(validateAnswers(reserved.data.answers), ideaContent);
+    const content = buildDossierContent(validateAnswers(upgradeLegacyAnswers(reserved.data.answers)), ideaContent);
     const published = await admin.rpc("publish_generation", { p_dossier_id: dossierId, p_attempt: attempt, p_content: content });
     databaseError(published.error);
     if (!published.data) throw new ApiError("Une tentative plus récente a pris le relais.", 409, "STALE_GENERATION");
@@ -33,7 +33,7 @@ export async function publishExtras(dossierId: string): Promise<void> {
   databaseError(reserved.error);
   const { attempt, videos, roadmap, answers, idea_id: ideaId } = reserved.data as { attempt: number; videos: number; roadmap: boolean; answers: unknown; idea_id: string };
   try {
-    const extras = buildExtras(validateAnswers(answers), ideaId, { videos, roadmap }, ideaContent);
+    const extras = buildExtras(validateAnswers(upgradeLegacyAnswers(answers)), ideaId, { videos, roadmap }, ideaContent);
     const published = await admin.rpc("publish_extras", { p_dossier_id: dossierId, p_attempt: attempt, p_content: extras });
     databaseError(published.error);
     if (!published.data) throw new ApiError("Une tentative plus récente a pris le relais.", 409, "STALE_GENERATION");

@@ -11,14 +11,14 @@ npm run build
 npm audit
 ```
 
-Les 93 tests se répartissent ainsi :
+Les 95 tests se répartissent ainsi :
 
-- **Contenus (80 tests, 4 par idée) :** structure du fichier, longueurs, vouvoiement, apostrophe typographique, 60 accroches et déroulés distincts, au moins trois plateformes, aucun pourcentage dans les vidéos et le plan de A à Z, sept phases aux périodes imposées, et prompt de 700 à 900 mots pour chacun des 3 072 profils testés. Les prompts vont de 794 à 884 mots selon les idées et les profils.
+- **Contenus (80 tests, 4 par idée) :** structure du fichier, longueurs, vouvoiement, apostrophe typographique, 60 accroches et déroulés distincts, au moins trois plateformes, aucun pourcentage dans les vidéos et le plan de A à Z, sept phases aux périodes imposées, et prompt de 700 à 900 mots pour chacun des 256 profils testés. Les prompts vont de 798 à 892 mots selon les idées et les profils.
 - **Domaine :**
-  - neuf questions et curseur final, réponses invalides ;
-  - sélection des idées (assez d’idées, aucune, complément avec les plus proches) et remontée des domaines choisis ;
-  - dossier assemblé pour deux profils : trois idées, citations des neuf réponses, prompt de 700 à 900 mots, 24 tâches distinctes, risques rédigés ;
-  - adaptation du prompt aux compétences et à la zone ;
+  - cinq questions avec le curseur de revenu en premier, réponses invalides, reprise des réponses d’un dossier payé avec l’ancien questionnaire ;
+  - sélection des idées (assez d’idées, aucune, complément avec les plus proches), clients faciles à joindre pour une vente sous deux semaines, vidéos face caméra réservées aux personnes à l’aise ;
+  - dossier assemblé pour deux profils : trois idées, citations des cinq réponses, prompt de 700 à 900 mots, 24 tâches distinctes, risques rédigés ;
+  - adaptation du prompt au délai de la première vente et à un outil guidé ;
   - bonus de chaque formule : 0, 30 ou 60 vidéos, plan de A à Z avec l’objectif de revenu ;
   - canaux autorisés, prix par jour (0,63 €, 0,33 € et 0,19 €) et économies (−47 % et −69 %).
 - **Base de données :** PostgreSQL/PGlite applique les huit migrations et le scénario `supabase/tests/rls.sql`. Le scénario couvre, en plus d’un paiement à 0 € obtenu avec un code promo (dossier ouvert, jamais compté comme remboursé, montant négatif refusé) :
@@ -60,7 +60,7 @@ Navigateur intégré, à 309 pixels de large, à 375 × 812 pixels et à 1280 ×
    - trois formules, chacune avec son prix barré de référence mensuelle, son pourcentage, son prix par jour et son contenu (30 idées de vidéos pour 3 mois, 60 et le plan de A à Z pour 12 mois) ;
    - badge « Recommandé » sur 3 mois.
 7. **Dossier d’exemple (`/dossier/demo`) :**
-   - RDVFacile avec cinq onglets, dont « Vidéos marketing » (60 idées) et « Plan de A à Z » (sept phases de A à G) ;
+   - AbosMalins avec cinq onglets, dont « Vidéos marketing » (60 idées) et « Plan de A à Z » (sept phases de A à G) ;
    - prompt de 813 mots ;
    - tâche cochée conservée après rechargement ;
    - aucun texte des autres idées dans le HTML ni dans les scripts chargés.

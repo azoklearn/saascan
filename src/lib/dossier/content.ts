@@ -1,7 +1,7 @@
 import type { Answers, DossierContent, Idea, PlanTask, RoadmapPhase, Selection, VideoIdea } from "@/types/domain";
 import { buildProfile, type UserProfile } from "@/lib/questionnaire/profile";
-import { answerLabel, formatEuros } from "@/lib/questionnaire/questions";
-import { acquisitionFor, ideaRules } from "@/lib/matching/idea-rules";
+import { formatEuros } from "@/lib/questionnaire/questions";
+import { acquisitionFor, channelFor, ideaRules } from "@/lib/matching/idea-rules";
 import { ideas } from "@/lib/matching/filters";
 import { matchIdeas } from "@/lib/matching/scoring";
 
@@ -21,56 +21,32 @@ export type ContentLookup = (ideaId: string) => IdeaContent;
 
 /** Profil d’exemple du dossier de démonstration. */
 export const demoAnswers: Answers = {
-  tranche_age: "25_34", cible_client: "b2b", domaines: ["productivite", "vente"], competences: "sans_code",
-  temps_jour: "1h", zone: "francophone", facturation: "abonnement", concurrence: "differencier", objectif_revenu: "2000",
+  objectif_revenu: "2000", tranche_age: "25_34", delai_premier_euro: "un_mois", temps_jour: "1h", niveau_video: "face_camera",
 };
 
-const skillEffects: Record<string, string> = {
-  application: "Le prompt propose une stack web complète et maintenable, sans infrastructure superflue.",
-  interface: "Le prompt s’appuie sur un outil guidé et une base gérée : vous gardez la main sur l’interface sans maintenir de serveur.",
-  sans_code: "Le prompt impose un outil visuel sans code, un modèle prêt à adapter et une vérification à chaque étape.",
-  aucune: "Le prompt vise un outil très guidé et reste assez précis pour être repris par un associé technique.",
+const firstSaleEffects: Record<string, string> = {
+  deux_semaines: "Pour vendre sous deux semaines, le plan retient une idée simple à montrer et des clients faciles à joindre.",
+  un_mois: "Le plan vise une première vente d’ici un mois : une semaine pour vérifier le problème, une pour construire, deux pour tester et vendre.",
+  trois_mois: "Avec trois mois devant vous, le plan laisse le temps de vérifier le problème en profondeur avant de construire.",
+  sans_urgence: "Sans date imposée, le plan avance à votre rythme, en vérifiant toujours le problème avant de construire.",
 };
-const zoneEffects: Record<string, string> = {
-  francophone: "Le lancement vise d’abord des clients francophones, avec un produit rédigé en français.",
-  anglophone: "Le produit, l’offre et les échanges sont préparés en anglais pour un premier marché anglophone.",
-  europe: "Le lancement commence par un seul pays européen et une langue, avant d’élargir.",
-  mondial: "Le lancement commence dans une seule langue pour mesurer l’intérêt avant d’élargir.",
+const contentEffects: Record<string, string> = {
+  face_camera: "Vous êtes à l’aise face caméra : quand l’idée s’y prête, le premier canal s’appuie sur de courtes vidéos où vous montrez le problème et l’outil.",
+  sans_visage: "Vous créez du contenu sans montrer votre visage : les vidéos passent par l’écran, les mains ou le texte, et le premier canal reste un échange direct.",
+  a_apprendre: "Le contenu est encore à apprendre : le premier canal repose sur des échanges directs, et les vidéos viennent en complément.",
+  non: "Vous préférez éviter le contenu : le premier canal repose sur des échanges directs, sans vidéo à tourner.",
 };
-const competitionEffects: Record<string, string> = {
-  nouveau: "Les dix conversations servent d’abord à prouver que le besoin existe, avant de construire.",
-  differencier: "Les entretiens identifient l’outil déjà utilisé par la cible et l’angle précis sur lequel vous démarquer.",
-  depend: "Le positionnement sera choisi après les premières conversations, selon les alternatives rencontrées.",
+const firstSalePrompt: Record<string, string> = {
+  deux_semaines: "Je vise une première vente sous deux semaines : priorise ce qui se montre vite.",
+  un_mois: "Je vise une première vente d’ici un mois.",
+  trois_mois: "Je vise une première vente d’ici trois mois.",
+  sans_urgence: "Je n’ai pas de date imposée pour la première vente.",
 };
-const stacks: Record<string, string> = {
-  aucune: "Utilise un constructeur très guidé comme Lovable, avec une base simple, des formulaires et un espace réservé au propriétaire. Explique chaque étape en langage simple et donne une vérification après chacune. Rédige aussi des consignes qu’un associé technique pourra reprendre. Ne demande aucune commande terminal. Vérifie les limites des offres gratuites avant de choisir les outils.",
-  sans_code: "Utilise un constructeur visuel no-code avec une base simple, des formulaires et un espace réservé au propriétaire. Guide chaque clic et explique les vérifications. Commence par une instance séparée par client et des modèles duplicables. Ne demande aucune commande terminal. Vérifie les limites des offres avant de choisir les outils.",
-  interface: "Utilise une stack guidée avec un constructeur visuel et Supabase pour la base. Fournis les petites modifications une par une, explique où les appliquer et donne une vérification après chacune. Évite les intégrations externes. Commence par une instance séparée par client et une authentification gérée par le fournisseur.",
-  application: "Utilise Next.js, TypeScript, Supabase pour les comptes et la base, puis Vercel pour publier. Garde une structure courte avec validation serveur, accès par propriétaire et composants réutilisables. Explique les variables nécessaires et fournis une migration reproductible. Aucune infrastructure personnalisée, aucun traitement asynchrone complexe et aucune intégration non indispensable.",
-};
-const markets: Record<string, string> = {
-  francophone: "Rédige le produit en français et vise d’abord des clients francophones.",
-  anglophone: "Rédige le produit, la page d’accueil et les emails en anglais pour un premier marché anglophone.",
-  europe: "Commence par un seul pays européen et sa langue ; garde les traductions pour après la validation.",
-  mondial: "Commence dans une seule langue, puis ajoute des traductions seulement après la validation.",
-};
-const billingModels: Record<string, string> = {
-  abonnement: "Propose d’abord un abonnement mensuel simple, sans engagement.",
-  usage: "Teste une facturation à l’usage avec un volume inclus clairement annoncé.",
-  licence: "Propose aux premiers clients une licence annuelle payée en une fois.",
-  indifferent: "Garde le modèle commercial annoncé pour cette idée.",
-};
+const guidedStack = "Utilise un constructeur visuel très guidé comme Lovable, avec une base simple, des formulaires et un espace réservé au propriétaire. Explique chaque étape en langage simple et donne une vérification après chacune. Rédige aussi des consignes qu’un associé technique pourra reprendre. Ne demande aucune commande terminal. Vérifie les limites des offres gratuites avant de choisir les outils.";
 
 function monthlyCustomers(idea: Idea, revenueGoal: number): number | null {
   const price = /(\d+(?:[.,]\d+)?)\s*€\/mois/.exec(idea.prix_conseille);
   return price ? Math.ceil(revenueGoal / Number(price[1].replace(",", "."))) : null;
-}
-
-function billingEffect(idea: Idea, profile: UserProfile): string {
-  if (profile.billing === "abonnement") return idea.modele_eco.startsWith("Abonnement") ? `Le modèle « ${idea.modele_eco} » correspond à votre préférence pour l’abonnement.` : `Une formule mensuelle est testée à côté du prix prévu : ${idea.prix_conseille}.`;
-  if (profile.billing === "usage") return "Le prix est testé à l’usage, avec un volume inclus clair et un dépassement annoncé à l’avance.";
-  if (profile.billing === "licence") return "Une licence annuelle est proposée aux premiers clients, avec un prix d’essai à valider.";
-  return `Le modèle retenu reste celui de l’idée : ${idea.modele_eco}.`;
 }
 
 function effectsFor(profile: UserProfile, idea: Idea): Record<string, string> {
@@ -78,23 +54,17 @@ function effectsFor(profile: UserProfile, idea: Idea): Record<string, string> {
   const customers = monthlyCustomers(idea, profile.revenueGoal);
   const goal = formatEuros(profile.revenueGoal);
   return {
-    tranche_age: profile.ageRange === "moins_18"
-      ? "Le plan prévoit l’accompagnement d’un représentant légal pour créer l’activité et encaisser les premiers paiements."
-      : "Le plan suppose que vous encaissez vous-même : vérifiez le statut adapté à votre activité avant la première vente.",
-    cible_client: profile.buyer === "b2c"
-      ? "L’offre privilégie des personnes qui paient pour leur propre usage, avec un parcours d’achat court."
-      : profile.buyer === "b2b" ? `L’offre s’adresse à des professionnels précis : ${idea.cible}` : `Le problème désigne l’acheteur : ${idea.cible}`,
-    domaines: `Vos domaines « ${answerLabel("domaines", profile.domains)} » orientent le vocabulaire, les exemples et l’angle du produit.`,
-    competences: skillEffects[profile.skills],
-    temps_jour: rule.effort_mvp_heures <= profile.weeklyHours
-      ? `La première version demande environ ${rule.effort_mvp_heures} heures, dans vos ${profile.weeklyHours} heures par semaine ; le reste du mois sert à tester l’idée et à vendre.`
-      : `La première version est découpée en sessions courtes pour avancer avec environ ${profile.weeklyHours} heures par semaine ; le reste attend les premiers retours.`,
-    zone: zoneEffects[profile.zone],
-    facturation: billingEffect(idea, profile),
-    concurrence: competitionEffects[profile.competition],
     objectif_revenu: customers
       ? `Pour atteindre ${goal} par mois au prix testé, il faudrait environ ${customers} clients payants : un repère de travail, pas une promesse.`
       : `Votre objectif de ${goal} par mois sert de repère pour fixer le prix à tester, sans promesse de revenu.`,
+    tranche_age: profile.ageRange === "moins_18"
+      ? "Le plan prévoit l’accompagnement d’un représentant légal pour créer l’activité et encaisser les premiers paiements."
+      : "Le plan suppose que vous encaissez vous-même : vérifiez le statut adapté à votre activité avant la première vente.",
+    delai_premier_euro: firstSaleEffects[profile.firstSale],
+    temps_jour: rule.effort_mvp_heures <= profile.weeklyHours
+      ? `La première version demande environ ${rule.effort_mvp_heures} heures, dans vos ${profile.weeklyHours} heures par semaine ; le reste du mois sert à tester l’idée et à vendre.`
+      : `La première version est découpée en sessions courtes pour avancer avec environ ${profile.weeklyHours} heures par semaine ; le reste attend les premiers retours.`,
+    niveau_video: contentEffects[profile.content],
   };
 }
 
@@ -113,13 +83,13 @@ export function buildPrompt(idea: Idea, content: IdeaContent, profile: UserProfi
   return `# Construire ${idea.nom}
 
 ## Le produit
-${content.prompt.produit} Cible initiale : ${idea.cible}${profile.buyer === "b2c" ? " Adapte l’offre aux particuliers quand c’est pertinent." : ""} Périmètre autorisé : ${rule.scope}. N’ajoute aucune fonction hors de ce périmètre.
+${content.prompt.produit} Cible initiale : ${idea.cible} Périmètre autorisé : ${rule.scope}. N’ajoute aucune fonction hors de ce périmètre.
 
 ## Contraintes de la personne qui construit
-${time} Réserve les autres semaines à la validation, aux essais et à la vente. Mes domaines de prédilection sont ${answerLabel("domaines", profile.domains)}. Mon objectif est d’atteindre ${formatEuros(profile.revenueGoal)} par mois ; ${customers ? `au prix testé, cela représente environ ${customers} clients payants, un repère de travail et non une promesse.` : "le prix testé servira à estimer le nombre de clients nécessaires, sans promesse de revenu."}${profile.ageRange === "moins_18" ? " Je suis mineur : un représentant légal doit accompagner la création de l’activité et l’encaissement." : ""} Signale tout dépassement du périmètre.
+${time} ${firstSalePrompt[profile.firstSale]} Réserve les autres semaines à la validation, aux essais et à la vente. Mon objectif est d’atteindre ${formatEuros(profile.revenueGoal)} par mois ; ${customers ? `au prix testé, cela représente environ ${customers} clients payants, un repère de travail et non une promesse.` : "le prix testé servira à estimer le nombre de clients nécessaires, sans promesse de revenu."}${profile.ageRange === "moins_18" ? " Je suis mineur : un représentant légal doit accompagner la création de l’activité et l’encaissement." : ""} Signale tout dépassement du périmètre.
 
 ## Stack et accompagnement
-${stacks[profile.skills]} Avance une action à la fois, vérifie chaque résultat à l’écran et garde un design sobre d’une seule couleur.
+${guidedStack} Avance une action à la fois, vérifie chaque résultat à l’écran et garde un design sobre d’une seule couleur.
 
 ## Parcours, écran par écran
 ${content.prompt.ecrans.map((screen, index) => `${index + 1}. ${screen}`).join("\n")}
@@ -128,10 +98,10 @@ ${content.prompt.ecrans.map((screen, index) => `${index + 1}. ${screen}`).join("
 ${content.prompt.donnees} Applique ces règles côté serveur ou en base : une URL secrète ne remplace jamais un contrôle d’accès. Prévois la correction, l’export et la suppression des données.
 
 ## Paiement et mise en ligne
-Le prix à tester est ${idea.prix_conseille}. ${billingModels[profile.billing]} Utilise un lien de paiement hébergé chez Stripe et n’ouvre l’accès qu’après un paiement vérifié, jamais sur un simple paramètre de retour. Aucune carte n’est collectée dans le produit. Distingue mode test et mode réel, et affiche les conditions et les coordonnées du vendeur.
+Le prix à tester est ${idea.prix_conseille}. Propose d’abord une formule simple et sans engagement. Utilise un lien de paiement hébergé chez Stripe et n’ouvre l’accès qu’après un paiement vérifié, jamais sur un simple paramètre de retour. Aucune carte n’est collectée dans le produit. Distingue mode test et mode réel, et affiche les conditions et les coordonnées du vendeur.
 
 ## Acquisition et aide
-Le premier canal retenu est : ${acquisitionFor(idea)} ${markets[profile.zone]} Ajoute cinq réponses aux questions fréquentes et un contact humain.
+Le premier canal retenu est : ${acquisitionFor(idea, channelFor(idea, profile.content))} Rédige le produit en français et vise d’abord des clients francophones. Ajoute cinq réponses aux questions fréquentes et un contact humain.
 
 ## Critères d’acceptation
 ${criteria.map((criterion) => `- ${criterion}`).join("\n")}`;
@@ -139,8 +109,7 @@ ${criteria.map((criterion) => `- ${criterion}`).join("\n")}`;
 
 export function buildTasks(idea: Idea, content: IdeaContent, profile: UserProfile): PlanTask[] {
   const rule = ideaRules[idea.id];
-  const channel = acquisitionFor(idea);
-  const guided = profile.skills === "aucune" || profile.skills === "sans_code";
+  const channel = acquisitionFor(idea, channelFor(idea, profile.content));
   const weeks = [
     [
       `Définir une seule cible à interroger : ${idea.cible}`,
@@ -148,15 +117,15 @@ export function buildTasks(idea: Idea, content: IdeaContent, profile: UserProfil
       "Préparer quatre questions sur le dernier problème rencontré, son coût et la solution utilisée aujourd’hui.",
       "Mener cinq conversations réelles et noter les mots employés sans présenter le produit trop tôt.",
       "Mener cinq autres conversations et comparer les problèmes répétés aux cinq premiers retours.",
-      profile.competition === "nouveau"
-        ? "Décider de poursuivre ou d’arrêter : ne construire que si le besoin revient clairement dans les dix échanges."
-        : "Noter l’outil déjà utilisé par chaque personne et l’angle qui permettrait de s’en distinguer.",
+      profile.firstSale === "deux_semaines"
+        ? "Décider vite : ne construire que si au moins trois personnes demandent à tester pendant ces dix échanges."
+        : "Noter l’outil déjà utilisé par chaque personne et ce qui lui manque.",
     ],
     [
       rule.effort_mvp_heures <= profile.weeklyHours
         ? `Copier le prompt et vérifier que le périmètre tient dans ${rule.effort_mvp_heures} heures de construction.`
         : `Copier le prompt et découper le périmètre en sessions courtes, dans vos ${profile.weeklyHours} heures hebdomadaires.`,
-      guided ? "Choisir un modèle guidé, vérifier ses limites gratuites et suivre sa configuration étape par étape." : "Préparer le projet, la base et les variables de test avec un premier écran fonctionnel.",
+      "Choisir un modèle guidé, vérifier ses limites gratuites et suivre sa configuration étape par étape.",
       ...content.construction,
     ],
     [
@@ -193,10 +162,10 @@ export function buildDossierContent(answers: Answers, lookup: ContentLookup): Do
     const effects = effectsFor(profile, idea);
     return {
       id: `selection-${idea.id}`, idea_id: idea.id, idea_snapshot: idea, rang: index + 1,
-      justification: `${effects.domaines} ${effects.cible_client} ${effects.temps_jour}`,
-      adaptation: `Commencez uniquement par ${ideaRules[idea.id].scope}. ${effects.competences} ${effects.zone} Le prix est une hypothèse à valider avec la cible, jamais une estimation de revenu.`,
-      canal_acquisition: acquisitionFor(idea),
-      risque: `${lookup(idea.id).risque} ${effects.concurrence}`,
+      justification: `${effects.niveau_video} ${effects.temps_jour}`,
+      adaptation: `Commencez uniquement par ${ideaRules[idea.id].scope}. ${effects.delai_premier_euro} Le prix est une hypothèse à valider avec la cible, jamais une estimation de revenu.`,
+      canal_acquisition: acquisitionFor(idea, channelFor(idea, profile.content)),
+      risque: lookup(idea.id).risque,
       reponses_citees: profile.evidence.filter((_, evidenceIndex) => evidenceIndex % 3 === index).map((evidence) => ({ question_id: evidence.question_id, reponse: evidence.reponse, effet: effects[evidence.question_id] })),
     };
   });

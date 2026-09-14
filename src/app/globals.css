@@ -106,7 +106,6 @@ h1,h2,h3,h4{font-weight:550;line-height:1.2}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}.reveal-pending{opacity:1;transform:none}}
 .hero-description strong{color:var(--foreground);font-weight:600}
 .payments-scene{margin:0;display:flex;flex-direction:column;align-items:center;gap:52px}
-.payments-scene figcaption{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:1.4px;color:#86a2aa}
 /* Le téléphone flotte en se balançant ; son ombre se resserre quand il monte. Même durée et même courbe : les deux restent synchrones. */
 .payments-phone{position:relative;width:282px;height:540px}
 .phone-body{height:100%;padding:10px;border-radius:48px;background:linear-gradient(160deg,#2b3b41,#11191c 45%,#1c282c);box-shadow:0 0 0 1px #3a4c52,0 40px 90px #0009,inset 0 0 0 1px #ffffff14;animation:phone-float 7s cubic-bezier(.37,0,.63,1) infinite}

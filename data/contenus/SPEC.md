@@ -35,14 +35,14 @@ Le principal risque de l’idée, puis un petit test concret pour le réduire. D
 
 ## `prompt` (assemblé dans le prompt de construction)
 
-L’application ajoute automatiquement la cible, le périmètre, le temps, la stack selon les compétences, le paiement, le canal d’acquisition, la langue et trois critères génériques. Ne pas les répéter. Écrire seulement ce qui est propre au produit :
+L’application ajoute automatiquement la cible, le périmètre, le temps, l’outil guidé, le délai de la première vente, le paiement, le canal d’acquisition, la langue et trois critères génériques. Ne pas les répéter. Écrire seulement ce qui est propre au produit :
 
 - `produit` (60 à 130 mots, viser 70 à 85) : ce que fait le produit, le parcours principal, qui l’utilise, et ce qu’il ne fait pas.
 - `ecrans` (5 ou 6 écrans, 15 à 50 mots chacun, viser 25 à 32) : « Nom de l’écran : ce qu’on y voit et ce qu’on y fait », avec les états vides ou d’erreur utiles. Pas de numéro, l’application numérote.
 - `donnees` (45 à 110 mots, viser 60 à 75) : entités, champs, relations, et qui voit quoi.
 - `criteres` (4 à 6 critères, 8 à 30 mots chacun, viser 10 à 16) : critères d’acceptation observables et propres à l’idée.
 
-**Budget total** de ces quatre parties : environ 340 à 410 mots. Le test calcule le prompt complet pour 3 072 profils et exige 700 à 900 mots pour chacun ; il affiche la fourchette obtenue.
+**Budget total** de ces quatre parties : environ 340 à 410 mots. Le test calcule le prompt complet pour 256 profils et exige 700 à 900 mots pour chacun ; il affiche la fourchette obtenue.
 
 ## `construction` (exactement 4 tâches, 50 à 260 caractères)
 

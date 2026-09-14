@@ -63,6 +63,5 @@ export function PaymentsPhone() {
       </div></div>
       <span className="phone-shadow" />
     </div>
-    <figcaption>ILLUSTRATION</figcaption>
   </figure>;
 }

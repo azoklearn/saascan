@@ -13,9 +13,9 @@ export function rejectionReasons(idea: Idea, profile: UserProfile): string[] {
   const rule = ideaRules[idea.id];
   if (!rule) return ["Règles de faisabilité absentes."];
   const reasons: string[] = [];
-  if (idea.difficulte_technique > profile.maxTechnicalDifficulty) reasons.push("Niveau technique supérieur aux compétences déclarées.");
   if (rule.effort_mvp_heures > profile.weeklyHours) reasons.push("Construction plus longue que le temps hebdomadaire.");
   if (idea.temps_mvp_jours > 7) reasons.push("Construction plus longue que la semaine prévue.");
-  if (profile.zone === "anglophone") reasons.push("Banque pensée d’abord pour des clients francophones.");
+  // Vendre sous deux semaines demande des clients faciles à joindre.
+  if (profile.firstSale === "deux_semaines" && idea.difficulte_distribution >= 3) reasons.push("Clients trop longs à convaincre pour une vente sous deux semaines.");
   return reasons;
 }

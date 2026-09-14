@@ -11,14 +11,12 @@ export const roadmapPeriods = ["Mois 1", "Mois 2", "Mois 3", "Mois 4 à 5", "Moi
 const placeholders = ["{objectif_revenu}", "{heures_par_semaine}"];
 
 const variants: Answers[] = [];
-for (const competences of ["application", "interface", "sans_code", "aucune"])
-  for (const zone of ["francophone", "anglophone", "europe", "mondial"])
-    for (const facturation of ["abonnement", "usage", "licence", "indifferent"])
-      for (const cible_client of ["b2b", "b2c", "decide"])
-        for (const tranche_age of ["25_34", "moins_18"])
-          for (const temps_jour of ["moins_1h", "1h", "2_3h", "journee"])
-            for (const objectif_revenu of ["300", "50000"])
-              variants.push({ ...demoAnswers, competences, zone, facturation, cible_client, tranche_age, temps_jour, objectif_revenu });
+for (const tranche_age of ["25_34", "moins_18"])
+  for (const delai_premier_euro of ["deux_semaines", "un_mois", "trois_mois", "sans_urgence"])
+    for (const temps_jour of ["moins_1h", "1h", "2_3h", "journee"])
+      for (const niveau_video of ["face_camera", "sans_visage", "a_apprendre", "non"])
+        for (const objectif_revenu of ["300", "50000"])
+          variants.push({ ...demoAnswers, tranche_age, delai_premier_euro, temps_jour, niveau_video, objectif_revenu });
 const profiles = variants.map(buildProfile);
 
 const chars = (label: string, text: unknown, min: number, max: number) =>

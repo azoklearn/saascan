@@ -1,6 +1,6 @@
 # SaaScan
 
-Application française qui transforme neuf réponses en trois pistes de SaaS, un prompt de construction et un plan sur 30 jours, vendus en abonnement. Next.js 15 App Router, TypeScript, Tailwind CSS, Supabase (comptes et base de données) et Whop. Un compte est demandé avant le questionnaire, avec Google ou avec un email et un mot de passe. Aucun dossier n’est écrit par une IA : les textes sont rédigés à l’avance pour chaque idée et assemblés selon les réponses. Aucun email n’est envoyé.
+Application française qui transforme cinq réponses en trois pistes de SaaS, un prompt de construction et un plan sur 30 jours, vendus en abonnement. Next.js 15 App Router, TypeScript, Tailwind CSS, Supabase (comptes et base de données) et Whop. Un compte est demandé avant le questionnaire, avec Google ou avec un email et un mot de passe. Aucun dossier n’est écrit par une IA : les textes sont rédigés à l’avance pour chaque idée et assemblés selon les réponses. Aucun email n’est envoyé.
 
 ## Démarrer localement
 
@@ -19,7 +19,7 @@ Pour parcourir tout le parcours sans compte ni paiement : [questionnaire de dém
 ## Le parcours
 
 1. « Créer mon SaaS » demande d’abord un compte (`/inscription`) : « Continuer avec Google » ou email et mot de passe, sans email de confirmation. Une personne déjà inscrite passe par `/connexion`.
-2. Le questionnaire suit : deux écrans d’introduction, puis neuf questions (tranche d’âge, cible B2B ou B2C, domaines, compétences, temps par jour, zone, facturation, concurrence et objectif de revenu au curseur). Les réponses restent dans le navigateur ; des pastilles permettent de revenir sur une réponse.
+2. Le questionnaire suit : deux écrans d’introduction, puis cinq questions (objectif de revenu au curseur, tranche d’âge, délai de la première vente, temps par jour et aisance avec le contenu). Les identifiants `delai_premier_euro` et `niveau_video` figurent déjà dans la liste autorisée par la base : aucune migration n’est nécessaire. Les réponses restent dans le navigateur ; des pastilles permettent de revenir sur une réponse.
 3. Une animation de calcul mène à l’écran « Prêt », puis au choix de la formule : 1 mois à 18,99 €, 3 mois à 29,99 € ou 12 mois à 69,99 €, renouvelés automatiquement.
 4. Au paiement, le serveur vérifie la session, valide les réponses, crée le dossier du compte avec un lien d’accès secret et ouvre la page de paiement Whop.
 5. Le webhook confirme le paiement et publie le dossier et les bonus de la formule en quelques secondes. Au retour de Whop, `/dossier/<lien>` affiche le dossier ; il reste ensuite dans l’espace du compte (`/espace`). La base de données refuse toute publication avant la confirmation du paiement.
@@ -30,9 +30,9 @@ Pour parcourir tout le parcours sans compte ni paiement : [questionnaire de dém
 - Landing, FAQ accessible, navigation mobile, thème sombre turquoise et téléphone animé dans le hero.
 - Comptes Supabase Auth : Google et email avec mot de passe, pages `/inscription` et `/connexion`, espace `/espace` avec les dossiers payés, déconnexion. Un middleware exige la session sur le questionnaire, l’analyse, l’offre et l’espace ; la démonstration reste ouverte.
 - Questionnaire avec reprise automatique et un curseur de revenu utilisable au doigt.
-- Banque de vingt idées françaises écrites à la main dans `data/ideas.json` ; domaines, canaux et périmètres dans `src/lib/matching/idea-rules.ts`.
-- Sélection déterministe : les idées compatibles avec les compétences, le temps et la zone passent en premier, classées selon les domaines, la cible, la facturation, la concurrence et l’objectif. Quand moins de trois idées conviennent, les plus proches complètent la sélection et le dossier les adapte sans le signaler.
-- Contenus rédigés à l’avance dans `data/contenus/<idée>.json` : risque, produit, écrans, données et critères du prompt, tâches de construction, 60 idées de vidéos et plan de A à Z en sept phases. `src/lib/dossier/content.ts` les combine avec les neuf réponses : trois idées argumentées qui citent chaque réponse, prompt de 700 à 900 mots adapté aux compétences, au temps, à la zone et à la facturation, plan de six tâches par semaine.
+- Banque de vingt idées françaises écrites à la main dans `data/ideas.json` ; canaux et périmètres dans `src/lib/matching/idea-rules.ts`.
+- Sélection déterministe : les idées compatibles avec le temps disponible et le délai de la première vente passent en premier, classées selon ce délai, l’aisance avec le contenu et l’objectif de revenu. Les vidéos face caméra ne deviennent le premier canal que pour les personnes à l’aise devant la caméra. Quand moins de trois idées conviennent, les plus proches complètent la sélection et le dossier les adapte sans le signaler.
+- Contenus rédigés à l’avance dans `data/contenus/<idée>.json` : risque, produit, écrans, données et critères du prompt, tâches de construction, 60 idées de vidéos et plan de A à Z en sept phases. `src/lib/dossier/content.ts` les combine avec les cinq réponses : trois idées argumentées qui citent chaque réponse, prompt de 700 à 900 mots adapté au temps, au délai de la première vente, au canal et à l’objectif, plan de six tâches par semaine.
 - Bonus selon la formule : 30 idées de vidéos marketing (3 mois), 60 idées et un plan de A à Z sur douze mois (12 mois).
 - Offre à trois formules définies dans `src/config/plans.json`. Les prix barrés et les pourcentages comparent au même nombre de mois en formule mensuelle ; aucun faux compte à rebours.
 - Abonnements Whop : webhook signé et idempotent, accès lié à l’abonnement, résiliation en fin de période depuis le dossier, renonciation à la rétractation cochée avant chaque paiement.
@@ -75,7 +75,7 @@ Le bouton « Continuer avec Google » renvoie ensuite vers `/auth/callback`, qui
 npx vitest run tests/contenus.test.ts -t budget-mensuel --silent=false --reporter=verbose
 ```
 
-Le test vérifie chaque fichier, calcule le prompt pour 3 072 profils (700 à 900 mots exigés) et affiche la fourchette obtenue. Une nouvelle idée demande une entrée dans `data/ideas.json`, ses règles dans `idea-rules.ts`, son fichier de contenu et son import dans `src/lib/dossier/library.ts`.
+Le test vérifie chaque fichier, calcule le prompt pour 256 profils (700 à 900 mots exigés) et affiche la fourchette obtenue. Une nouvelle idée demande une entrée dans `data/ideas.json`, ses règles dans `idea-rules.ts`, son fichier de contenu et son import dans `src/lib/dossier/library.ts`.
 
 Les dossiers déjà publiés gardent le texte de leur publication : une correction s’applique aux dossiers suivants.
 
@@ -116,7 +116,7 @@ npm run build
 npm audit
 ```
 
-Les tests de domaine couvrent les réponses invalides, la sélection des idées (y compris quand aucune ne convient), l’assemblage du dossier (trois idées, citations des neuf réponses, prompt de 700 à 900 mots, plan de 24 tâches, bonus de chaque formule), les canaux, les prix par jour et les économies affichées. Les tests de contenus contrôlent les vingt fichiers rédigés. Le test de base démarre PostgreSQL avec PGlite, applique les vraies migrations et exécute `supabase/tests/rls.sql` : comptes et profils, absence d’accès navigateur et de traces d’emails, dossier rattaché au compte au paiement, compte inconnu refusé, publication refusée avant paiement, bonus de la formule 12 mois, renouvellement, résiliation, webhooks dupliqués ou tardifs, remboursement et réactivation réservée au compte propriétaire. Il ne remplace pas un essai de Whop et de Google avec les véritables services.
+Les tests de domaine couvrent les réponses invalides, la sélection des idées (y compris quand aucune ne convient), l’assemblage du dossier (trois idées, citations des cinq réponses, prompt de 700 à 900 mots, plan de 24 tâches, bonus de chaque formule), les canaux, les prix par jour et les économies affichées. Les tests de contenus contrôlent les vingt fichiers rédigés. Le test de base démarre PostgreSQL avec PGlite, applique les vraies migrations et exécute `supabase/tests/rls.sql` : comptes et profils, absence d’accès navigateur et de traces d’emails, dossier rattaché au compte au paiement, compte inconnu refusé, publication refusée avant paiement, bonus de la formule 12 mois, renouvellement, résiliation, webhooks dupliqués ou tardifs, remboursement et réactivation réservée au compte propriétaire. Il ne remplace pas un essai de Whop et de Google avec les véritables services.
 
 Le protocole de vérification du navigateur est décrit dans `docs/verification.md`.
 

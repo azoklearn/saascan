@@ -20,7 +20,7 @@ Le déclencheur de la première migration crée un profil pour chaque compte ; `
 
 ## Modèle d’accès
 
-Le questionnaire ne parle pas au serveur : les réponses restent dans le stockage local jusqu’au paiement. `POST /api/checkout` exige une session (`401 UNAUTHENTICATED` sinon), valide les neuf réponses et la formule, génère un lien d’accès de 32 octets aléatoires (43 caractères base64url) et appelle `start_checkout`, qui crée dans une transaction le dossier du compte, ses réponses et le paiement en attente au prix de la formule. Avec un lien de dossier à la place des réponses, `reopen_checkout` prépare la réactivation d’un abonnement terminé ; elle est refusée pour un dossier appartenant à un autre compte, et rattache au compte un dossier créé avant les comptes.
+Le questionnaire ne parle pas au serveur : les réponses restent dans le stockage local jusqu’au paiement. `POST /api/checkout` exige une session (`401 UNAUTHENTICATED` sinon), valide les cinq réponses et la formule, génère un lien d’accès de 32 octets aléatoires (43 caractères base64url) et appelle `start_checkout`, qui crée dans une transaction le dossier du compte, ses réponses et le paiement en attente au prix de la formule. Avec un lien de dossier à la place des réponses, `reopen_checkout` prépare la réactivation d’un abonnement terminé ; elle est refusée pour un dossier appartenant à un autre compte, et rattache au compte un dossier créé avant les comptes.
 
 Le lien du dossier ouvre son contenu sans connexion : il figure dans l’URL de retour Whop et dans l’espace du compte, jamais dans les métadonnées transmises à Whop. Le dossier et l’espace demandent `no-referrer` pour que ces liens ne partent pas vers un autre site. Un lien au mauvais format produit la même réponse 404 qu’un lien inconnu.
 
@@ -52,7 +52,7 @@ Les erreurs suivent `{error,code?}`.
 
 Le dossier n’est publié qu’après paiement. `reserve_generation` refuse un dossier non payé ou remboursé, verrouille le dossier et renvoie un instantané des réponses ; la contrainte `dossiers_generation_after_payment` empêche aussi tout passage en préparation d’un dossier impayé. Le serveur valide l’instantané, puis `buildDossierContent` assemble le contenu sans aucun appel externe.
 
-L’assemblage (`src/lib/dossier/content.ts`) choisit trois idées de façon déterministe (`src/lib/matching`), écrit la justification, l’adaptation et les citations des neuf réponses à partir de phrases types, reprend le risque rédigé pour chaque idée, puis compose le prompt de l’idée n°1 : sections rédigées (produit, écrans, données, critères) et sections qui dépendent du profil (temps, objectif de revenu, stack selon les compétences, facturation, langue, canal). Les tâches de la semaine 2 reprennent les étapes de construction rédigées pour l’idée. Quand moins de trois idées respectent les compétences, le temps et la zone, les plus proches complètent la liste sans que l’écart soit signalé.
+L’assemblage (`src/lib/dossier/content.ts`) choisit trois idées de façon déterministe (`src/lib/matching`), écrit la justification, l’adaptation et les citations des cinq réponses à partir de phrases types, reprend le risque rédigé pour chaque idée, puis compose le prompt de l’idée n°1 : sections rédigées (produit, écrans, données, critères) et sections qui dépendent du profil (temps, délai de la première vente, objectif de revenu, outil guidé, canal selon l’aisance avec le contenu). Les tâches de la semaine 2 reprennent les étapes de construction rédigées pour l’idée. Quand moins de trois idées respectent le temps disponible et le délai de la première vente, les plus proches complètent la liste sans que l’écart soit signalé. Un dossier payé avec l’ancien questionnaire en neuf questions passe par `upgradeLegacyAnswers` : les réponses encore posées sont reprises, les nouvelles prennent une valeur neutre.
 
 Le webhook de paiement publie le dossier puis les bonus après avoir répondu à Whop, avec `after()` de Next.js. La page du dossier interroge l’état et appelle `POST /api/generate` si un dossier payé n’est pas prêt, puis avec `part: "bonus"` tant que les bonus de la formule manquent. Un conflit 409 signifie qu’une publication est déjà en cours.
 
@@ -60,7 +60,7 @@ Le webhook de paiement publie le dossier puis les bonus après avoir répondu à
 
 Les bonus suivent le même modèle : `reserve_extras` détermine ce qui manque selon la formule (30 idées de vidéos pour 3 mois, 60 et le plan de A à Z pour 12 mois), `publish_extras` vérifie le nombre d’idées et publie tout ou rien, `fail_extras` libère la réservation. Un passage de 3 à 12 mois complète les bonus manquants ; un succès remet le compteur d’échecs à zéro. Dans le plan de A à Z, `{objectif_revenu}` et `{heures_par_semaine}` sont remplacés selon le profil.
 
-`tests/contenus.test.ts` contrôle les vingt fichiers rédigés (structure, longueurs, vouvoiement, accroches distinctes, aucun pourcentage dans les vidéos et le plan) et calcule le prompt de chaque idée pour 3 072 profils.
+`tests/contenus.test.ts` contrôle les vingt fichiers rédigés (structure, longueurs, vouvoiement, accroches distinctes, aucun pourcentage dans les vidéos et le plan) et calcule le prompt de chaque idée pour 256 profils.
 
 ## Whop
 
