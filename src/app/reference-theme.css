@@ -12,7 +12,6 @@
 .hero-description { font-size: 17px; line-height: 1.75; max-width: 440px; color: #a3b3bc; }
 .hero-actions .button { font-size: 14px; }
 .eyebrow { font-size: 10px; }
-.tools-intro { font-size: 9px; color: #90a9b2; }
 .faq-item h3 > button { font-size: 16px; }
 .faq-item [role=region] > p { font-size: 14px; }
 
@@ -39,7 +38,6 @@
   .hero-actions { gap: 18px; flex-wrap: wrap; }
   .hero-actions .button { font-size: 12px; }
   .eyebrow { font-size: 9px; }
-  .tools-intro { font-size: 8px; }
   .faq-item h3 > button { font-size: 15px; }
   .faq-item [role=region] > p { font-size: 14px; }
 }
