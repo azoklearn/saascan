@@ -8,7 +8,6 @@
 .button-small { font-size: 12px; }
 .hero { min-height: 690px; }
 .hero h1 { font-weight: 600; letter-spacing: -.055em; }
-.hero-eyebrow { font-size: 10px; color: #a7bdbd; }
 .hero-description { font-size: 17px; line-height: 1.75; max-width: 440px; color: #a3b3bc; }
 .hero-actions .button { font-size: 14px; }
 .eyebrow { font-size: 10px; }
@@ -24,7 +23,6 @@
   .hero-actions .button { font-size: 13px; }
 }
 @media (max-width: 900px) {
-  .hero-eyebrow { font-size: 8px; }
   .hero-description { font-size: 14px; }
 }
 @media (max-width: 640px) {
@@ -33,7 +31,6 @@
   .hero-decor .glow { width: 760px; height: 900px; left: 65%; top: 15%; }
   .hero { min-height: 0; padding-top: 48px; }
   .hero h1 { font-size: clamp(35px, 8.9vw, 48px); line-height: 1.12; margin-bottom: 24px; }
-  .hero-eyebrow { font-size: 8px; letter-spacing: 1.05px; }
   .hero-description { font-size: 15px; line-height: 1.7; }
   .hero-actions { gap: 18px; flex-wrap: wrap; }
   .hero-actions .button { font-size: 12px; }
