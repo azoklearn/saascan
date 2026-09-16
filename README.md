@@ -37,6 +37,7 @@ Pour parcourir tout le parcours sans compte ni paiement : [questionnaire de dém
 - Offre à trois formules définies dans `src/config/plans.json`. Les prix barrés et les pourcentages comparent au même nombre de mois en formule mensuelle ; aucun faux compte à rebours.
 - Abonnements Whop : webhook signé et idempotent, accès lié à l’abonnement, résiliation en fin de période depuis le dossier, renonciation à la rétractation cochée avant chaque paiement.
 - Vercel Web Analytics : visites mesurées sans cookie, lien secret des dossiers masqué, et événement `Checkout Started` (formule, parcours `nouveau` ou `reactivation`) envoyé par le navigateur au moment où la page de paiement Whop s’ouvre.
+- Whop Pixel (`biz_CNNc2c0v2u6uxe`) recopié sans modification dans le `<head>` de chaque page (`src/app/layout.tsx`) : il suit lui-même les navigations internes, et Whop compte les paiements côté serveur. Ce traceur publicitaire dépose un cookie : son consentement préalable est à prévoir pour les visiteurs européens.
 - Dossier : trois idées, copie et export `.md` du prompt, plan à cocher, vidéos et plan de A à Z selon la formule, lien personnel à copier.
 - Huit migrations PostgreSQL : RLS sur toutes les tables, aucun droit pour les rôles du navigateur, transactions réservées au serveur.
 - Pages de contact, confidentialité, mentions légales et CGV configurables. Les textes légaux sont une base préparatoire à adapter au vendeur réel avant commercialisation.
