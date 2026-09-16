@@ -217,6 +217,20 @@
 .scan-space-item svg { flex: 0 0 auto; color: var(--scan-accent); }
 .scan-space-empty { display: grid; justify-items: start; gap: 16px; color: var(--scan-muted); }
 .scan-space-actions { display: flex; justify-content: flex-end; margin-top: 22px; }
+.scan-admin { width: min(720px, 100%); margin: 0 auto; }
+.scan-admin .brand-logo { margin-bottom: 26px; }
+.scan-admin h1 { margin: 12px 0 8px; font-size: clamp(30px, 3.4vw, 38px); line-height: 1.12; letter-spacing: -1.3px; font-weight: 650; }
+.scan-admin-total { color: var(--scan-accent); font-variant-numeric: tabular-nums; }
+.scan-admin-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 0 0 32px; }
+.scan-admin-tiles > div { padding: 14px 16px; border: 1px solid var(--scan-line); border-radius: 12px; background: rgb(255 255 255 / .025); }
+.scan-admin-tiles dt { color: var(--scan-muted); font-size: 12px; }
+.scan-admin-tiles dd { margin: 6px 0 0; color: #f2f5f6; font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.scan-admin-heading { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+.scan-admin-days { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.scan-admin-days li { display: grid; grid-template-columns: 104px 1fr 32px; align-items: center; gap: 12px; color: var(--scan-muted); font-size: 13px; }
+.scan-admin-days strong { color: #f2f5f6; text-align: right; font-variant-numeric: tabular-nums; }
+.scan-admin-bar { height: 8px; border-radius: 999px; background: rgb(255 255 255 / .05); overflow: hidden; }
+.scan-admin-bar > span { display: block; height: 100%; border-radius: inherit; background: var(--scan-accent); }
 
 @keyframes scan-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes scan-spin { to { transform: rotate(360deg); } }

@@ -11,7 +11,7 @@ npm run build
 npm audit
 ```
 
-Les 95 tests se répartissent ainsi :
+Les 96 tests se répartissent ainsi (dont un pour les chiffres de la page admin) :
 
 - **Contenus (80 tests, 4 par idée) :** structure du fichier, longueurs, vouvoiement, apostrophe typographique, 60 accroches et déroulés distincts, au moins trois plateformes, aucun pourcentage dans les vidéos et le plan de A à Z, sept phases aux périodes imposées, et prompt de 700 à 900 mots pour chacun des 256 profils testés. Les prompts vont de 798 à 892 mots selon les idées et les profils.
 - **Domaine :**
