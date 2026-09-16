@@ -10,7 +10,7 @@ import { countWords } from "@/lib/dossier/word-count";
 import { clearLocalAnswers } from "@/lib/questionnaire/local-answers";
 import type { DossierContent, DossierRecord, DossierState, PlanTask, Selection } from "@/types/domain";
 import { EndedScreen, RoadmapPanel, SubscriptionPanel, VideosPanel } from "./dossier-extras";
-import { ApiError, ErrorNotice, ProblemScreen, Shell, Spinner, api, checkoutUrl, downloadMarkdown, friendlyError } from "./shared";
+import { ApiError, ErrorNotice, ProblemScreen, Shell, Spinner, api, downloadMarkdown, friendlyError, openCheckout } from "./shared";
 import "./workspace.css";
 
 const allTabs = [
@@ -170,7 +170,7 @@ export function DossierScreen({ token, demoContent }: { token: string; demoConte
   const reactivate = (formule: PlanId) => run(formule, "reactivate", async () => {
     try {
       const { url } = await api<{ url: string }>("/api/checkout", { method: "POST", body: JSON.stringify({ formule, token, renonciation_retractation: true }) });
-      window.location.assign(checkoutUrl(url));
+      openCheckout(url, formule, "reactivation");
     } catch (cause) {
       if (!(cause instanceof ApiError && cause.status === 401)) throw cause;
       window.location.assign(`/connexion?suite=${encodeURIComponent(`/dossier/${token}`)}`);

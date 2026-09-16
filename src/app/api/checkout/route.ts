@@ -1,6 +1,5 @@
-import { track } from "@vercel/analytics/server";
 import { z } from "zod";
-import { planIds, type PlanId } from "@/config/pricing";
+import { planIds } from "@/config/pricing";
 import { validateAnswers } from "@/lib/questionnaire/schemas";
 import { parseAccessToken } from "@/lib/security/access-token";
 import { rateLimit } from "@/lib/security/rate-limit";
@@ -13,19 +12,12 @@ export const runtime = "nodejs";
 
 // Nouveau dossier à partir des réponses, ou réactivation d’un dossier par son lien. Un compte est requis,
 // ainsi que la renonciation expresse à la rétractation cochée avant le paiement.
+// L’événement « Checkout Started » part du navigateur, au moment où la page Whop s’ouvre (openCheckout).
 const waiver = z.literal(true);
 const bodySchema = z.union([
   z.object({ formule: z.enum(planIds), answers: z.unknown(), renonciation_retractation: waiver }).strict(),
   z.object({ formule: z.enum(planIds), token: z.string(), renonciation_retractation: waiver }).strict(),
 ]);
-
-// Événement Vercel Web Analytics envoyé côté serveur, donc compté même avec un bloqueur de publicité.
-// Sans cookie ni référent : l’adresse d’origine peut contenir le lien secret d’un dossier.
-async function trackCheckoutStarted(request: Request, formule: PlanId, parcours: "nouveau" | "reactivation") {
-  const headers = new Headers(request.headers);
-  headers.delete("cookie"); headers.delete("referer");
-  await track("Checkout Started", { formule, parcours }, { headers }).catch(() => undefined);
-}
 
 export async function POST(request: Request) {
   try {
@@ -35,12 +27,8 @@ export async function POST(request: Request) {
     if ("token" in body) {
       const token = parseAccessToken(body.token);
       const dossier = await findDossier(createAdminClient(), token);
-      const url = await createCheckout(body.formule, { dossierId: dossier.id, token, userId: user.id });
-      await trackCheckoutStarted(request, body.formule, "reactivation");
-      return json({ url });
+      return json({ url: await createCheckout(body.formule, { dossierId: dossier.id, token, userId: user.id }) });
     }
-    const url = await createCheckout(body.formule, { answers: validateAnswers(body.answers), userId: user.id });
-    await trackCheckoutStarted(request, body.formule, "nouveau");
-    return json({ url });
+    return json({ url: await createCheckout(body.formule, { answers: validateAnswers(body.answers), userId: user.id }) });
   } catch (error) { return errorResponse(error); }
 }

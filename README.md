@@ -36,7 +36,7 @@ Pour parcourir tout le parcours sans compte ni paiement : [questionnaire de dém
 - Bonus selon la formule : 30 idées de vidéos marketing (3 mois), 60 idées et un plan de A à Z sur douze mois (12 mois).
 - Offre à trois formules définies dans `src/config/plans.json`. Les prix barrés et les pourcentages comparent au même nombre de mois en formule mensuelle ; aucun faux compte à rebours.
 - Abonnements Whop : webhook signé et idempotent, accès lié à l’abonnement, résiliation en fin de période depuis le dossier, renonciation à la rétractation cochée avant chaque paiement.
-- Vercel Web Analytics : visites mesurées sans cookie, lien secret des dossiers masqué, et événement serveur `Checkout Started` (formule, parcours `nouveau` ou `reactivation`) à chaque ouverture de la page de paiement.
+- Vercel Web Analytics : visites mesurées sans cookie, lien secret des dossiers masqué, et événement `Checkout Started` (formule, parcours `nouveau` ou `reactivation`) envoyé par le navigateur au moment où la page de paiement Whop s’ouvre.
 - Dossier : trois idées, copie et export `.md` du prompt, plan à cocher, vidéos et plan de A à Z selon la formule, lien personnel à copier.
 - Huit migrations PostgreSQL : RLS sur toutes les tables, aucun droit pour les rôles du navigateur, transactions réservées au serveur.
 - Pages de contact, confidentialité, mentions légales et CGV configurables. Les textes légaux sont une base préparatoire à adapter au vendeur réel avant commercialisation.

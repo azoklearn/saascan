@@ -11,7 +11,7 @@ import type { AnswerValue, Answers } from "@/types/domain";
 import { QuestionnaireView, ScanIntro } from "./questionnaire-view";
 import { ScanAnalysis, ScanOffer, ScanReady } from "./scan-result-views";
 import { ScanShell } from "./scan-shell";
-import { ApiError, api, checkoutUrl, demoHref, friendlyError, useDemoMode } from "./shared";
+import { ApiError, api, demoHref, friendlyError, openCheckout, useDemoMode } from "./shared";
 
 const firstIntro = -2;
 
@@ -97,7 +97,7 @@ export function OfferScreen() {
     if (demo) { resetDemoDossier(); router.push("/dossier/demo?demo=1"); return; }
     try {
       const { url } = await api<{ url: string }>("/api/checkout", { method: "POST", body: JSON.stringify({ formule, answers: questionnaireAnswers(readLocalAnswers()), renonciation_retractation: true }) });
-      window.location.assign(checkoutUrl(url));
+      openCheckout(url, formule, "nouveau");
     } catch (cause) {
       // Session expirée : reconnexion, puis retour sur l’offre.
       if (cause instanceof ApiError && cause.status === 401) { window.location.assign("/connexion?suite=/debloquer"); return; }

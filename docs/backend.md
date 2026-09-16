@@ -42,7 +42,7 @@ Les écritures venant du navigateur contrôlent l’origine. Les réponses JSON 
 | `GET /auth/callback` | `code`, `suite` | Redirection |
 | `POST /auth/deconnexion` | Session | Redirection vers l’accueil |
 
-`POST /api/checkout` est limité à dix demandes par adresse IP sur dix minutes, par instance. Une fois le passage en caisse créé, la route envoie l’événement Vercel Web Analytics `Checkout Started` (`formule`, `parcours` : `nouveau` ou `reactivation`), sans cookie ni référent, puisque l’adresse d’origine peut contenir le lien secret d’un dossier.
+`POST /api/checkout` est limité à dix demandes par adresse IP sur dix minutes, par instance. Quand la route renvoie l’adresse Whop, le navigateur envoie l’événement Vercel Web Analytics `Checkout Started` (`formule`, `parcours` : `nouveau` ou `reactivation`) juste avant d’ouvrir la page de paiement. L’envoi survit à la navigation, et l’adresse d’un dossier y est remplacée par `/dossier/[lien]`.
 
 Sans `WHOP_API_URL`, le client Whop vise la production. Les informations du vendeur ne bloquent pas le passage en caisse ; tant qu’elles manquent, les pages légales restent en version préparatoire. Whop refuse une adresse de retour qui ne commence pas par `https://` : le passage en caisse renvoie `503 NOT_CONFIGURED` sur `http://localhost`. Les pages légales restent à compléter et vérifier pour l’éditeur réel.
 

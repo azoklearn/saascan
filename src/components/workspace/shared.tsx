@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
+import { track } from "@vercel/analytics";
 import { ArrowLeft, FolderOpen, LoaderCircle, ScanLine } from "lucide-react";
+import type { PlanId } from "@/config/pricing";
 import "./workspace.css";
 
 export class ApiError extends Error {
@@ -21,6 +23,13 @@ export function checkoutUrl(url: string) {
   const target = new URL(url);
   if (target.protocol !== "https:" || !(target.hostname === "whop.com" || target.hostname.endsWith(".whop.com"))) throw new Error("Le lien de paiement reçu n’est pas valide. Réessayez.");
   return target.href;
+}
+
+/** Ouvre la page de paiement Whop et compte ce moment dans Vercel Web Analytics : l’envoi (fetch keepalive) survit à la navigation. */
+export function openCheckout(url: string, formule: PlanId, parcours: "nouveau" | "reactivation") {
+  const destination = checkoutUrl(url);
+  track("Checkout Started", { formule, parcours });
+  window.location.assign(destination);
 }
 
 export function friendlyError(error: unknown) { return error instanceof Error ? error.message : "Une erreur est survenue. Réessayez dans un instant."; }
