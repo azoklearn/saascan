@@ -97,6 +97,10 @@ Sans `WHOP_API_URL`, le client vise la production. Les informations du vendeur (
 
 SaaScan n’envoie aucun email ; Whop envoie ses propres reçus de paiement. Les dossiers se retrouvent dans l’espace du compte, et leur lien personnel les ouvre aussi sans connexion. Un mot de passe oublié passe par la page contact : l’éditeur vérifie la demande puis définit un nouveau mot de passe avec l’API d’administration Supabase (`auth.admin.updateUserById`) ; la personne peut aussi se connecter avec Google si son compte utilise la même adresse. L’email saisi sur Whop est enregistré dans `dossiers.email` pour retrouver un dossier sur demande.
 
+## Lister les comptes
+
+`node scripts/comptes.mjs` affiche les comptes de la base configurée dans `.env.local` : email, date de création, mode de connexion (email, Google ou les deux), nombre de dossiers, dossiers payés, abonnements encore actifs et dernière connexion. La lecture passe par la clé `service_role` et l’API d’administration Supabase ; aucun lien secret de dossier n’est affiché. `--avec-dossier` ne garde que les comptes qui ont au moins un dossier, `--json` sort la liste brute. Les dossiers créés avant l’obligation de compte n’appartiennent à personne : ils sont comptés à part en bas de la liste.
+
 ## Déployer sur Vercel
 
 1. Importer le dépôt dans Vercel en tant que projet Next.js.
