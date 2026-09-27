@@ -11,7 +11,7 @@ npm run build
 npm audit
 ```
 
-Les 96 tests se répartissent ainsi (dont un pour les chiffres de la page admin) :
+Les 97 tests se répartissent ainsi (dont deux pour les chiffres et la liste des comptes de la page admin) :
 
 - **Contenus (80 tests, 4 par idée) :** structure du fichier, longueurs, vouvoiement, apostrophe typographique, 60 accroches et déroulés distincts, au moins trois plateformes, aucun pourcentage dans les vidéos et le plan de A à Z, sept phases aux périodes imposées, et prompt de 700 à 900 mots pour chacun des 256 profils testés. Les prompts vont de 798 à 892 mots selon les idées et les profils.
 - **Domaine :**
@@ -45,9 +45,10 @@ Le build produit les pages `/inscription`, `/connexion` et `/espace`, les routes
 
 Navigateur intégré, à 309 pixels de large, à 375 × 812 pixels et à 1280 × 800 pixels :
 
-1. **Compte obligatoire :**
-   - `/questionnaire` redirige vers `/inscription?suite=%2Fquestionnaire` ;
-   - `/espace` redirige vers `/inscription?suite=%2Fespace` ;
+1. **Compte demandé à la fin du questionnaire :**
+   - `/questionnaire` s’ouvre sans compte ;
+   - `/analyse` redirige vers `/inscription?suite=%2Fanalyse` ;
+   - `/profil` redirige vers `/inscription?suite=%2Fprofil` ;
    - `/questionnaire?demo=1` reste ouvert sans compte.
 2. **Création de compte (`/inscription`) :**
    - logo, « Créez votre compte. », bouton « Continuer avec Google », champs email et mot de passe (8 caractères minimum) et lien « Se connecter » qui conserve la suite ;

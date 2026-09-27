@@ -17,7 +17,7 @@ export function SiteHeader() {
     return () => data.subscription.unsubscribe();
   }, []);
   const close = () => setOpen(false);
-  const account = signedIn ? { href: "/espace", label: "Mon espace" } : { href: "/connexion", label: "Se connecter" };
+  const account = signedIn ? { href: "/profil", label: "Mon profil" } : { href: "/connexion", label: "Se connecter" };
   return <header className="site-header">
     <div className="container header-inner">
       <Link href="/" aria-label="SaaScan, accueil" onClick={close}><BrandLogo /></Link>

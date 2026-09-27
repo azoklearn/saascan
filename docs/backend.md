@@ -12,7 +12,7 @@ Appliquer dans cet ordre les migrations `202609120001_initial_schema.sql`, `2026
 
 Supabase Auth gère les comptes : « Continuer avec Google » et email avec mot de passe, sans email de confirmation (« Confirm email » désactivé dans le projet). Le navigateur utilise la clé publishable (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`) uniquement pour se connecter ; la session vit dans des cookies gérés par `@supabase/ssr`.
 
-`src/middleware.ts` rafraîchit la session et redirige vers `/inscription?suite=<chemin>` toute visite sans compte de `/questionnaire`, `/analyse`, `/debloquer` et `/espace`, sauf en démonstration (`?demo=1`). Une personne connectée qui ouvre `/inscription` ou `/connexion` repart vers `suite`. `suite` n’accepte qu’un chemin interne.
+`src/middleware.ts` rafraîchit la session et redirige vers `/inscription?suite=<chemin>` toute visite sans compte de `/analyse`, `/debloquer`, `/profil` et `/admin` ; le questionnaire reste ouvert et le compte est demandé à la fin, avant le résultat, sauf en démonstration (`?demo=1`). Une personne connectée qui ouvre `/inscription` ou `/connexion` repart vers `suite`. `suite` n’accepte qu’un chemin interne.
 
 Google renvoie vers `GET /auth/callback`, qui échange le code contre une session puis reprend le parcours ; en cas d’échec, `/inscription?erreur=google` affiche un message. `POST /auth/deconnexion` ferme la session. `/espace` lit l’utilisateur côté serveur et liste ses dossiers payés, avec leur formule et l’état de l’abonnement.
 

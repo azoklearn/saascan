@@ -18,17 +18,18 @@ Pour parcourir tout le parcours sans compte ni paiement : [questionnaire de dém
 
 ## Le parcours
 
-1. « Créer mon SaaS » demande d’abord un compte (`/inscription`) : « Continuer avec Google » ou email et mot de passe, sans email de confirmation. Une personne déjà inscrite passe par `/connexion`.
-2. Le questionnaire suit : deux écrans d’introduction, puis cinq questions (objectif de revenu au curseur, tranche d’âge, délai de la première vente, temps par jour et aisance avec le contenu). Les identifiants `delai_premier_euro` et `niveau_video` figurent déjà dans la liste autorisée par la base : aucune migration n’est nécessaire. Les réponses restent dans le navigateur ; des pastilles permettent de revenir sur une réponse.
-3. Une animation de calcul mène à l’écran « Prêt », puis au choix de la formule : 1 mois à 18,99 €, 3 mois à 29,99 € ou 12 mois à 69,99 €, renouvelés automatiquement.
-4. Au paiement, le serveur vérifie la session, valide les réponses, crée le dossier du compte avec un lien d’accès secret et ouvre la page de paiement Whop.
-5. Le webhook confirme le paiement et publie le dossier et les bonus de la formule en quelques secondes. Au retour de Whop, `/dossier/<lien>` affiche le dossier ; il reste ensuite dans l’espace du compte (`/espace`). La base de données refuse toute publication avant la confirmation du paiement.
-6. Le dossier reste accessible tant que l’abonnement est actif. La personne peut le résilier depuis le dossier ou réactiver un abonnement terminé depuis le même dossier. Avant chaque paiement, elle coche une case qui demande l’accès immédiat au dossier et renonce au droit de rétractation ; aucun remboursement n’est proposé dans le site.
+1. « Lancer mon business » ouvre directement le questionnaire : aucun compte n’est demandé pour répondre.
+2. Le questionnaire : deux écrans d’introduction, puis cinq questions (objectif de revenu au curseur, tranche d’âge, délai de la première vente, temps par jour et aisance avec le contenu). Les identifiants `delai_premier_euro` et `niveau_video` figurent déjà dans la liste autorisée par la base : aucune migration n’est nécessaire. Les réponses restent dans le navigateur ; des pastilles permettent de revenir sur une réponse.
+3. À la fin du questionnaire, le compte est demandé (`/inscription`) : « Continuer avec Google » ou email et mot de passe, sans email de confirmation. Une personne déjà inscrite passe par `/connexion`, et ses réponses l’attendent au retour.
+4. Une animation de calcul mène à l’écran « Prêt », puis au choix de la formule : 1 mois à 18,99 €, 3 mois à 29,99 € ou 12 mois à 69,99 €, renouvelés automatiquement.
+5. Au paiement, le serveur vérifie la session, valide les réponses, crée le dossier du compte avec un lien d’accès secret et ouvre la page de paiement Whop.
+6. Le webhook confirme le paiement et publie le dossier et les bonus de la formule en quelques secondes. Au retour de Whop, `/dossier/<lien>` affiche le dossier ; il reste ensuite dans l’espace du compte (`/espace`). La base de données refuse toute publication avant la confirmation du paiement.
+7. Le dossier reste accessible tant que l’abonnement est actif. La personne peut le résilier depuis le dossier ou réactiver un abonnement terminé depuis le même dossier. Avant chaque paiement, elle coche une case qui demande l’accès immédiat au dossier et renonce au droit de rétractation ; aucun remboursement n’est proposé dans le site.
 
 ## Ce qui est inclus
 
 - Landing, FAQ accessible, navigation mobile, thème sombre turquoise et téléphone animé dans le hero.
-- Comptes Supabase Auth : Google et email avec mot de passe, pages `/inscription` et `/connexion`, espace `/espace` avec les dossiers payés, déconnexion. Un middleware exige la session sur le questionnaire, l’analyse, l’offre et l’espace ; la démonstration reste ouverte.
+- Comptes Supabase Auth : Google et email avec mot de passe, pages `/inscription` et `/connexion`, profil `/profil` avec les dossiers payés, déconnexion. Un middleware exige la session sur l’analyse, l’offre, le profil et la page admin, pas sur le questionnaire ; la démonstration reste ouverte.
 - Questionnaire avec reprise automatique et un curseur de revenu utilisable au doigt.
 - Banque de vingt idées françaises écrites à la main dans `data/ideas.json` ; canaux et périmètres dans `src/lib/matching/idea-rules.ts`.
 - Sélection déterministe : les idées compatibles avec le temps disponible et le délai de la première vente passent en premier, classées selon ce délai, l’aisance avec le contenu et l’objectif de revenu. Les vidéos face caméra ne deviennent le premier canal que pour les personnes à l’aise devant la caméra. Quand moins de trois idées conviennent, les plus proches complètent la sélection et le dossier les adapte sans le signaler.
@@ -37,7 +38,8 @@ Pour parcourir tout le parcours sans compte ni paiement : [questionnaire de dém
 - Offre à trois formules définies dans `src/config/plans.json`. Les prix barrés et les pourcentages comparent au même nombre de mois en formule mensuelle ; aucun faux compte à rebours.
 - Abonnements Whop : webhook signé et idempotent, accès lié à l’abonnement, résiliation en fin de période depuis le dossier, renonciation à la rétractation cochée avant chaque paiement.
 - Vercel Web Analytics : visites mesurées sans cookie, lien secret des dossiers masqué, et événement `Checkout Started` (formule, parcours `nouveau` ou `reactivation`) envoyé par le navigateur au moment où la page de paiement Whop s’ouvre.
-- Page `/admin` réservée aux comptes dont `app_metadata.role` vaut `admin` (rôle posé avec la clé service_role, qu’aucun compte ne peut s’attribuer) : nombre d’inscrits, par période et par méthode de connexion, comptes arrivés au paiement et abonnés payants. Les autres comptes reçoivent une page introuvable.
+- Page `/profil` (l’ancienne `/espace` y renvoie) : compte connecté, dossiers payés, état de l’abonnement et résiliation en deux clics, déconnexion.
+- Page `/admin` réservée aux comptes dont `app_metadata.role` vaut `admin` (rôle posé avec la clé service_role, qu’aucun compte ne peut s’attribuer) : nombre d’inscrits, par période et par méthode de connexion, comptes arrivés au paiement, abonnés payants, inscriptions des quatorze derniers jours et liste des cent comptes les plus récents (email, méthode, dates, dossiers, abonnement). Les autres comptes reçoivent une page introuvable.
 - Whop Pixel (`biz_CNNc2c0v2u6uxe`) recopié sans modification dans le `<head>` de chaque page (`src/app/layout.tsx`) : il suit lui-même les navigations internes, et Whop compte les paiements côté serveur. Ce traceur publicitaire dépose un cookie : son consentement préalable est à prévoir pour les visiteurs européens.
 - Dossier : trois idées, copie et export `.md` du prompt, plan à cocher, vidéos et plan de A à Z selon la formule, lien personnel à copier.
 - Huit migrations PostgreSQL : RLS sur toutes les tables, aucun droit pour les rôles du navigateur, transactions réservées au serveur.

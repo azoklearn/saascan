@@ -10,7 +10,7 @@ const items = [
   ["Pourquoi ces questions ?", `${questions.length} questions, moins d’une minute. Chaque réponse oriente la sélection : votre objectif de revenu, votre âge, le délai de votre première vente, votre temps disponible et votre aisance avec le contenu. Vos réponses restent dans votre navigateur jusqu’au paiement.`],
   ["Pourquoi seulement 3 idées et pas 50 ?", "Parce qu’une liste de 50 idées, vous l’avez sûrement déjà dans vos notes. Trois pistes, c’est assez pour choisir sans vous disperser. Elles sont classées et argumentées, et la première reçoit un prompt de construction et un plan détaillé pour passer tout de suite à l’étape suivante."],
   ["Comment fonctionne l’abonnement ?", "Vous choisissez une formule de 1, 3 ou 12 mois, renouvelée automatiquement jusqu’à sa résiliation. Votre dossier reste accessible tant que l’abonnement est actif, et les formules 3 et 12 mois ajoutent des idées de vidéos marketing. Vous résiliez en deux clics depuis votre dossier : aucun nouveau prélèvement, et l’accès continue jusqu’à la fin de la période payée."],
-  ["Faut-il créer un compte ?", "Oui, un compte gratuit, créé en un clic avec Google ou avec votre email et un mot de passe. Il vous permet de retrouver votre dossier dans votre espace, depuis n’importe quel appareil. Le paiement se fait ensuite sur Whop."],
+  ["Faut-il créer un compte ?", "Oui, mais seulement à la fin du questionnaire, juste avant votre résultat. Il est gratuit et se crée en un clic avec Google ou avec votre email et un mot de passe. Il garde vos idées et votre dossier, retrouvables depuis n’importe quel appareil. Le paiement se fait ensuite sur Whop."],
 ];
 
 export function FAQ() {

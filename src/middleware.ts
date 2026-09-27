@@ -2,8 +2,9 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { safeNextPath } from "@/lib/security/next-path";
 
-// Le questionnaire, l’offre, l’espace et la page admin demandent un compte. La démonstration reste ouverte.
-const accountPaths = ["/questionnaire", "/analyse", "/debloquer", "/espace", "/admin"];
+// Le questionnaire reste ouvert : le compte est demandé à la fin, avant le résultat.
+// L’analyse, l’offre, le profil et la page admin le demandent. La démonstration reste ouverte.
+const accountPaths = ["/analyse", "/debloquer", "/espace", "/profil", "/admin"];
 const authPaths = ["/inscription", "/connexion"];
 
 export async function middleware(request: NextRequest) {
@@ -40,5 +41,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/questionnaire/:path*", "/analyse/:path*", "/debloquer/:path*", "/espace/:path*", "/admin/:path*", "/inscription", "/connexion", "/dossier/:path*"],
+  matcher: ["/questionnaire/:path*", "/analyse/:path*", "/debloquer/:path*", "/espace/:path*", "/profil/:path*", "/admin/:path*", "/inscription", "/connexion", "/dossier/:path*"],
 };

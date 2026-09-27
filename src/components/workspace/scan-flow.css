@@ -217,7 +217,23 @@
 .scan-space-item svg { flex: 0 0 auto; color: var(--scan-accent); }
 .scan-space-empty { display: grid; justify-items: start; gap: 16px; color: var(--scan-muted); }
 .scan-space-actions { display: flex; justify-content: flex-end; margin-top: 22px; }
-.scan-admin { width: min(720px, 100%); margin: 0 auto; }
+.scan-profil { width: min(720px, 100%); margin: 0 auto; }
+.scan-profil .brand-logo { margin-bottom: 26px; }
+.scan-profil h1 { margin: 12px 0 8px; font-size: clamp(28px, 3.2vw, 36px); line-height: 1.12; letter-spacing: -1.3px; font-weight: 650; }
+.scan-profil-heading { margin: 34px 0 14px; font-size: 17px; font-weight: 600; }
+.scan-profil-note { margin: 14px 0 0; color: var(--scan-muted); font-size: 13px; line-height: 1.7; }
+.scan-profil-subscriptions { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.scan-profil-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 15px 18px; border: 1px solid var(--scan-line); border-radius: 12px; background: rgb(255 255 255 / .025); }
+.scan-profil-card strong { display: block; color: #f2f5f6; font-size: 16px; }
+.scan-profil-card small { display: block; margin-top: 4px; color: var(--scan-muted); font-size: 13px; }
+.scan-profil-card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.scan-profil-link { display: inline-flex; align-items: center; gap: 6px; color: var(--scan-accent); font-size: 13px; font-weight: 600; }
+.scan-profil-button { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 14px; border: 1px solid var(--scan-line); border-radius: 999px; background: rgb(255 255 255 / .03); color: #e8f2f1; font: inherit; font-size: 13px; cursor: pointer; transition: border-color .16s, color .16s; }
+@media (hover: hover) and (pointer: fine) { .scan-profil-button:hover:not(:disabled) { border-color: var(--scan-accent); } .scan-profil-link:hover { text-decoration: underline; text-underline-offset: 3px; } }
+.scan-profil-button:disabled { opacity: .5; cursor: not-allowed; }
+.scan-profil-danger { color: #ffc9c9; border-color: #744a4a; }
+.scan-profil-confirm { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+.scan-admin { width: min(860px, 100%); margin: 0 auto; }
 .scan-admin .brand-logo { margin-bottom: 26px; }
 .scan-admin h1 { margin: 12px 0 8px; font-size: clamp(30px, 3.4vw, 38px); line-height: 1.12; letter-spacing: -1.3px; font-weight: 650; }
 .scan-admin-total { color: var(--scan-accent); font-variant-numeric: tabular-nums; }
@@ -231,6 +247,16 @@
 .scan-admin-days strong { color: #f2f5f6; text-align: right; font-variant-numeric: tabular-nums; }
 .scan-admin-bar { height: 8px; border-radius: 999px; background: rgb(255 255 255 / .05); overflow: hidden; }
 .scan-admin-bar > span { display: block; height: 100%; border-radius: inherit; background: var(--scan-accent); }
+.scan-admin-accounts { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.scan-admin-account { padding: 14px 16px; border: 1px solid var(--scan-line); border-radius: 12px; background: rgb(255 255 255 / .025); }
+.scan-admin-account-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0; }
+.scan-admin-account-head strong { color: #f2f5f6; font-size: 15px; overflow-wrap: anywhere; }
+.scan-admin-account-head span { color: var(--scan-muted); font-size: 12px; }
+.scan-admin-account-empty { margin: 6px 0 0; color: var(--scan-muted); font-size: 13px; }
+.scan-admin-dossiers { display: grid; gap: 8px; margin: 10px 0 0; padding: 10px 0 0; border-top: 1px solid var(--scan-line); list-style: none; }
+.scan-admin-dossier-state { display: block; color: #d7e0e2; font-size: 13px; }
+.scan-admin-dossier-state[data-paid=true] { color: var(--scan-accent); font-weight: 600; }
+.scan-admin-dossier-answers { display: block; margin-top: 3px; color: var(--scan-muted); font-size: 12px; line-height: 1.6; }
 
 @keyframes scan-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes scan-spin { to { transform: rotate(360deg); } }
