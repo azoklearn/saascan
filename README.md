@@ -20,8 +20,8 @@ Pour parcourir tout le parcours sans compte ni paiement : [questionnaire de dém
 
 1. « Lancer mon business » ouvre directement le questionnaire : aucun compte n’est demandé pour répondre.
 2. Le questionnaire : deux écrans d’introduction, puis cinq questions (objectif de revenu au curseur, tranche d’âge, délai de la première vente, temps par jour et aisance avec le contenu). Les identifiants `delai_premier_euro` et `niveau_video` figurent déjà dans la liste autorisée par la base : aucune migration n’est nécessaire. Les réponses restent dans le navigateur ; des pastilles permettent de revenir sur une réponse.
-3. À la fin du questionnaire, le compte est demandé (`/inscription`) : « Continuer avec Google » ou email et mot de passe, sans email de confirmation. Une personne déjà inscrite passe par `/connexion`, et ses réponses l’attendent au retour.
-4. Une animation de calcul mène à l’écran « Prêt », puis au choix de la formule : 1 mois à 18,99 €, 3 mois à 29,99 € ou 12 mois à 69,99 €, renouvelés automatiquement.
+3. Une animation de calcul se lance sans compte, puis mène à l’écran « Prêt ».
+4. Le compte est alors demandé (`/inscription`) : « Continuer avec Google » ou email et mot de passe, sans email de confirmation. Une personne déjà inscrite passe par `/connexion`, et ses réponses l’attendent au retour. Vient ensuite le choix de la formule : 1 mois à 18,99 €, 3 mois à 29,99 € ou 12 mois à 69,99 €, renouvelés automatiquement.
 5. Au paiement, le serveur vérifie la session, valide les réponses, crée le dossier du compte avec un lien d’accès secret et ouvre la page de paiement Whop.
 6. Le webhook confirme le paiement et publie le dossier et les bonus de la formule en quelques secondes. Au retour de Whop, `/dossier/<lien>` affiche le dossier ; il reste ensuite dans l’espace du compte (`/espace`). La base de données refuse toute publication avant la confirmation du paiement.
 7. Le dossier reste accessible tant que l’abonnement est actif. La personne peut le résilier depuis le dossier ou réactiver un abonnement terminé depuis le même dossier. Avant chaque paiement, elle coche une case qui demande l’accès immédiat au dossier et renonce au droit de rétractation ; aucun remboursement n’est proposé dans le site.
@@ -29,7 +29,7 @@ Pour parcourir tout le parcours sans compte ni paiement : [questionnaire de dém
 ## Ce qui est inclus
 
 - Landing, FAQ accessible, navigation mobile, thème sombre turquoise et téléphone animé dans le hero.
-- Comptes Supabase Auth : Google et email avec mot de passe, pages `/inscription` et `/connexion`, profil `/profil` avec les dossiers payés, déconnexion. Un middleware exige la session sur l’analyse, l’offre, le profil et la page admin, pas sur le questionnaire ; la démonstration reste ouverte.
+- Comptes Supabase Auth : Google et email avec mot de passe, pages `/inscription` et `/connexion`, profil `/profil` avec les dossiers payés, déconnexion. Un middleware exige la session sur l’offre, le profil et la page admin, pas sur le questionnaire ni sur l’analyse ; la démonstration reste ouverte.
 - Questionnaire avec reprise automatique et un curseur de revenu utilisable au doigt.
 - Banque de vingt idées françaises écrites à la main dans `data/ideas.json` ; canaux et périmètres dans `src/lib/matching/idea-rules.ts`.
 - Sélection déterministe : les idées compatibles avec le temps disponible et le délai de la première vente passent en premier, classées selon ce délai, l’aisance avec le contenu et l’objectif de revenu. Les vidéos face caméra ne deviennent le premier canal que pour les personnes à l’aise devant la caméra. Quand moins de trois idées conviennent, les plus proches complètent la sélection et le dossier les adapte sans le signaler.

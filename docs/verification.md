@@ -45,9 +45,9 @@ Le build produit les pages `/inscription`, `/connexion` et `/espace`, les routes
 
 Navigateur intégré, à 309 pixels de large, à 375 × 812 pixels et à 1280 × 800 pixels :
 
-1. **Compte demandé à la fin du questionnaire :**
-   - `/questionnaire` s’ouvre sans compte ;
-   - `/analyse` redirige vers `/inscription?suite=%2Fanalyse` ;
+1. **Compte demandé après l’analyse :**
+   - `/questionnaire` et `/analyse` s’ouvrent sans compte ;
+   - `/debloquer` redirige vers `/inscription?suite=%2Fdebloquer` ;
    - `/profil` redirige vers `/inscription?suite=%2Fprofil` ;
    - `/questionnaire?demo=1` reste ouvert sans compte.
 2. **Création de compte (`/inscription`) :**
