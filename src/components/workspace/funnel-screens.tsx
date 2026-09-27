@@ -86,10 +86,16 @@ export function OfferScreen() {
   const [error, setError] = useState("");
   const [notConfigured, setNotConfigured] = useState(false);
   const [formule, setFormule] = useState<PlanId>(defaultPlanId);
+  const recorded = useRef(false);
   useEffect(() => {
     if (!ready) return;
-    if (!isComplete(questionnaireAnswers(readLocalAnswers()))) { router.replace(demoHref("/questionnaire", demo)); return; }
+    const answers = questionnaireAnswers(readLocalAnswers());
+    if (!isComplete(answers)) { router.replace(demoHref("/questionnaire", demo)); return; }
     setAllowed(true);
+    // Le questionnaire terminé est enregistré ici, avant tout paiement. Un échec ne bloque rien.
+    if (demo || recorded.current) return;
+    recorded.current = true;
+    api("/api/questionnaire", { method: "POST", body: JSON.stringify({ answers }) }).catch(() => undefined);
   }, [ready, demo, router]);
 
   async function checkout() {

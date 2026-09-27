@@ -54,7 +54,12 @@ describe("Page admin", () => {
       { dossier_id: "d-ancien", question_id: "competences", value: "aucune" },
       { dossier_id: "d-autre", question_id: "objectif_revenu", value: "5000" },
     ];
+    const completions = [{ user_id: "u1", answers: { objectif_revenu: "2000", temps_jour: "1h" }, updated_at: "2026-09-21T11:10:00Z" }];
+    const [avecQuestionnaire] = accountDetails(users, dossiers, responses, completions);
+    expect(avecQuestionnaire.completedAt).toBe("2026-09-21T11:10:00Z");
+    expect(avecQuestionnaire.completionAnswers).toEqual([{ question_id: "objectif_revenu", value: "2000" }, { question_id: "temps_jour", value: "1h" }]);
     const [account] = accountDetails(users, dossiers, responses);
+    expect(account.completedAt).toBeNull();
     expect(account.dossiers.map((dossier) => dossier.id)).toEqual(["d-recent", "d-ancien"]);
     expect(account.dossiers[0].answers).toEqual([{ question_id: "objectif_revenu", value: "2000" }, { question_id: "temps_jour", value: "1h" }]);
     expect(account.dossiers[1].answers).toEqual([{ question_id: "competences", value: "aucune" }]);

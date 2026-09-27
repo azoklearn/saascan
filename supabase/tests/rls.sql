@@ -51,6 +51,8 @@ do $$ begin
   exception when insufficient_privilege then null; end;
   begin perform 1 from public.profiles; raise exception 'ÉCHEC : profils lisibles avec une session';
   exception when insufficient_privilege then null; end;
+  begin perform 1 from public.questionnaires; raise exception 'ÉCHEC : questionnaires terminés lisibles avec une session';
+  exception when insufficient_privilege then null; end;
   begin perform public.apply_whop_event('msg_navigateur', 'payment.succeeded', 'pay_navigateur', now(), gen_random_uuid());
     raise exception 'ÉCHEC : paiement confirmé depuis le navigateur';
   exception when insufficient_privilege then null; end;

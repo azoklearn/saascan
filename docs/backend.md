@@ -38,6 +38,7 @@ Les écritures venant du navigateur contrôlent l’origine. Les réponses JSON 
 | `PATCH /api/dossiers/[lien]/taches/[id]` | `{done}` | `{ok:true}` |
 | `GET /api/dossiers/[lien]/export` | — | Prompt Markdown téléchargé |
 | `POST /api/abonnement` | `{token}` | `{ok:true}` |
+| `POST /api/questionnaire` | Session + `{answers}` | `{ok:true,enregistre}` |
 | `POST /api/webhooks/whop` | Corps Whop brut + en-têtes `webhook-*` | `{received:true}` |
 | `GET /auth/callback` | `code`, `suite` | Redirection |
 | `POST /auth/deconnexion` | Session | Redirection vers l’accueil |

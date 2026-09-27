@@ -11,7 +11,7 @@ npm run build
 npm audit
 ```
 
-Les 97 tests se répartissent ainsi (dont deux pour les chiffres et la liste des comptes de la page admin) :
+Les 98 tests se répartissent ainsi (dont trois pour les chiffres, la liste des comptes et les questionnaires terminés de la page admin) :
 
 - **Contenus (80 tests, 4 par idée) :** structure du fichier, longueurs, vouvoiement, apostrophe typographique, 60 accroches et déroulés distincts, au moins trois plateformes, aucun pourcentage dans les vidéos et le plan de A à Z, sept phases aux périodes imposées, et prompt de 700 à 900 mots pour chacun des 256 profils testés. Les prompts vont de 798 à 892 mots selon les idées et les profils.
 - **Domaine :**
@@ -21,10 +21,10 @@ Les 97 tests se répartissent ainsi (dont deux pour les chiffres et la liste des
   - adaptation du prompt au délai de la première vente et à un outil guidé ;
   - bonus de chaque formule : 0, 30 ou 60 vidéos, plan de A à Z avec l’objectif de revenu ;
   - canaux autorisés, prix par jour (0,63 €, 0,33 € et 0,19 €) et économies (−47 % et −69 %).
-- **Base de données :** PostgreSQL/PGlite applique les huit migrations et le scénario `supabase/tests/rls.sql`. Le scénario couvre, en plus d’un paiement à 0 € obtenu avec un code promo (dossier ouvert, jamais compté comme remboursé, montant négatif refusé) :
+- **Base de données :** PostgreSQL/PGlite applique les neuf migrations et le scénario `supabase/tests/rls.sql`. Le scénario couvre, en plus d’un paiement à 0 € obtenu avec un code promo (dossier ouvert, jamais compté comme remboursé, montant négatif refusé) :
   - la création des profils avec les comptes ;
   - l’absence de table de rappels et de colonnes d’email dans le journal des paiements ;
-  - l’absence d’accès navigateur, même connecté (dossiers, bonus, profils, transactions) ;
+  - l’absence d’accès navigateur, même connecté (dossiers, bonus, profils, transactions, questionnaires terminés) ;
   - le dossier et le paiement rattachés au compte au passage en caisse, et le refus d’un compte inconnu ;
   - le refus de publier avant paiement ;
   - le premier paiement Whop signalé pour la publication, avec l’email Whop enregistré, et la livraison répétée ;

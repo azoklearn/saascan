@@ -5,6 +5,8 @@ export type SignupDossier = {
   formule?: string | null; membership_status?: string | null; cancel_at_period_end?: boolean | null;
 };
 export type SignupResponse = { dossier_id: string; question_id: string; value: unknown };
+/** Questionnaire terminé et enregistré avant tout paiement. */
+export type SignupCompletion = { user_id: string; answers: Record<string, unknown> | null; updated_at?: string | null; created_at?: string | null };
 export type SignupSummary = {
   total: number; today: number; last7Days: number; last30Days: number;
   google: number; email: number; openedCheckout: number; paying: number;
@@ -76,12 +78,16 @@ export type AccountDossier = {
   formule: string | null; membershipStatus: string | null; cancelAtPeriodEnd: boolean;
   answers: { question_id: string; value: unknown }[];
 };
-export type AccountDetail = AccountRow & { dossiers: AccountDossier[] };
+export type AccountDetail = AccountRow & { dossiers: AccountDossier[]; completedAt: string | null; completionAnswers: { question_id: string; value: unknown }[] };
 
 /** Les comptes avec, sous chacun, ses dossiers du plus récent au plus ancien et les réponses données. */
-export function accountDetails(users: SignupUser[], dossiers: SignupDossier[], responses: SignupResponse[]): AccountDetail[] {
-  return accountRows(users, dossiers).map((account) => ({
+export function accountDetails(users: SignupUser[], dossiers: SignupDossier[], responses: SignupResponse[], completions: SignupCompletion[] = []): AccountDetail[] {
+  return accountRows(users, dossiers).map((account) => {
+    const completion = completions.find((entry) => entry.user_id === account.id);
+    return {
     ...account,
+    completedAt: completion?.updated_at ?? completion?.created_at ?? null,
+    completionAnswers: Object.entries(completion?.answers ?? {}).map(([question_id, value]) => ({ question_id, value })),
     dossiers: dossiers
       .filter((dossier) => dossier.user_id && dossier.user_id === account.id)
       .sort((a, b) => Date.parse(b.created_at ?? "") - Date.parse(a.created_at ?? ""))
@@ -96,5 +102,6 @@ export function accountDetails(users: SignupUser[], dossiers: SignupDossier[], r
         cancelAtPeriodEnd: !!dossier.cancel_at_period_end,
         answers: responses.filter((response) => response.dossier_id === dossier.id).map(({ question_id, value }) => ({ question_id, value })),
       })),
-  }));
+    };
+  });
 }

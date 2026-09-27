@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { ScanShell } from "@/components/workspace/scan-shell";
 import { findPlan } from "@/config/pricing";
-import { accountDetails, summarizeSignups, type AccountDetail, type AccountDossier, type SignupUser } from "@/lib/admin/signups";
+import { accountDetails, summarizeSignups, type AccountDetail, type AccountDossier, type SignupCompletion, type SignupUser } from "@/lib/admin/signups";
 import { questions, shortAnswer } from "@/lib/questionnaire/questions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { currentUser } from "@/lib/supabase/server";
@@ -37,14 +37,14 @@ function dossierState(dossier: AccountDossier) {
 }
 
 /** Les réponses du questionnaire actuel sont dites en clair ; les anciennes sont seulement signalées. */
-function answersOf(dossier: AccountDossier) {
+function readableAnswers(answers: { question_id: string; value: unknown }[]) {
   const known = questions.flatMap((question) => {
-    const answer = dossier.answers.find((entry) => entry.question_id === question.id);
+    const answer = answers.find((entry) => entry.question_id === question.id);
     const label = answer ? shortAnswer(question, answer.value) : "";
     return label ? [label] : [];
   });
   if (known.length) return known.join(" · ");
-  return dossier.answers.length ? "Réponses de l’ancien questionnaire" : "Aucune réponse enregistrée";
+  return answers.length ? "Réponses de l’ancien questionnaire" : "Aucune réponse enregistrée";
 }
 
 export default async function Page() {
@@ -53,15 +53,20 @@ export default async function Page() {
   // Rôle posé dans app_metadata avec la clé service_role : aucun compte ne peut se l’attribuer lui-même.
   if (user.app_metadata?.role !== "admin") notFound();
   const admin = createAdminClient();
-  const [users, dossiers] = await Promise.all([
+  const [users, dossiers, completions] = await Promise.all([
     loadUsers(admin),
     admin.from("dossiers").select("id,user_id,created_at,statut,paid_at,refunded_at,formule,membership_status,cancel_at_period_end"),
+    admin.from("questionnaires").select("user_id,answers,created_at,updated_at"),
   ]);
   if (dossiers.error) throw new Error(dossiers.error.message);
+  // Tant que la migration 202609270001 n’est pas appliquée, la page s’affiche sans les questionnaires terminés.
+  const missingTable = completions.error?.code === "42P01" || completions.error?.code === "PGRST205";
+  if (completions.error && !missingTable) throw new Error(completions.error.message);
+  const finished = (completions.data ?? []) as SignupCompletion[];
   const responses = await admin.from("responses").select("dossier_id,question_id,value");
   if (responses.error) throw new Error(responses.error.message);
   const stats = summarizeSignups(users, dossiers.data);
-  const accounts = accountDetails(users, dossiers.data, responses.data);
+  const accounts = accountDetails(users, dossiers.data, responses.data, finished);
   const peak = Math.max(1, ...stats.days.map((entry) => entry.count));
   const tiles: [string, number][] = [
     ["Aujourd’hui", stats.today],
@@ -69,6 +74,7 @@ export default async function Page() {
     ["30 derniers jours", stats.last30Days],
     ["Avec Google", stats.google],
     ["Par email", stats.email],
+    ["Questionnaire terminé", finished.length],
     ["Ont ouvert le paiement", stats.openedCheckout],
     ["Abonnés payants", stats.paying],
   ];
@@ -95,12 +101,14 @@ export default async function Page() {
         <span>{accountLine(account)}</span>
       </p>
       {account.dossiers.length === 0
-        ? <p className="scan-admin-account-empty">Compte créé, questionnaire jamais terminé.</p>
+        ? <p className="scan-admin-account-empty">{account.completedAt
+          ? <>Questionnaire terminé le {dateTime.format(new Date(account.completedAt))}, arrêté devant les prix.<span className="scan-admin-dossier-answers">{readableAnswers(account.completionAnswers)}</span></>
+          : "Aucun dossier : la page de paiement n’a jamais été ouverte."}</p>
         : <ul className="scan-admin-dossiers">{account.dossiers.map((dossier) => <li key={dossier.id}>
           <span className="scan-admin-dossier-state" data-paid={!!dossier.paidAt && !dossier.refundedAt}>{dossierState(dossier)}</span>
-          <span className="scan-admin-dossier-answers">{answersOf(dossier)}</span>
+          <span className="scan-admin-dossier-answers">{readableAnswers(dossier.answers)}</span>
         </li>)}</ul>}
     </li>)}</ul>
-    <p className="scan-profil-note">Un dossier est créé quand la page de paiement Whop s’ouvre : « jamais payé » signale un abandon au moment de payer.{accounts.length > shownAccounts ? ` Seuls les ${shownAccounts} comptes les plus récents sont affichés.` : ""}</p>
+    <p className="scan-profil-note">Un dossier est créé quand la page de paiement Whop s’ouvre : « jamais payé » signale un abandon devant le paiement. Le questionnaire terminé est enregistré dès l’affichage de l’offre, avant tout paiement.{' '}Les comptes créés avant le 27 septembre 2026 se sont inscrits avant de répondre : pour eux, l’absence de dossier ne dit rien du questionnaire.{accounts.length > shownAccounts ? ` Seuls les ${shownAccounts} comptes les plus récents sont affichés.` : ""}</p>
   </section></ScanShell>;
 }
